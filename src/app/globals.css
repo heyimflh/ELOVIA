@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+@theme {
+  --font-jakarta: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-fraunces: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-jetbrains: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-white: #FFFFFF;
+  --color-mist-50: #F6FAF7;
+  --color-mint-50: #F4FAF6;
+  --color-mint-100: #E8F4EC;
+  --color-mint-200: #D3EBDB;
+  --color-mint-300: #A9D3B8;
+  --color-mint-400: #62B884;
+  --color-sage-300: #A9D3B8;
+  --color-green-500: #2FA866;
+  --color-green-600: #177A47;
+  --color-green-700: #0F5F37;
+  --color-green-800: #0B4A2B;
+  --color-lime-200: #E3F6B5;
+  --color-teal-100: #D1F2ED;
+  --color-teal-600: #0E7C7B;
+  --color-ink-900: #0F1F17;
+  --color-ink-800: #1B2E24;
+  --color-ink-700: #2D3D33;
+  --color-ink-600: #4A5D52;
+  --color-ink-500: #5D7065;
+  --color-ink-400: #7A8F83;
+  --color-ink-100: #E8ECE9;
+  --color-ink-50: #F4F6F5;
+
+  --shadow-soft: 0 12px 36px -8px rgba(15, 31, 23, 0.08), 0 4px 12px -2px rgba(15, 31, 23, 0.03);
+  --animate-shimmer: shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(350%) skewX(-20deg);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@layer base {
+  :root {
+    --font-jakarta: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-fraunces: 'Fraunces', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-jetbrains: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --color-white: #FFFFFF;
+    --color-mist-50: #F6FAF7;
+    --color-mint-50: #F4FAF6;
+    --color-mint-100: #E8F4EC;
+    --color-mint-200: #D3EBDB;
+    --color-mint-300: #A9D3B8;
+    --color-mint-400: #62B884;
+    --color-sage-300: #A9D3B8;
+    --color-green-500: #2FA866;
+    --color-green-600: #177A47;
+    --color-green-700: #0F5F37;
+    --color-green-800: #0B4A2B;
+    --color-lime-200: #E3F6B5;
+    --color-teal-100: #D1F2ED;
+    --color-teal-600: #0E7C7B;
+    --color-ink-900: #0F1F17;
+    --color-ink-800: #1B2E24;
+    --color-ink-700: #2D3D33;
+    --color-ink-600: #4A5D52;
+    --color-ink-500: #5D7065;
+    --color-ink-400: #7A8F83;
+    --color-ink-100: #E8ECE9;
+    --color-ink-50: #F4F6F5;
+
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-white);
+    color: var(--color-ink-900);
+    font-family: var(--font-jakarta);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+.font-fraunces {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.font-jakarta {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.shadow-soft {
+  box-shadow: 0 12px 36px -8px rgba(15, 31, 23, 0.08), 0 4px 12px -2px rgba(15, 31, 23, 0.03);
+}
+
+/* Custom Sleek Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(232, 245, 236, 0.4);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(23, 122, 71, 0.25);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(23, 122, 71, 0.5);
+}
+
+/* Subtle dot-grid pattern for eco-tech precision (PRD Section 14.1) */
+.bg-eco-grid {
+  background-image: radial-gradient(rgba(23, 122, 71, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Dreamy Fresh Green Tech Range Slider */
+.dreamy-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dreamy-range-slider::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.dreamy-range-slider::-moz-range-track {
+  height: 12px;
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.dreamy-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 2px solid #177A47;
+  box-shadow: 0 4px 12px rgba(23, 122, 71, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+}
+
+.dreamy-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(23, 122, 71, 0.35), 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.dreamy-range-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.dreamy-range-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 2px solid #177A47;
+  box-shadow: 0 4px 12px rgba(23, 122, 71, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+}
+
+.dreamy-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(23, 122, 71, 0.35), 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.dreamy-range-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
