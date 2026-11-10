@@ -20,6 +20,9 @@
 # misc
 .DS_Store
 *.pem
+*.zip
+*.tar.gz
+*.rar
 
 # debug
 npm-debug.log*

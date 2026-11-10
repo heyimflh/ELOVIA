@@ -53,6 +53,14 @@
     --font-fraunces: 'Fraunces', Georgia, serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --font-jetbrains: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-inter-tight: 'Inter Tight', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Awwwards Light Theme: Lush Airy Morning Sky */
+    --sky-bg: #e6f4f1;
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --ink: #0f2922;
+    --highlight: #22c55e;
 
     --color-white: #FFFFFF;
     --color-mist-50: #F6FAF7;
@@ -101,6 +109,19 @@
 
 .font-mono {
   font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.font-inter-tight {
+  font-family: var(--font-inter-tight), 'Inter Tight', system-ui, -apple-system, sans-serif;
+}
+
+/* Global Reset: Hide scrollbars visually but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .shadow-soft {

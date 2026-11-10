@@ -32,7 +32,7 @@ const NAV_LINKS: NavItem[] = [
   },
   {
     label: 'Impact Garden',
-    href: '/taman',
+    href: '/dampak',
     description: 'Visualisasi dampak ekologis dan reduksi karbon',
   },
   {
@@ -51,6 +51,9 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
   const scrollDelta = useRef(0);
+
+  // Dedicated Partner Portal has its own custom Top Header & Command Center
+  const isMitraPortal = pathname?.startsWith('/mitra');
 
   // Automatically style as floating glass pill on light background pages like /keranjang
   const isLightPage = pathname?.startsWith('/keranjang');
@@ -130,6 +133,11 @@ export function Navbar() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [mobileMenuOpen]);
+
+  // Don't render consumer navbar on Mitra Portal
+  if (isMitraPortal) {
+    return null;
+  }
 
   return (
     <>

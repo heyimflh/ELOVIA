@@ -1,0 +1,16 @@
+export { ImpactHero } from './ImpactHero';
+export { PersonalEcologicalMetrics } from './PersonalEcologicalMetrics';
+export type { PersonalEcologicalMetricsProps, MetricCardData } from './PersonalEcologicalMetrics';
+export { AchievementBadgesSection } from './AchievementBadgesSection';
+export type { AchievementBadge } from './AchievementBadgesSection';
+export { BentoBreakdownSection } from './BentoBreakdownSection';
+export { EcoLeaderboardSection } from './EcoLeaderboardSection';
+export type { LeaderboardUser } from './EcoLeaderboardSection';
+export { MinimalGardenCanvas, Garden, Loader } from './MinimalGardenCanvas';
+export type { MinimalGardenCanvasHandle } from './MinimalGardenCanvas';
+export { ImpactCanvas } from './ImpactCanvas';
+export { ImpactScene } from './ImpactScene';
+export { CameraController } from './CameraController';
+export { MagicTree, PrehistoricEnvironment, SeedlingSprout, IslandGround } from './GardenModels';
+export { TransitionParticles } from './TransitionParticles';
+export * from './types';

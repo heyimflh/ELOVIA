@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useMemo } from 'react';
+import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import {
   Center,
@@ -76,10 +77,17 @@ export function Delivery3DStage({ type }: Delivery3DStageProps) {
         dpr={[1, 1.5]}
         shadows
       >
-        {/* 2. Ban Over-exposure: Neutral City Lighting & Crisp Directional Highlights */}
-        <ambientLight intensity={0.4} />
+        {/* 2. Ban Over-exposure: Neutral Lighting & Crisp Directional Highlights */}
+        <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1.5} castShadow />
-        <Environment preset="city" />
+        <hemisphereLight args={['#f8fafc', '#cbd5e1', 0.8]} position={[0, 20, 0]} />
+        <Environment resolution={128}>
+          <mesh scale={100}>
+            <sphereGeometry args={[1, 16, 16]} />
+            <meshBasicMaterial side={THREE.BackSide} color="#f8fafc" />
+          </mesh>
+          <directionalLight position={[10, 10, 5]} intensity={1.5} color="#ffffff" />
+        </Environment>
 
         {/* 5. Refined OrbitControls: Controlled Auto-Rotation & Clamped Polar Angles */}
         <OrbitControls
