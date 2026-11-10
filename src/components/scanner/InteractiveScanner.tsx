@@ -6,7 +6,6 @@ import {
   motion,
   AnimatePresence,
   useSpring,
-  useMotionValueEvent,
 } from 'framer-motion';
 import {
   Scale,
@@ -279,11 +278,11 @@ function SpringNumber({ value, decimals = 0 }: { value: number; decimals?: numbe
 
   useEffect(() => {
     spring.set(value);
+    const unsubscribe = spring.on('change', (latest) => {
+      setDisplay(latest);
+    });
+    return () => unsubscribe();
   }, [value, spring]);
-
-  useMotionValueEvent(spring, 'change', (latest) => {
-    setDisplay(latest);
-  });
 
   return (
     <>
@@ -306,11 +305,11 @@ function ReactiveSeedling({ weightKg }: { weightKg: number }) {
 
   useEffect(() => {
     scaleSpring.set(targetScale);
+    const unsubscribe = scaleSpring.on('change', (latest) => {
+      setCurrentScale(latest);
+    });
+    return () => unsubscribe();
   }, [targetScale, scaleSpring]);
-
-  useMotionValueEvent(scaleSpring, 'change', (latest) => {
-    setCurrentScale(latest);
-  });
 
   return (
     <div className="relative flex flex-col items-center justify-center py-3 select-none">

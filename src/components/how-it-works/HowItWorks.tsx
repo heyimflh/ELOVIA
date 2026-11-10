@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, useReducedMotion } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import {
   FileText,
   Layers,
@@ -152,18 +152,21 @@ export function HowItWorks() {
   // Active state for each node
   const [activeNodes, setActiveNodes] = useState<boolean[]>([true, false, false, false]);
 
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (shouldReduceMotion) {
-      setActiveNodes([true, true, true, true]);
-      return;
-    }
-    setActiveNodes([
-      latest >= 0.05,
-      latest >= 0.32,
-      latest >= 0.58,
-      latest >= 0.82,
-    ]);
-  });
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on('change', (latest) => {
+      if (shouldReduceMotion) {
+        setActiveNodes([true, true, true, true]);
+        return;
+      }
+      setActiveNodes([
+        latest >= 0.05,
+        latest >= 0.32,
+        latest >= 0.58,
+        latest >= 0.82,
+      ]);
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress, shouldReduceMotion]);
 
   return (
     <section

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { ShoppingBag, Menu, X, ArrowUpRight } from 'lucide-react';
 import { useCart } from '@/lib/cart-store';
 
@@ -67,7 +67,12 @@ export function Navbar() {
   );
   const effectiveScrolled = (mounted && isScrolled) || isLightPage;
 
-  // Sync scroll position on initial mount (in case user reloads page halfway down)
+  const mobileMenuOpenRef = useRef(mobileMenuOpen);
+  useEffect(() => {
+    mobileMenuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
+  // Sync scroll position & track scroll direction safely inside useEffect (after mount)
   useEffect(() => {
     setMounted(true);
     const currentY = window.scrollY;
@@ -75,51 +80,55 @@ export function Navbar() {
       setIsScrolled(true);
     }
     lastScrollY.current = currentY;
-  }, []);
 
-  // Smooth Headroom scroll direction tracking with jitter filtering
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    const previous = lastScrollY.current;
-    const diff = latest - previous;
+    // Smooth Headroom scroll direction tracking with jitter filtering
+    const unsubscribe = scrollY.on('change', (latest) => {
+      const previous = lastScrollY.current;
+      const diff = latest - previous;
 
-    // 1. Hero vs Scrolled Floating Pill state
-    // When within top 60px: ALWAYS Hero design (full-width transparent, white text)
-    if (latest <= 60) {
-      setIsScrolled(false);
-      setHidden(false);
+      // 1. Hero vs Scrolled Floating Pill state
+      // When within top 60px: ALWAYS Hero design (full-width transparent, white text)
+      if (latest <= 60) {
+        setIsScrolled(false);
+        setHidden(false);
+        lastScrollY.current = latest;
+        scrollDelta.current = 0;
+        return;
+      }
+
+      // Past 60px: transform into floating glassmorphism pill
+      setIsScrolled(true);
+
+      // Keep visible if mobile menu is active
+      if (mobileMenuOpenRef.current) {
+        setHidden(false);
+        lastScrollY.current = latest;
+        return;
+      }
+
+      // Accumulate scroll delta in the same direction to filter micro-jitters
+      if ((diff > 0 && scrollDelta.current < 0) || (diff < 0 && scrollDelta.current > 0)) {
+        scrollDelta.current = 0;
+      }
+      scrollDelta.current += diff;
+
+      // 2. Smooth Headroom hide & show with directional hysteresis
+      // Only hide when scrolling DOWN with meaningful movement (> 22px accumulated)
+      if (latest > 120 && scrollDelta.current > 22) {
+        setHidden(true);
+      }
+      // Only show when scrolling UP with intentional movement (< -14px accumulated)
+      else if (scrollDelta.current < -14) {
+        setHidden(false);
+      }
+
       lastScrollY.current = latest;
-      scrollDelta.current = 0;
-      return;
-    }
+    });
 
-    // Past 60px: transform into floating glassmorphism pill
-    setIsScrolled(true);
-
-    // Keep visible if mobile menu is active
-    if (mobileMenuOpen) {
-      setHidden(false);
-      lastScrollY.current = latest;
-      return;
-    }
-
-    // Accumulate scroll delta in the same direction to filter micro-jitters
-    if ((diff > 0 && scrollDelta.current < 0) || (diff < 0 && scrollDelta.current > 0)) {
-      scrollDelta.current = 0;
-    }
-    scrollDelta.current += diff;
-
-    // 2. Smooth Headroom hide & show with directional hysteresis
-    // Only hide when scrolling DOWN with meaningful movement (> 22px accumulated)
-    if (latest > 120 && scrollDelta.current > 22) {
-      setHidden(true);
-    }
-    // Only show when scrolling UP with intentional movement (< -14px accumulated)
-    else if (scrollDelta.current < -14) {
-      setHidden(false);
-    }
-
-    lastScrollY.current = latest;
-  });
+    return () => {
+      unsubscribe();
+    };
+  }, [scrollY]);
 
   // Lock body scroll and listen for Escape key when mobile menu is open
   useEffect(() => {

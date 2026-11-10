@@ -7,7 +7,6 @@ import {
   useScroll,
   useTransform,
   useSpring,
-  useMotionValueEvent,
   useReducedMotion,
 } from 'framer-motion';
 import {
@@ -210,23 +209,27 @@ export function ClosingCTA() {
      4. BUTTERY SMOOTH LERP FRAME INTERPOLATION (60-120 FPS RAF)
      Synchronizes user scroll directly to the 300 frame sequence.
      ========================================================================= */
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    setProgressVal(latest);
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on('change', (latest) => {
+      setProgressVal(latest);
 
-    // Map scroll progress (0 to 1) directly to frame index (0 to 299)
-    const targetIdx = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(latest * TOTAL_FRAMES)));
-    targetFrameRef.current = targetIdx;
+      // Map scroll progress (0 to 1) directly to frame index (0 to 299)
+      const targetIdx = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(latest * TOTAL_FRAMES)));
+      targetFrameRef.current = targetIdx;
 
-    // Update phase indicator
-    let nextPhase: 1 | 2 | 3 | 4 = 1;
-    if (latest < 0.28) nextPhase = 1;
-    else if (latest < 0.58) nextPhase = 2;
-    else if (latest < 0.78) nextPhase = 3;
-    else nextPhase = 4;
+      // Update phase indicator
+      let nextPhase: 1 | 2 | 3 | 4 = 1;
+      if (latest < 0.28) nextPhase = 1;
+      else if (latest < 0.58) nextPhase = 2;
+      else if (latest < 0.78) nextPhase = 3;
+      else nextPhase = 4;
 
-    setCurrentPhase(nextPhase);
-    setIsInteractive(latest >= 0.76);
-  });
+      setCurrentPhase(nextPhase);
+      setIsInteractive(latest >= 0.76);
+    });
+
+    return () => unsubscribe();
+  }, [scrollYProgress]);
 
   useEffect(() => {
     let rafId: number;
