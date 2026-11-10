@@ -43,24 +43,33 @@ const NAV_LINKS: NavItem[] = [
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  const pathname = rawPathname || '';
   const { itemCount } = useCart();
   const { scrollY } = useScroll();
+  const [mounted, setMounted] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
   const scrollDelta = useRef(0);
 
-  // Dedicated Partner Portal has its own custom Top Header & Command Center
-  const isMitraPortal = pathname?.startsWith('/mitra');
+  // Dedicated Partner Portal & Auth pages have their own custom Top Header & Command Center
+  const isMitraPortal = pathname.startsWith('/mitra');
+  const isAuthPage = pathname === '/masuk' || pathname === '/daftar';
 
-  // Automatically style as floating glass pill on light background pages like /keranjang
-  const isLightPage = pathname?.startsWith('/keranjang');
-  const effectiveScrolled = isScrolled || Boolean(isLightPage);
+  // Automatically style as floating glass pill on light background pages like /keranjang or /metodologi
+  const isLightPage = Boolean(
+    pathname.startsWith('/keranjang') ||
+    pathname.startsWith('/metodologi') ||
+    pathname.startsWith('/akun') ||
+    pathname.startsWith('/material')
+  );
+  const effectiveScrolled = (mounted && isScrolled) || isLightPage;
 
   // Sync scroll position on initial mount (in case user reloads page halfway down)
   useEffect(() => {
+    setMounted(true);
     const currentY = window.scrollY;
     if (currentY > 60) {
       setIsScrolled(true);
@@ -134,8 +143,8 @@ export function Navbar() {
     };
   }, [mobileMenuOpen]);
 
-  // Don't render consumer navbar on Mitra Portal
-  if (isMitraPortal) {
+  // Don't render consumer navbar on Mitra Portal or Auth pages (Login/Register)
+  if (isMitraPortal || isAuthPage) {
     return null;
   }
 
@@ -243,11 +252,13 @@ export function Navbar() {
                 >
                   <span>{link.label}</span>
 
-                  {/* Subtle active / hover indicator dot or bar */}
-                  {isActive && !effectiveScrolled && (
+                  {/* Subtle active / hover indicator dot or bar (toggled via CSS to prevent DOM hydration mismatches) */}
+                  {isActive && (
                     <span
                       aria-hidden="true"
-                      className="inline-block w-1 h-1 rounded-full bg-[#A7F3D0] ml-1.5 align-middle"
+                      className={`w-1 h-1 rounded-full bg-[#A7F3D0] ml-1.5 align-middle transition-opacity duration-300 ${
+                        effectiveScrolled ? 'hidden' : 'inline-block'
+                      }`}
                     />
                   )}
                 </Link>
@@ -263,7 +274,7 @@ export function Navbar() {
               aria-label={`Keranjang Material (${itemCount} item)`}
               className={`relative p-2 rounded-full transition-all duration-300 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#177A47] group ${
                 effectiveScrolled
-                  ? 'text-[#0F1F17] hover:text-[#177A47] hover:bg-[#E8F4EC]/70'
+                  ? 'text-slate-700 hover:text-slate-900 hover:bg-[#E8F4EC]/70'
                   : 'text-white hover:text-white hover:bg-white/15 drop-shadow-sm'
               }`}
             >
@@ -272,6 +283,7 @@ export function Navbar() {
               {/* Dynamic Notification Badge */}
               {itemCount > 0 && (
                 <span
+                  suppressHydrationWarning
                   className={`absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center transition-all duration-300 shadow-xs ${
                     effectiveScrolled
                       ? 'bg-[#177A47] text-white ring-2 ring-white'
@@ -283,12 +295,12 @@ export function Navbar() {
               )}
             </Link>
 
-            {/* Primary CTA: 'Masuk' (Pill-shaped, glass at hero, solid green when scrolled) */}
+            {/* Primary CTA: 'Masuk' (Pill-shaped, solid emerald on light/scrolled, glass at dark hero) */}
             <Link
               href="/masuk"
-              className={`hidden sm:inline-flex items-center justify-center px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 shadow-sm active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#177A47] ${
+              className={`hidden sm:inline-flex items-center justify-center px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 shadow-md active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 ${
                 effectiveScrolled
-                  ? 'bg-[#177A47] hover:bg-[#0F5F37] text-white shadow-[#177A47]/20 hover:shadow-md'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/25 hover:shadow-lg'
                   : 'bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-md hover:border-white/40 drop-shadow-sm'
               }`}
             >
@@ -303,7 +315,7 @@ export function Navbar() {
               aria-expanded={mobileMenuOpen}
               className={`lg:hidden p-2 rounded-full transition-all duration-300 flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#177A47] ${
                 effectiveScrolled
-                  ? 'text-[#0F1F17] hover:bg-[#E8F4EC]'
+                  ? 'text-slate-700 hover:text-slate-900 hover:bg-[#E8F4EC]'
                   : 'text-white hover:bg-white/15'
               }`}
             >

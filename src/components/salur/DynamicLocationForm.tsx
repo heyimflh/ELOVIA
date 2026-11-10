@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User,
@@ -14,7 +15,9 @@ import {
   Route,
   Receipt,
   Sparkles,
+  Check,
 } from 'lucide-react';
+import { getSavedAddresses, type AddressItem } from '@/lib/addressStore';
 
 export type DeliveryMethod = 'pickup' | 'dropoff';
 
@@ -89,6 +92,43 @@ export function DynamicLocationForm({
     },
   });
 
+  const [savedAddresses, setSavedAddresses] = useState<AddressItem[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+
+  // Hydrate saved addresses from central store / localStorage
+  useEffect(() => {
+    const list = getSavedAddresses();
+    setSavedAddresses(list);
+    if (list.length > 0 && !initialFormData) {
+      const def = list.find((a) => a.isDefault) || list[0];
+      if (def) {
+        setSelectedAddressId(def.id);
+        const initialData: PickupFormData = {
+          fullName: def.recipientName,
+          whatsappNumber: def.phone,
+          address: def.fullAddress,
+          driverNotes: def.driverNotes || '',
+          coordinates: def.coordinates || { lat: -6.8924, lng: 107.6186 },
+        };
+        setFormData(initialData);
+        onChange?.(initialData);
+      }
+    }
+  }, []);
+
+  const handleSelectSavedAddress = (addr: AddressItem) => {
+    setSelectedAddressId(addr.id);
+    const updated: PickupFormData = {
+      fullName: addr.recipientName,
+      whatsappNumber: addr.phone,
+      address: addr.fullAddress,
+      driverNotes: addr.driverNotes || '',
+      coordinates: addr.coordinates || { lat: -6.8924, lng: 107.6186 },
+    };
+    setFormData(updated);
+    onChange?.(updated);
+  };
+
   const updateField = (field: keyof PickupFormData, value: any) => {
     const updated = { ...formData, [field]: value };
     setFormData(updated);
@@ -135,9 +175,57 @@ export function DynamicLocationForm({
                 <h3 className="text-2xl font-bold text-white drop-shadow-md font-jakarta">
                   Detail Lokasi Penjemputan
                 </h3>
-                <p className="text-white/70 mb-6 font-jakarta text-sm mt-1">
+                <p className="text-white/70 mb-4 font-jakarta text-sm mt-1">
                   Tentukan titik presisi agar armada mudah menemukan Anda.
                 </p>
+
+                {/* ── Saved Addresses Quick Selector from /akun/alamat ── */}
+                {savedAddresses.length > 0 && (
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/15 backdrop-blur-md">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <span className="text-xs font-bold text-green-300 uppercase tracking-wider font-jakarta flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5" />
+                        Pilih Dari Buku Alamat Tersimpan:
+                      </span>
+                      <Link
+                        href="/akun/alamat"
+                        className="text-[11px] text-white/60 hover:text-green-300 transition-colors underline"
+                      >
+                        Kelola Alamat
+                      </Link>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {savedAddresses.map((addr) => {
+                        const isSelected = selectedAddressId === addr.id;
+                        return (
+                          <button
+                            key={addr.id}
+                            type="button"
+                            onClick={() => handleSelectSavedAddress(addr)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                              isSelected
+                                ? 'bg-green-500 text-slate-950 shadow-md ring-2 ring-green-300'
+                                : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+                            }`}
+                          >
+                            <span>{addr.label}</span>
+                            {addr.isDefault && (
+                              <span
+                                className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                                  isSelected
+                                    ? 'bg-slate-950/20 text-slate-950'
+                                    : 'bg-green-400/20 text-green-300'
+                                }`}
+                              >
+                                Utama
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Spatial Glass Form Inputs */}
