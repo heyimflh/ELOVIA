@@ -150,7 +150,7 @@ export function ScannerHeader({
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative w-full h-screen overflow-hidden flex flex-col justify-between bg-[#F6FAF7] [perspective:1200px] select-none ${className}`}
+      className={`relative w-full h-screen overflow-hidden flex flex-col justify-between bg-transparent [perspective:1200px] select-none ${className}`}
     >
       {/* =========================================================================
           TIER 1: BACKGROUND LAYER (Deepest: Wall, window, wall decor)
@@ -271,14 +271,20 @@ export function ScannerHeader({
         </motion.div>
       </motion.div>
 
-      {/* Subtle top & bottom grounding gradient overlays (No blur, preserving crisp detail) */}
+      {/* Subtle top & bottom grounding gradient overlays (Seamless blend into dark forest background) */}
       <div
         aria-hidden="true"
-        className="absolute top-0 inset-x-0 h-44 sm:h-56 bg-gradient-to-b from-black/55 via-black/20 to-transparent pointer-events-none z-[3]"
+        className="absolute top-0 inset-x-0 h-44 sm:h-56 bg-gradient-to-b from-black/60 via-black/20 to-transparent pointer-events-none z-[3]"
       />
       <div
         aria-hidden="true"
-        className="absolute bottom-0 inset-x-0 h-48 sm:h-64 bg-gradient-to-t from-black/60 via-black/25 to-transparent pointer-events-none z-[3]"
+        className="absolute bottom-0 inset-x-0 h-56 sm:h-72 bg-gradient-to-t from-[#0a150f] via-[#0a150f]/70 to-transparent pointer-events-none z-[3]"
+      />
+
+      {/* Ultra-smooth invisible radial gradient overlay behind text for flawless contrast */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.2)_40%,transparent_70%)] pointer-events-none z-[4]"
       />
 
       {/* =========================================================================
@@ -301,43 +307,40 @@ export function ScannerHeader({
           }}
           className="w-full flex-1 flex flex-col justify-between items-center"
         >
-          {/* CENTER CONTENT BLOCK */}
+          {/* CENTER CONTENT BLOCK (Clean, Borderless, Floating Layout) */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex-1 flex flex-col items-center justify-center -mt-6 sm:-mt-8"
+            className="flex flex-col items-center justify-center text-center w-full max-w-4xl mx-auto px-4 z-10 flex-1 -mt-6 sm:-mt-8"
           >
-            {/* Badge: '• WASTE VALUE SCANNER 🍃' capsule chip */}
-            <motion.div variants={itemVariants} className="mb-4 sm:mb-5">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-[#D3EBDB] shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                <span className="w-2 h-2 rounded-full bg-[#177A47] inline-block" />
-                <span className="text-[11px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-[#0F5F37] font-jakarta">
-                  WASTE VALUE SCANNER
-                </span>
+            {/* Badge: '• WASTE VALUE SCANNER 🍃' standalone floating pill */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-md border border-white/20 text-emerald-300 text-xs font-bold tracking-widest uppercase shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                <span className="font-jakarta">WASTE VALUE SCANNER</span>
                 <span className="text-sm" aria-hidden="true">🍃</span>
               </div>
             </motion.div>
 
-            {/* Headline: 'Kenali sampah, ketahui potensinya.' in heavy Fraunces with diffuse text shadow */}
+            {/* Headline: 'Kenali sampah, ketahui potensinya.' with glowing gradient and heavy drop shadows */}
             <motion.h1
               variants={itemVariants}
-              className="font-fraunces text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold text-[#0F1F17] tracking-tight leading-[1.12] sm:leading-[1.1] max-w-3xl drop-shadow-[0_2px_16px_rgba(255,255,255,0.95)] [text-shadow:0_2px_16px_rgba(255,255,255,0.95),0_0_24px_rgba(255,255,255,0.85),0_1px_3px_rgba(0,0,0,0.15)]"
+              className="font-fraunces text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-center max-w-3xl mx-auto leading-tight mb-4"
             >
-              Kenali sampah, <br className="hidden sm:inline" />
-              <span className="relative inline-block">
+              <span className="text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+                Kenali sampah,{' '}
+              </span>
+              <br className="hidden sm:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-emerald-200 to-teal-300 drop-shadow-[0_2px_15px_rgba(16,185,129,0.8)] font-serif italic">
                 ketahui potensinya.
-                <span
-                  aria-hidden="true"
-                  className="absolute -bottom-1 left-0 right-0 h-2 sm:h-2.5 bg-gradient-to-r from-[#D3EBDB]/30 via-[#D3EBDB]/80 to-[#D3EBDB]/30 -z-10 rounded-full"
-                />
               </span>
             </motion.h1>
 
-            {/* Description: 'Pilih material Anda, masukkan beratnya, dan temukan nilai ekonomi yang tersembunyi.' */}
+            {/* Subtitle: High legibility pure white with strong shadow */}
             <motion.p
               variants={itemVariants}
-              className="mt-3.5 sm:mt-5 text-sm sm:text-base md:text-lg font-medium text-[#0F1F17] font-jakarta max-w-xl mx-auto leading-relaxed drop-shadow-[0_1px_10px_rgba(255,255,255,0.95)] [text-shadow:0_1px_10px_rgba(255,255,255,0.95),0_0_18px_rgba(255,255,255,0.8)]"
+              className="mt-3.5 sm:mt-5 text-white/95 text-sm md:text-base lg:text-lg max-w-2xl mx-auto text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-medium leading-relaxed font-jakarta"
             >
               Pilih material Anda, masukkan beratnya, dan temukan nilai ekonomi yang tersembunyi.
             </motion.p>
@@ -346,18 +349,18 @@ export function ScannerHeader({
                 '• Formula 6 Faktor Penentu', '■ Harga Acuan Bertanggal', '• Panduan SNI Terpadu' */}
             <motion.div
               variants={itemVariants}
-              className="mt-6 sm:mt-7 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#0F5F37]"
+              className="mt-6 sm:mt-7 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-emerald-100"
             >
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#E8F4EC]/90 sm:bg-white/90 border border-[#D3EBDB] shadow-xs font-semibold font-jakarta">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#177A47]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-md border border-white/20 shadow-md font-semibold font-jakarta text-emerald-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 Formula 6 Faktor Penentu
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#E8F4EC]/90 sm:bg-white/90 border border-[#D3EBDB] shadow-xs font-semibold font-jakarta">
-                <span className="w-1.5 h-1.5 rounded-[1px] bg-[#0E7C7B]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-md border border-white/20 shadow-md font-semibold font-jakarta text-emerald-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <span className="w-1.5 h-1.5 rounded-[1px] bg-teal-300" />
                 Harga Acuan Bertanggal
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#E8F4EC]/90 sm:bg-white/90 border border-[#D3EBDB] shadow-xs font-semibold font-jakarta">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2FA866]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900/60 backdrop-blur-md border border-white/20 shadow-md font-semibold font-jakarta text-emerald-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
                 Panduan SNI Terpadu
               </div>
             </motion.div>
@@ -374,9 +377,9 @@ export function ScannerHeader({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
               aria-label="Gulir ke pemindai interaktif di bawah"
-              className="group flex flex-col items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-2xl cursor-pointer p-1 transition-transform active:scale-95"
+              className="group flex flex-col items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 rounded-2xl cursor-pointer p-1 transition-transform active:scale-95"
             >
-              <span className="text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)] font-jakarta group-hover:text-[#E8F4EC] transition-colors">
+              <span className="text-[11px] sm:text-xs font-bold tracking-[0.22em] uppercase text-emerald-200 drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)] font-jakarta group-hover:text-white transition-colors">
                 MULAI PINDAI NILAI
               </span>
 
@@ -394,9 +397,9 @@ export function ScannerHeader({
                   repeat: Infinity,
                   ease: 'easeInOut',
                 }}
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white shadow-[0_6px_24px_rgba(0,0,0,0.35)] flex items-center justify-center border border-white/80 group-hover:scale-105 transition-all duration-300"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-emerald-600/90 hover:bg-emerald-500 text-white shadow-[0_6px_24px_rgba(16,185,129,0.45)] flex items-center justify-center border border-emerald-300/60 group-hover:scale-105 transition-all duration-300 backdrop-blur-md"
               >
-                <ArrowDown className="w-5 h-5 text-[#0F5F37] stroke-[2.5] group-hover:translate-y-0.5 transition-transform duration-300" />
+                <ArrowDown className="w-5 h-5 text-white stroke-[2.5] group-hover:translate-y-0.5 transition-transform duration-300" />
               </motion.div>
             </motion.button>
           </div>

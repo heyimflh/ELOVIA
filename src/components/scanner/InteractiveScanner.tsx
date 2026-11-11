@@ -609,29 +609,26 @@ export function InteractiveScanner() {
   return (
     <section
       id="scanner-section"
-      className="relative py-20 sm:py-28 overflow-hidden bg-mist-50 scroll-mt-12 select-none"
+      className="relative py-16 sm:py-24 lg:py-28 overflow-hidden bg-transparent scroll-mt-12 select-none"
     >
       {/* =========================================================================
           1. TRUE AMBIENT BACKGROUND WITH MASSIVE HIGHLY BLURRED CSS ORBS
-          - w-[40vw] h-[40vw] blur-[140px] bg-mint-200/60
-          - w-[40vw] h-[40vw] blur-[140px] bg-teal-100/40
-          - Center gentle lime aura
           ========================================================================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10">
         {/* Subtle dot-grid texture */}
         <svg
-          className="absolute inset-0 w-full h-full opacity-4 pointer-events-none"
+          className="absolute inset-0 w-full h-full opacity-10 pointer-events-none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
             <pattern id="scanner-ambient-grid" width="32" height="32" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.5" fill="#177A47" />
+              <circle cx="2" cy="2" r="1.5" fill="#34D399" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#scanner-ambient-grid)" />
         </svg>
 
-        {/* Massive Blurred Ambient Orb 1: Mint-200/60 */}
+        {/* Massive Blurred Ambient Orb 1: Emerald glow */}
         <motion.div
           animate={{
             x: [0, 45, -30, 0],
@@ -639,10 +636,10 @@ export function InteractiveScanner() {
             scale: [1, 1.1, 0.96, 1],
           }}
           transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-[12vw] -left-[10vw] w-[40vw] h-[40vw] rounded-full bg-mint-200/60 blur-[140px]"
+          className="absolute -top-[12vw] -left-[10vw] w-[40vw] h-[40vw] rounded-full bg-emerald-500/20 blur-[140px]"
         />
 
-        {/* Massive Blurred Ambient Orb 2: Teal-100/40 */}
+        {/* Massive Blurred Ambient Orb 2: Teal glow */}
         <motion.div
           animate={{
             x: [0, -40, 35, 0],
@@ -650,220 +647,209 @@ export function InteractiveScanner() {
             scale: [1, 1.12, 1, 1],
           }}
           transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -bottom-[12vw] -right-[10vw] w-[40vw] h-[40vw] rounded-full bg-teal-100/40 blur-[140px]"
+          className="absolute -bottom-[12vw] -right-[10vw] w-[40vw] h-[40vw] rounded-full bg-teal-400/20 blur-[140px]"
         />
 
         {/* Center Dreamy Atmosphere Glow */}
         <motion.div
           animate={{
             scale: [1, 1.14, 0.98, 1],
-            opacity: [0.3, 0.5, 0.3],
+            opacity: [0.2, 0.35, 0.2],
           }}
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34vw] h-[34vw] rounded-full bg-lime-200/35 blur-[130px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34vw] h-[34vw] rounded-full bg-lime-300/15 blur-[130px]"
         />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 shadow-xs text-xs font-semibold uppercase tracking-wider text-[#0F5F37] mb-3.5 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-[#177A47]" />
+        {/* Soft Glass Container for Section Hero Header */}
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-3xl p-6 sm:p-8 mb-10 sm:mb-12 shadow-lg text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold uppercase tracking-wider mb-4 backdrop-blur-md shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
             <span>Kalkulator & Pemindai Acuan Harga</span>
           </div>
-          <h2 className="font-fraunces text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0F1F17] tracking-tight">
+          <h2 className="font-fraunces text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight drop-shadow-md">
             Pindai Potensi Nilai Sampah Anda
           </h2>
-          <p className="mt-3.5 text-sm sm:text-base text-[#4A5D52] font-jakarta leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-3.5 text-sm sm:text-base text-emerald-100/90 font-jakarta leading-relaxed max-w-2xl mx-auto">
             Pilih kategori material, tentukan berat dengan slider presisi, dan pantau pertumbuhan
             nilai serta dampak bibit lingkungan secara seketika.
           </p>
         </div>
 
-        {/* =========================================================================
-            TRUE GLASSMORPHISM MAIN CONTAINER
-            - bg-white/60
-            - backdrop-blur-2xl
-            - border border-white/40
-            - soft shadow-[0_8px_32px_rgba(23,122,71,0.08)]
-            - NO inner dividers! Generous breathing padding (p-8 sm:p-10 lg:p-12)
-            ========================================================================= */}
-        <div className="relative rounded-[2.5rem] bg-white/60 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(23,122,71,0.08)] p-8 sm:p-10 lg:p-12 transition-all duration-300">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+        {/* 2-Column Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          
+          {/* =====================================================================
+              LEFT COLUMN: THE MAIN CALCULATOR DASHBOARD (TRUE GLASS CONTAINER)
+              Cols 1 to 7 - Translucent frosted glass with high contrast
+              ===================================================================== */}
+          <motion.div
+            layout
+            className="lg:col-span-7 bg-white/15 backdrop-blur-2xl border border-white/30 rounded-[2.5rem] p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.15)] space-y-8 text-white"
+          >
             
-            {/* =====================================================================
-                LEFT COLUMN: TACTILE CLAYMORPHISM & ORGANIC FORM SECTIONS
-                Cols 1 to 7 - Soft background tints & whitespace (NO gray borders)
-                ===================================================================== */}
-            <motion.div layout className="lg:col-span-7 space-y-9">
-              
-              {/* -------------------------------------------------------------------
-                  SECTION 1: TACTILE CLAYMORPHISM MATERIAL CATEGORIES
-                  ------------------------------------------------------------------- */}
-              <motion.div layout className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#177A47] to-[#2FA866] text-white text-xs font-bold font-mono flex items-center justify-center shadow-xs">
-                      1
-                    </span>
-                    <h3 className="font-fraunces text-xl sm:text-2xl font-bold text-[#0F1F17]">
-                      Pilih Kategori Material
-                    </h3>
-                  </div>
-                  <span className="text-xs font-mono text-[#5D7065] bg-white/70 px-3 py-1 rounded-full shadow-2xs hidden sm:inline">
-                    SNI Terpadu (4 Kategori)
+            {/* -------------------------------------------------------------------
+                SECTION 1: TACTILE MATERIAL CATEGORIES
+                ------------------------------------------------------------------- */}
+            <motion.div layout className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-emerald-500 text-white text-xs font-bold font-mono flex items-center justify-center shadow-xs border border-emerald-400/40">
+                    1
                   </span>
+                  <h3 className="font-fraunces text-xl sm:text-2xl font-bold text-white">
+                    Pilih Kategori Material
+                  </h3>
                 </div>
+                <span className="text-xs font-mono text-emerald-100 bg-white/15 border border-white/20 px-3 py-1 rounded-full shadow-2xs hidden sm:inline">
+                  SNI Terpadu (4 Kategori)
+                </span>
+              </div>
 
-                {/* 4 Tactile Claymorphism Category Cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 pt-1">
-                  {MATERIAL_CATEGORIES.map((cat) => {
-                    const isSelected = cat.id === selectedCategoryId;
-                    return (
-                      <motion.button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => handleCategorySelect(cat.id)}
-                        whileHover={{ scale: isSelected ? 1.05 : 1.03 }}
-                        whileTap={{ scale: 0.98 }}
-                        animate={{
-                          scale: isSelected ? 1.05 : 1,
-                        }}
-                        style={{
-                          boxShadow: isSelected
-                            ? `0 16px 36px rgba(47,168,102,0.22), 0 4px 12px rgba(15,31,23,0.04), inset 0 2px 4px rgba(255,255,255,1), inset 0 -2px 4px rgba(23,122,71,0.06)`
-                            : `0 8px 24px rgba(15,31,23,0.04), 0 2px 6px rgba(15,31,23,0.02), inset 0 2px 4px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(15,31,23,0.03)`,
-                        }}
-                        className={`relative group flex flex-col items-center text-center p-4 sm:p-5 rounded-2xl sm:rounded-3xl transition-all duration-300 cursor-pointer focus:outline-none bg-white ${
-                          isSelected
-                            ? 'ring-2 ring-green-500 ring-offset-2 ring-offset-white/50 text-[#0F1F17]'
-                            : 'text-[#4A5D52] hover:text-[#0F1F17]'
-                        }`}
-                      >
-                        {/* 3D Claymorphic Thumbnail Frame */}
-                        <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden mb-3 shadow-[0_6px_16px_rgba(0,0,0,0.08),inset_0_2px_4px_rgba(255,255,255,0.7)] group-hover:rotate-1 transition-transform duration-200">
-                          <Image
-                            src={cat.image}
-                            alt={cat.title}
-                            fill
-                            sizes="72px"
-                            className="object-cover"
-                          />
-                        </div>
-
-                        <span className="text-xs sm:text-sm font-bold text-[#0F1F17] leading-tight mb-1 font-jakarta">
-                          {cat.title}
-                        </span>
-                        <span className="text-[10px] text-[#5D7065] line-clamp-1 font-jakarta">
-                          {cat.subtitle}
-                        </span>
-
-                        {/* Claymorphic Selected Checkmark Pill */}
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-gradient-to-tr from-[#177A47] to-[#2FA866] text-white flex items-center justify-center shadow-[0_2px_8px_rgba(23,122,71,0.4)]"
-                          >
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </motion.div>
-                        )}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                {/* Sub-Category Chips (Soft Background Tint, NO Hard Border) */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeCategory.id}
-                    layout
-                    initial={{ opacity: 0, y: -6, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                    exit={{ opacity: 0, y: -6, height: 0 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="p-4 sm:p-5 rounded-2xl bg-mist-50/70 shadow-[inset_0_1px_3px_rgba(15,31,23,0.03)] space-y-2.5 mt-2">
-                      <div className="flex items-center justify-between text-xs text-[#0F5F37] font-semibold font-jakarta">
-                        <span>Pilih Sub-jenis Material {activeCategory.title}:</span>
-                        <span className="text-[11px] font-mono text-[#5D7065] font-normal hidden sm:inline">
-                          Spesifikasi acuan industri daur ulang
-                        </span>
+              {/* 4 Translucent Category Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4 pt-1">
+                {MATERIAL_CATEGORIES.map((cat) => {
+                  const isSelected = cat.id === selectedCategoryId;
+                  return (
+                    <motion.button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => handleCategorySelect(cat.id)}
+                      whileHover={{ scale: isSelected ? 1.05 : 1.03 }}
+                      whileTap={{ scale: 0.98 }}
+                      animate={{
+                        scale: isSelected ? 1.05 : 1,
+                      }}
+                      className={`relative group flex flex-col items-center text-center p-4 sm:p-5 rounded-2xl sm:rounded-3xl transition-all duration-300 cursor-pointer focus:outline-none backdrop-blur-md border ${
+                        isSelected
+                          ? 'bg-emerald-500/80 text-white border-emerald-400 shadow-[0_12px_28px_rgba(16,185,129,0.35)] ring-2 ring-emerald-300 ring-offset-2 ring-offset-black/20'
+                          : 'bg-white/20 text-white hover:bg-white/30 border-white/30 shadow-sm'
+                      }`}
+                    >
+                      {/* 3D Thumbnail Frame */}
+                      <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden mb-3 border border-white/40 shadow-[0_6px_16px_rgba(0,0,0,0.25)] group-hover:rotate-1 transition-transform duration-200">
+                        <Image
+                          src={cat.image}
+                          alt={cat.title}
+                          fill
+                          sizes="72px"
+                          className="object-cover"
+                        />
                       </div>
 
-                      <div className="flex flex-wrap gap-2 pt-0.5">
-                        {activeCategory.subcategories.map((sub) => {
-                          const isSubSelected = sub.id === selectedSubId;
-                          return (
-                            <button
-                              key={sub.id}
-                              type="button"
-                              onClick={() => handleSubSelect(sub.id)}
-                              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-2 ${
-                                isSubSelected
-                                  ? 'bg-gradient-to-r from-[#177A47] to-[#2FA866] text-white shadow-[0_4px_14px_rgba(23,122,71,0.25)] ring-2 ring-green-500/40'
-                                  : 'bg-white text-[#0F1F17] shadow-xs hover:bg-mint-50/90'
-                              }`}
-                            >
-                              <span className="text-[10px] font-mono opacity-80">{sub.tag}</span>
-                              <span className="font-semibold">{sub.name}</span>
-                              {isSubSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <span className="text-xs sm:text-sm font-bold text-white leading-tight mb-1 font-jakarta">
+                        {cat.title}
+                      </span>
+                      <span className="text-[10px] text-emerald-100/90 line-clamp-1 font-jakarta">
+                        {cat.subtitle}
+                      </span>
+
+                      {/* Selected Checkmark Pill */}
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.3)] font-bold"
+                        >
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Sub-Category Chips */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeCategory.id}
+                  layout
+                  initial={{ opacity: 0, y: -6, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, y: -6, height: 0 }}
+                  transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 space-y-2.5 mt-2 shadow-inner">
+                    <div className="flex items-center justify-between text-xs text-emerald-200 font-semibold font-jakarta">
+                      <span>Pilih Sub-jenis Material {activeCategory.title}:</span>
+                      <span className="text-[11px] font-mono text-emerald-100/80 font-normal hidden sm:inline">
+                        Spesifikasi acuan industri daur ulang
+                      </span>
                     </div>
-                  </motion.div>
-                </AnimatePresence>
-              </motion.div>
+
+                    <div className="flex flex-wrap gap-2 pt-0.5">
+                      {activeCategory.subcategories.map((sub) => {
+                        const isSubSelected = sub.id === selectedSubId;
+                        return (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            onClick={() => handleSubSelect(sub.id)}
+                            className={`px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-2 border ${
+                              isSubSelected
+                                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_4px_14px_rgba(16,185,129,0.3)] ring-2 ring-emerald-300 border-emerald-300/50'
+                                : 'bg-white/15 hover:bg-white/25 text-white/90 border-white/20 shadow-xs'
+                            }`}
+                          >
+                            <span className="text-[10px] font-mono opacity-80">{sub.tag}</span>
+                            <span className="font-semibold">{sub.name}</span>
+                            {isSubSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
 
               {/* -------------------------------------------------------------------
                   SECTION 2: CUSTOM PREMIUM WEIGHT SLIDER & QUALITY CONTROLS
-                  Separated by soft background tint & whitespace (NO harsh box borders)
                   ------------------------------------------------------------------- */}
               <motion.div layout className="space-y-6">
                 <div className="flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#177A47] to-[#2FA866] text-white text-xs font-bold font-mono flex items-center justify-center shadow-xs">
+                  <span className="w-7 h-7 rounded-full bg-emerald-500 text-white text-xs font-bold font-mono flex items-center justify-center shadow-xs border border-emerald-400/40">
                     2
                   </span>
-                  <h3 className="font-fraunces text-xl sm:text-2xl font-bold text-[#0F1F17]">
+                  <h3 className="font-fraunces text-xl sm:text-2xl font-bold text-white">
                     Tentukan Berat & Kualitas
                   </h3>
                 </div>
 
-                {/* Weight Control Container with Soft Tint (bg-mist-50/60) */}
-                <div className="bg-mist-50/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 space-y-6 shadow-[inset_0_1px_3px_rgba(15,31,23,0.03)]">
+                {/* Weight Control Container with Soft Tint (bg-white/10 backdrop-blur-md) */}
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 sm:p-8 space-y-6 shadow-inner">
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="weight-slider"
-                      className="text-xs font-bold text-[#0F1F17] uppercase tracking-wider flex items-center gap-2 font-jakarta"
+                      className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 font-jakarta"
                     >
-                      <Scale className="w-4 h-4 text-[#177A47]" />
+                      <Scale className="w-4 h-4 text-emerald-300" />
                       Estimasi Berat Material
                     </label>
-                    <span className="text-[11px] font-mono text-[#5D7065] bg-white/80 px-2.5 py-1 rounded-full shadow-2xs">
+                    <span className="text-[11px] font-mono text-emerald-200 bg-white/15 border border-white/25 px-2.5 py-1 rounded-full shadow-2xs">
                       Rentang: 0,1 – 500 kg
                     </span>
                   </div>
 
-                  {/* Big Live Weight Display Pill (Tactile 3D Card) */}
-                  <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-white shadow-[0_8px_24px_rgba(15,31,23,0.05),inset_0_2px_4px_rgba(255,255,255,0.95)]">
+                  {/* Big Live Weight Display Pill */}
+                  <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-white/15 backdrop-blur-xl border border-white/30 shadow-[0_8px_24px_rgba(0,0,0,0.15)]">
                     <button
                       type="button"
                       onClick={() => handleWeightChange(weightKg - 0.5)}
                       disabled={weightKg <= 0.1}
                       aria-label="Kurangi berat 0.5 kg"
-                      className="w-11 h-11 rounded-xl bg-mist-50 hover:bg-mint-100/70 text-[#0F1F17] flex items-center justify-center shadow-xs transition-transform active:scale-95 disabled:opacity-30 cursor-pointer font-bold"
+                      className="w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 text-white border border-white/30 flex items-center justify-center shadow-xs transition-transform active:scale-95 disabled:opacity-30 cursor-pointer font-bold"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
 
                     <div className="flex items-baseline gap-2">
-                      <span className="font-mono text-3xl sm:text-4xl font-extrabold text-[#177A47] tracking-tight">
+                      <span className="font-mono text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200 drop-shadow-[0_0_12px_rgba(16,185,129,0.5)] tracking-tight">
                         <SpringNumber value={weightKg} decimals={1} />
                       </span>
-                      <span className="font-mono text-lg text-[#5D7065] font-semibold">
+                      <span className="font-mono text-lg text-emerald-100/90 font-semibold">
                         kg
                       </span>
                     </div>
@@ -873,32 +859,27 @@ export function InteractiveScanner() {
                       onClick={() => handleWeightChange(weightKg + 0.5)}
                       disabled={weightKg >= 500}
                       aria-label="Tambah berat 0.5 kg"
-                      className="w-11 h-11 rounded-xl bg-mist-50 hover:bg-mint-100/70 text-[#0F1F17] flex items-center justify-center shadow-xs transition-transform active:scale-95 disabled:opacity-30 cursor-pointer font-bold"
+                      className="w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 text-white border border-white/30 flex items-center justify-center shadow-xs transition-transform active:scale-95 disabled:opacity-30 cursor-pointer font-bold"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
 
-                  {/* =============================================================
-                      CUSTOM PREMIUM WEIGHT SLIDER
-                      - Thick track (h-3 rounded-full)
-                      - Vibrant gradient fill (from-lime-400 to-green-600)
-                      - Large clean thumb casting shadow (w-6 h-6 border-2 border-green-600)
-                      ============================================================= */}
+                  {/* CUSTOM PREMIUM WEIGHT SLIDER */}
                   <div className="space-y-2 pt-1">
                     <div className="relative flex items-center h-8">
-                      {/* Thick Base Track */}
-                      <div className="w-full h-3 rounded-full bg-mint-100/90 shadow-[inset_0_1px_3px_rgba(15,31,23,0.08)] overflow-hidden">
-                        {/* Vibrant Gradient Filled Track */}
+                      {/* Base Track */}
+                      <div className="w-full h-3 rounded-full bg-white/20 border border-white/25 overflow-hidden">
+                        {/* Gradient Filled Track */}
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-lime-400 via-emerald-400 to-green-600 transition-all duration-75 shadow-[0_0_12px_rgba(47,168,102,0.35)]"
+                          className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 transition-all duration-75 shadow-[0_0_15px_rgba(52,211,153,0.7)]"
                           style={{
                             width: `${Math.min(100, Math.max(0, ((Math.min(100, weightKg) - 0.1) / (100 - 0.1)) * 100))}%`,
                           }}
                         />
                       </div>
 
-                      {/* Custom Range Input (Clean thumb styled via CSS) */}
+                      {/* Custom Range Input */}
                       <input
                         id="weight-slider"
                         type="range"
@@ -912,7 +893,7 @@ export function InteractiveScanner() {
                       />
                     </div>
 
-                    <div className="flex justify-between text-[11px] font-mono text-[#5D7065] px-1">
+                    <div className="flex justify-between text-[11px] font-mono text-emerald-100/80 px-1">
                       <span>0.1 kg</span>
                       <span>25 kg</span>
                       <span>50 kg</span>
@@ -921,9 +902,9 @@ export function InteractiveScanner() {
                     </div>
                   </div>
 
-                  {/* Aesthetic Quick Weight Pills */}
+                  {/* Quick Weight Pills */}
                   <div className="flex items-center gap-2 flex-wrap pt-1">
-                    <span className="text-xs text-[#5D7065] mr-1 font-jakarta font-medium">
+                    <span className="text-xs text-emerald-100/80 mr-1 font-jakarta font-medium">
                       Pilihan Cepat:
                     </span>
                     {QUICK_WEIGHTS.map((amt) => (
@@ -931,10 +912,10 @@ export function InteractiveScanner() {
                         key={amt}
                         type="button"
                         onClick={() => handleWeightChange(amt)}
-                        className={`px-3.5 py-1.5 rounded-full font-mono text-xs font-semibold transition-all cursor-pointer ${
+                        className={`px-3.5 py-1.5 rounded-full font-mono text-xs font-semibold transition-all cursor-pointer border ${
                           weightKg === amt
-                            ? 'bg-gradient-to-r from-[#177A47] to-[#2FA866] text-white shadow-[0_4px_12px_rgba(23,122,71,0.25)] ring-2 ring-green-500/40'
-                            : 'bg-white text-[#4A5D52] shadow-2xs hover:bg-mint-50 hover:text-[#0F1F17]'
+                            ? 'bg-emerald-500 text-white shadow-[0_4px_14px_rgba(16,185,129,0.4)] ring-2 ring-emerald-300 border-emerald-300/50'
+                            : 'bg-white/15 hover:bg-white/25 text-white/90 border-white/20 shadow-2xs'
                         }`}
                       >
                         {amt} kg
@@ -943,14 +924,14 @@ export function InteractiveScanner() {
                   </div>
                 </div>
 
-                {/* Quality Radio Selection (Tactile Cards, NO Harsh Borders) */}
+                {/* Quality Radio Selection */}
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-[#0F1F17] uppercase tracking-wider flex items-center gap-2 font-jakarta">
-                      <Sparkles className="w-4 h-4 text-[#177A47]" />
+                    <label className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 font-jakarta">
+                      <Sparkles className="w-4 h-4 text-emerald-300" />
                       Kondisi & Kebersihan Material
                     </label>
-                    <span className="text-[11px] font-mono text-[#5D7065]">
+                    <span className="text-[11px] font-mono text-emerald-200">
                       Faktor Kualitas (Fq)
                     </span>
                   </div>
@@ -966,37 +947,37 @@ export function InteractiveScanner() {
                             setQuality(q.id);
                             setAddedToCart(false);
                           }}
-                          className={`w-full text-left p-4 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 focus:outline-none ${
+                          className={`w-full text-left p-4 sm:p-5 rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 focus:outline-none backdrop-blur-md border ${
                             isSelected
-                              ? 'bg-gradient-to-r from-mint-50/90 to-white ring-2 ring-green-500 ring-offset-2 ring-offset-white/60 shadow-[0_8px_24px_rgba(47,168,102,0.14)]'
-                              : 'bg-white shadow-[0_4px_16px_rgba(15,31,23,0.04),inset_0_2px_4px_rgba(255,255,255,0.95)] hover:shadow-md'
+                              ? 'bg-emerald-500/30 border-2 border-emerald-400 ring-2 ring-emerald-300/40 shadow-[0_8px_24px_rgba(16,185,129,0.3)] text-white'
+                              : 'bg-white/15 hover:bg-white/25 border border-white/25 text-white/90 shadow-sm'
                           }`}
                         >
                           <div className="space-y-1">
                             <div className="flex items-center gap-2.5">
-                              <span className="text-sm font-bold text-[#0F1F17]">{q.label}</span>
+                              <span className="text-sm font-bold text-white">{q.label}</span>
                               <span
                                 className={`font-mono text-[11px] px-2.5 py-0.5 rounded-full font-semibold ${
                                   isSelected
-                                    ? 'bg-[#177A47] text-white shadow-2xs'
-                                    : 'bg-mint-100 text-[#0F5F37]'
+                                    ? 'bg-emerald-400 text-slate-950 font-bold shadow-2xs'
+                                    : 'bg-white/20 text-emerald-200 border border-white/20'
                                 }`}
                               >
                                 {q.multiplierText}
                               </span>
                             </div>
-                            <p className="text-xs text-[#5D7065]">{q.description}</p>
-                            <p className="text-[11px] text-[#177A47] font-medium pt-0.5 flex items-center gap-1.5">
-                              <Info className="w-3.5 h-3.5 shrink-0" />
+                            <p className="text-xs text-white/80">{q.description}</p>
+                            <p className="text-[11px] text-emerald-300 font-medium pt-0.5 flex items-center gap-1.5">
+                              <Info className="w-3.5 h-3.5 shrink-0 text-emerald-300" />
                               {q.impactText}
                             </p>
                           </div>
 
                           <div
-                            className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                            className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors border ${
                               isSelected
-                                ? 'bg-[#177A47] text-white shadow-xs'
-                                : 'bg-mist-50'
+                                ? 'bg-emerald-400 border-emerald-300 text-slate-950 shadow-xs'
+                                : 'bg-white/10 border-white/30 text-transparent'
                             }`}
                           >
                             {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -1007,16 +988,14 @@ export function InteractiveScanner() {
                   </div>
                 </div>
 
-                {/* -----------------------------------------------------------------
-                    SECTION 3: HOLOGRAPHIC SCAN ZONE (PRD Compliant Local Preview)
-                    ----------------------------------------------------------------- */}
-                <div className="bg-mist-50/50 backdrop-blur-md rounded-3xl p-6 sm:p-7 space-y-4 shadow-[inset_0_1px_3px_rgba(15,31,23,0.03)]">
+                {/* HOLOGRAPHIC SCAN ZONE */}
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 sm:p-7 space-y-4 shadow-inner">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#0F1F17] uppercase tracking-wider flex items-center gap-2 font-jakarta">
-                      <Camera className="w-4 h-4 text-[#177A47]" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 font-jakarta">
+                      <Camera className="w-4 h-4 text-emerald-300" />
                       Zona Pindai Foto (Opsional)
                     </span>
-                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-white text-[#0F5F37] shadow-2xs">
+                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-white/15 border border-white/25 text-emerald-200 shadow-2xs">
                       Pratinjau Lokal
                     </span>
                   </div>
@@ -1033,17 +1012,17 @@ export function InteractiveScanner() {
                   {/* Holographic Scan Container with Soft Glow Scan Line */}
                   <div
                     onClick={() => !photoPreview && fileInputRef.current?.click()}
-                    className="relative border-2 border-dashed border-emerald-300/80 bg-white/70 overflow-hidden rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:bg-white cursor-pointer group shadow-[inset_0_1px_3px_rgba(15,31,23,0.02)]"
+                    className="relative border-2 border-dashed border-emerald-400/50 bg-white/10 hover:bg-white/15 backdrop-blur-md overflow-hidden rounded-2xl p-5 sm:p-6 transition-all duration-300 cursor-pointer group shadow-sm text-white"
                   >
                     {/* Holographic Tech Brackets */}
-                    <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-[#0E7C7B]/70 rounded-tl pointer-events-none" />
-                    <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t-2 border-r-2 border-[#0E7C7B]/70 rounded-tr pointer-events-none" />
-                    <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b-2 border-l-2 border-[#0E7C7B]/70 rounded-bl pointer-events-none" />
-                    <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b-2 border-r-2 border-[#0E7C7B]/70 rounded-br pointer-events-none" />
+                    <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-emerald-400/70 rounded-tl pointer-events-none" />
+                    <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t-2 border-r-2 border-emerald-400/70 rounded-tr pointer-events-none" />
+                    <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b-2 border-l-2 border-emerald-400/70 rounded-bl pointer-events-none" />
+                    <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b-2 border-r-2 border-emerald-400/70 rounded-br pointer-events-none" />
 
                     {/* Animated Holographic Teal Scan Line */}
                     <motion.div
-                      className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-teal-400 to-transparent shadow-[0_0_15px_rgba(45,212,191,0.9)] z-10 pointer-events-none"
+                      className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-teal-300 to-transparent shadow-[0_0_15px_rgba(45,212,191,0.9)] z-10 pointer-events-none"
                       animate={{
                         top: ['6%', '92%', '6%'],
                       }}
@@ -1053,13 +1032,13 @@ export function InteractiveScanner() {
                         ease: 'easeInOut',
                       }}
                     >
-                      <div className="absolute left-1/2 -top-1 -translate-x-1/2 w-10 h-2 bg-teal-400/50 blur-xs rounded-full" />
+                      <div className="absolute left-1/2 -top-1 -translate-x-1/2 w-10 h-2 bg-teal-300/50 blur-xs rounded-full" />
                     </motion.div>
 
                     {photoPreview ? (
                       <div className="relative z-0 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-xs shrink-0">
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-xs shrink-0 border border-white/30">
                             <Image
                               src={photoPreview.url}
                               alt="Pratinjau foto lokal"
@@ -1068,10 +1047,10 @@ export function InteractiveScanner() {
                             />
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-[#0F1F17] truncate max-w-[200px]">
+                            <div className="text-xs font-semibold text-white truncate max-w-[200px]">
                               {photoPreview.name}
                             </div>
-                            <div className="text-[11px] text-[#177A47] font-medium mt-0.5 flex items-center gap-1.5 font-mono">
+                            <div className="text-[11px] text-emerald-300 font-medium mt-0.5 flex items-center gap-1.5 font-mono">
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               Pratinjau visual aktif
                             </div>
@@ -1082,29 +1061,29 @@ export function InteractiveScanner() {
                           type="button"
                           onClick={handleRemovePhoto}
                           aria-label="Hapus foto pratinjau"
-                          className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          className="p-2 rounded-xl text-white/60 hover:text-red-400 hover:bg-white/10 transition-colors cursor-pointer"
                         >
                           <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
                       <div className="text-center py-2.5 relative z-0">
-                        <div className="w-12 h-12 rounded-2xl bg-white mx-auto flex items-center justify-center text-[#177A47] group-hover:scale-105 transition-transform mb-2.5 shadow-xs">
-                          <Upload className="w-5 h-5 text-[#177A47]" />
+                        <div className="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 mx-auto flex items-center justify-center text-emerald-300 group-hover:scale-105 transition-transform mb-2.5 shadow-xs">
+                          <Upload className="w-5 h-5 text-emerald-300" />
                         </div>
-                        <p className="text-xs font-bold text-[#0F1F17] group-hover:text-[#177A47] transition-colors font-jakarta">
+                        <p className="text-xs font-bold text-white group-hover:text-emerald-200 transition-colors font-jakarta">
                           Unggah Foto (Opsional)
                         </p>
-                        <p className="text-[11px] text-[#5D7065] mt-1">
+                        <p className="text-[11px] text-emerald-100/80 mt-1">
                           Klik atau seret file foto kemasan Anda ke sini (PNG, JPG, WebP)
                         </p>
                       </div>
                     )}
                   </div>
 
-                  {/* Mandatory PRD Disclaimer (Clean pill styling) */}
-                  <div className="flex items-start gap-2 text-[11px] text-[#5D7065] bg-white/80 p-3 rounded-2xl shadow-2xs leading-relaxed font-jakarta">
-                    <ShieldCheck className="w-4 h-4 text-[#177A47] shrink-0 mt-0.5" />
+                  {/* PRD Disclaimer */}
+                  <div className="flex items-start gap-2 text-[11px] text-white/80 bg-white/15 border border-white/25 p-3 rounded-2xl shadow-2xs leading-relaxed font-jakarta">
+                    <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />
                     <span>
                       <strong>Prinsip Kejujuran Sistem:</strong> Foto hanya digunakan sebagai
                       pratinjau lokal di peramban Anda dan tidak diunggah ke server maupun
@@ -1116,19 +1095,16 @@ export function InteractiveScanner() {
             </motion.div>
 
             {/* =====================================================================
-                RIGHT COLUMN: THE RESULT CARD (FLOATING GLASS RECEIPT)
-                - Visually detached from left column with distinct floating elevation
-                - Designated prominent Impact Garden Box (bg-mint-50/80)
-                - Massive JetBrains Mono price with subtle glowing tech green shadow
-                - Completely borderless accordions with subtle mint hover
+                RIGHT COLUMN: THE RESULT CARD (FLOATING HOLOGRAPHIC GLASS RECEIPT)
+                - Holographic glowing receipt: bg-gradient-to-b from-white/20 to-white/10 backdrop-blur-3xl border border-white/40 rounded-[2.5rem] p-6 sm:p-8 shadow-[0_20px_50px_rgba(16,185,129,0.2)] sticky top-28 sm:top-32
+                - Price glowing gradient: text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]
+                - Cart CTA button: bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold backdrop-blur-md border border-emerald-400/50 shadow-lg hover:shadow-emerald-500/40
                 ===================================================================== */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-5">
-              <div className="relative rounded-[2rem] bg-white/80 backdrop-blur-2xl border border-white/80 shadow-[0_24px_60px_rgba(23,122,71,0.12),0_4px_16px_rgba(0,0,0,0.02)] overflow-hidden p-6 sm:p-8 space-y-5">
+            <div className="lg:col-span-5 lg:sticky lg:top-28 sm:lg:top-32 space-y-5">
+              <div className="relative rounded-[2.5rem] bg-gradient-to-b from-white/20 to-white/10 backdrop-blur-3xl border border-white/40 shadow-[0_20px_50px_rgba(16,185,129,0.2)] overflow-hidden p-6 sm:p-8 space-y-5 text-white">
                 <AnimatePresence mode="wait">
                   
-                  {/* =================================================================
-                      STATE A: IDLE STATE
-                      ================================================================= */}
+                  {/* STATE A: IDLE STATE */}
                   {scannerState === 'idle' && (
                     <motion.div
                       key="idle"
@@ -1138,29 +1114,29 @@ export function InteractiveScanner() {
                       transition={{ duration: 0.35 }}
                       className="py-4 text-center space-y-5"
                     >
-                      <div className="w-16 h-16 rounded-2xl bg-mint-100 mx-auto flex items-center justify-center text-[#177A47] shadow-xs">
-                        <Scan className="w-8 h-8 animate-pulse text-[#177A47]" />
+                      <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 mx-auto flex items-center justify-center text-emerald-300 shadow-md">
+                        <Scan className="w-8 h-8 animate-pulse text-emerald-300" />
                       </div>
 
                       <div className="space-y-1.5">
-                        <h4 className="font-fraunces text-2xl font-bold text-[#0F1F17]">
+                        <h4 className="font-fraunces text-2xl font-bold text-white">
                           Kalkulator Siap Memindai
                         </h4>
-                        <p className="text-xs text-[#5D7065] max-w-sm mx-auto leading-relaxed font-jakarta">
+                        <p className="text-xs text-white/80 max-w-sm mx-auto leading-relaxed font-jakarta">
                           Pilih jenis material dan tentukan perkiraan berat di kolom kiri untuk
                           menjalankan estimasi nilai berdasarkan harga acuan terbaru.
                         </p>
                       </div>
 
                       {/* Current Selection summary chip */}
-                      <div className="p-4 rounded-2xl bg-mist-50/80 text-left text-xs space-y-1 shadow-2xs">
-                        <div className="text-[10px] uppercase font-mono text-[#5D7065]">
+                      <div className="p-4 rounded-2xl bg-white/15 border border-white/25 text-left text-xs space-y-1 shadow-sm">
+                        <div className="text-[10px] uppercase font-mono text-emerald-200">
                           Pilihan Saat Ini:
                         </div>
-                        <div className="font-bold text-[#0F1F17] text-sm">
+                        <div className="font-bold text-white text-sm">
                           {activeSubcategory.name}
                         </div>
-                        <div className="flex items-center gap-2 text-[#5D7065] font-mono text-[11px] pt-0.5">
+                        <div className="flex items-center gap-2 text-white/80 font-mono text-[11px] pt-0.5">
                           <span>{weightKg} kg</span>
                           <span>•</span>
                           <span>{activeQuality.label}</span>
@@ -1170,17 +1146,15 @@ export function InteractiveScanner() {
                       <button
                         type="button"
                         onClick={triggerScanSequence}
-                        className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-[#177A47] to-[#2FA866] hover:shadow-lg text-white font-bold text-sm flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(23,122,71,0.25)] transition-all cursor-pointer active:scale-98"
+                        className="w-full py-4 px-5 rounded-2xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-sm backdrop-blur-md border border-emerald-400/50 shadow-lg hover:shadow-emerald-500/40 transition-all cursor-pointer active:scale-98 flex items-center justify-center gap-2"
                       >
-                        <Sparkles className="w-4 h-4" />
+                        <Sparkles className="w-4 h-4 text-emerald-200" />
                         <span>Periksa Estimasi Nilai</span>
                       </button>
                     </motion.div>
                   )}
 
-                  {/* =================================================================
-                      STATE B: SCANNING STATE (1.5s simulated scan)
-                      ================================================================= */}
+                  {/* STATE B: SCANNING STATE */}
                   {scannerState === 'scanning' && (
                     <motion.div
                       key="scanning"
@@ -1192,26 +1166,26 @@ export function InteractiveScanner() {
                     >
                       {/* Top status & Skip button */}
                       <div className="flex items-center justify-between z-10">
-                        <div className="inline-flex items-center gap-2 font-mono text-xs text-[#0E7C7B] bg-mint-100 px-3 py-1 rounded-full font-medium shadow-2xs">
-                          <span className="w-2 h-2 rounded-full bg-[#0E7C7B] animate-ping" />
+                        <div className="inline-flex items-center gap-2 font-mono text-xs text-emerald-200 bg-white/15 border border-white/25 px-3 py-1 rounded-full font-medium shadow-2xs">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                           <span>Pemeriksaan Data Acuan</span>
                         </div>
                         <button
                           type="button"
                           onClick={handleSkipScan}
-                          className="text-xs font-semibold text-[#5D7065] hover:text-[#0F1F17] px-3 py-1 rounded-full bg-white shadow-2xs transition-colors cursor-pointer"
+                          className="text-xs font-semibold text-white/90 hover:text-white px-3 py-1 rounded-full bg-white/20 border border-white/30 shadow-2xs transition-colors cursor-pointer"
                         >
                           Lewati →
                         </button>
                       </div>
 
                       {/* Animated Scanning Viewport with Teal Scanning Line */}
-                      <div className="relative my-6 h-52 rounded-2xl bg-gradient-to-b from-mist-50 to-white overflow-hidden flex flex-col items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)]">
-                        <div className="absolute inset-0 bg-eco-grid opacity-35" />
+                      <div className="relative my-6 h-52 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 overflow-hidden flex flex-col items-center justify-center shadow-inner">
+                        <div className="absolute inset-0 bg-eco-grid opacity-25" />
 
                         {/* Animated Glowing Teal Scanning Line */}
                         <motion.div
-                          className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#0E7C7B] to-transparent z-10 shadow-[0_0_14px_#0E7C7B]"
+                          className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-300 to-transparent z-10 shadow-[0_0_14px_rgba(52,211,153,0.9)]"
                           animate={{
                             top: ['8%', '88%', '8%'],
                           }}
@@ -1221,19 +1195,19 @@ export function InteractiveScanner() {
                             ease: 'easeInOut',
                           }}
                         >
-                          <div className="absolute left-1/2 -top-1 -translate-x-1/2 w-8 h-2 bg-[#0E7C7B]/40 blur-xs rounded-full" />
+                          <div className="absolute left-1/2 -top-1 -translate-x-1/2 w-8 h-2 bg-emerald-300/50 blur-xs rounded-full" />
                         </motion.div>
 
                         {/* Scanned Material Indicator */}
                         <div className="relative z-0 text-center space-y-2.5 p-4">
-                          <div className="w-16 h-16 rounded-2xl bg-white mx-auto flex items-center justify-center text-3xl shadow-xs">
+                          <div className="w-16 h-16 rounded-2xl bg-white/20 border border-white/30 mx-auto flex items-center justify-center text-3xl shadow-xs">
                             {activeCategory.icon}
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-[#0F1F17]">
+                            <div className="text-sm font-bold text-white">
                               {activeSubcategory.name}
                             </div>
-                            <div className="text-xs font-mono text-[#5D7065] mt-0.5">
+                            <div className="text-xs font-mono text-emerald-200 mt-0.5">
                               {weightKg} kg · {activeQuality.label}
                             </div>
                           </div>
@@ -1242,11 +1216,11 @@ export function InteractiveScanner() {
 
                       {/* Text indicator */}
                       <div className="text-center space-y-1.5 z-10">
-                        <p className="text-sm font-semibold text-[#0F1F17] flex items-center justify-center gap-2">
-                          <span className="inline-block w-4 h-4 border-2 border-[#177A47] border-t-transparent rounded-full animate-spin" />
+                        <p className="text-sm font-semibold text-white flex items-center justify-center gap-2">
+                          <span className="inline-block w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
                           Memeriksa data harga acuan...
                         </p>
-                        <p className="text-[11px] text-[#5D7065] max-w-xs mx-auto">
+                        <p className="text-[11px] text-white/70 max-w-xs mx-auto">
                           Mencocokkan spesifikasi material dengan harga acuan agregator daur ulang
                           tervalidasi.
                         </p>
@@ -1254,9 +1228,7 @@ export function InteractiveScanner() {
                     </motion.div>
                   )}
 
-                  {/* =================================================================
-                      STATE C: FINAL RESULT RECEIPT CARD
-                      ================================================================= */}
+                  {/* STATE C: FINAL RESULT RECEIPT CARD */}
                   {scannerState === 'result' && (
                     <motion.div
                       key="result"
@@ -1271,34 +1243,29 @@ export function InteractiveScanner() {
                         <div className="flex items-center gap-2">
                           <span className="relative flex h-2.5 w-2.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#177A47]"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
                           </span>
-                          <span className="font-mono text-xs font-bold tracking-wider uppercase text-[#0F5F37]">
+                          <span className="font-mono text-xs font-bold tracking-wider uppercase text-emerald-300">
                             Estimasi Nilai ELOVIA
                           </span>
                         </div>
-                        <span className="font-mono text-[11px] text-[#5D7065] bg-mist-50 px-3 py-1 rounded-full shadow-2xs">
+                        <span className="font-mono text-[11px] text-white/80 bg-white/15 border border-white/25 px-3 py-1 rounded-full shadow-2xs">
                           Acuan per 31 Okt 2026
                         </span>
                       </div>
 
-                      {/* =============================================================
-                          IMPACT GARDEN UPGRADE
-                          - Prominent designated box at top of receipt
-                          - Slightly darker glass layer: bg-mint-50/80
-                          - Larger dynamic SVG seedling scaling with weight
-                          ============================================================= */}
-                      <div className="relative rounded-2xl bg-mint-50/80 backdrop-blur-md p-6 sm:p-7 flex flex-col items-center justify-center text-center overflow-hidden shadow-[inset_0_2px_4px_rgba(255,255,255,0.85),inset_0_-2px_4px_rgba(15,31,23,0.03)]">
+                      {/* Impact Garden Box */}
+                      <div className="relative rounded-2xl bg-white/15 backdrop-blur-xl border border-white/30 p-6 sm:p-7 flex flex-col items-center justify-center text-center overflow-hidden shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)]">
                         {/* Ambient botanical aura */}
-                        <div className="absolute w-40 h-40 rounded-full bg-gradient-to-tr from-lime-300/35 via-emerald-400/25 to-teal-500/20 blur-2xl pointer-events-none" />
+                        <div className="absolute w-40 h-40 rounded-full bg-gradient-to-tr from-lime-300/25 via-emerald-400/20 to-teal-500/15 blur-2xl pointer-events-none" />
 
                         {/* Impact Garden Top Tag */}
                         <div className="relative z-10 flex items-center justify-between w-full mb-2">
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#0F5F37] font-semibold bg-white/80 px-3 py-1 rounded-full shadow-2xs">
-                            <Leaf className="w-3.5 h-3.5 text-[#177A47]" />
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-emerald-200 font-semibold bg-white/20 border border-white/25 px-3 py-1 rounded-full shadow-2xs">
+                            <Leaf className="w-3.5 h-3.5 text-emerald-300" />
                             Impact Garden Visual
                           </span>
-                          <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-gradient-to-r from-[#177A47] to-[#2FA866] text-white font-bold shadow-xs">
+                          <span className="text-[10px] font-mono px-3 py-1 rounded-full bg-emerald-500 text-white font-bold shadow-xs border border-emerald-300/40">
                             {ecoStageTitle}
                           </span>
                         </div>
@@ -1307,76 +1274,70 @@ export function InteractiveScanner() {
                         <ReactiveSeedling weightKg={weightKg} />
 
                         {/* Impact Stats in the Box */}
-                        <div className="relative z-10 mt-3 pt-3 border-t border-white/60 w-full flex items-center justify-between text-xs">
-                          <span className="text-[#5D7065] font-jakarta">Reduksi Jejak Karbon:</span>
-                          <span className="font-mono font-bold text-[#177A47] text-sm">
+                        <div className="relative z-10 mt-3 pt-3 border-t border-white/30 w-full flex items-center justify-between text-xs">
+                          <span className="text-white/80 font-jakarta">Reduksi Jejak Karbon:</span>
+                          <span className="font-mono font-bold text-emerald-300 text-sm">
                             ≈ <SpringNumber value={parseFloat(co2Reduction)} decimals={1} /> kg CO₂e
                           </span>
                         </div>
                       </div>
 
                       {/* Selected Material Summary Strip */}
-                      <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-mist-50/60 shadow-[inset_0_1px_3px_rgba(15,31,23,0.02)]">
+                      <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md shadow-xs">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center text-xl shrink-0 shadow-[0_2px_8px_rgba(15,31,23,0.06),inset_0_1px_2px_rgba(255,255,255,0.9)]">
+                          <div className="w-11 h-11 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-xl shrink-0">
                             {activeCategory.icon}
                           </div>
                           <div className="min-w-0">
-                            <div className="text-[10px] font-mono text-[#5D7065] uppercase">
+                            <div className="text-[10px] font-mono text-emerald-200 uppercase">
                               {activeCategory.title}
                             </div>
-                            <div className="text-xs sm:text-sm font-bold text-[#0F1F17] truncate">
+                            <div className="text-xs sm:text-sm font-bold text-white truncate">
                               {activeSubcategory.name}
                             </div>
                           </div>
                         </div>
 
                         <div className="text-right shrink-0">
-                          <div className="font-mono text-xs font-bold text-[#177A47]">
+                          <div className="font-mono text-xs font-bold text-emerald-300">
                             <SpringNumber value={weightKg} decimals={1} /> kg
                           </div>
-                          <div className="text-[10px] text-[#5D7065] font-mono">
+                          <div className="text-[10px] text-emerald-200 font-mono">
                             Fq: {activeQuality.multiplierText}
                           </div>
                         </div>
                       </div>
 
-                      {/* =============================================================
-                          MASSIVE PRICE TYPOGRAPHY WITH GLOWING TECH TEXT-SHADOW
-                          ============================================================= */}
-                      <div className="py-5 px-5 rounded-2xl bg-white/95 backdrop-blur-md shadow-[0_10px_30px_rgba(23,122,71,0.06),inset_0_2px_4px_rgba(255,255,255,0.95)] text-center space-y-2">
-                        <div className="text-[11px] text-[#5D7065] font-bold uppercase tracking-wider font-jakarta">
+                      {/* MASSIVE PRICE TYPOGRAPHY WITH GLOWING TECH GRADIENT */}
+                      <div className="py-5 px-5 rounded-2xl bg-white/15 backdrop-blur-2xl border border-white/30 shadow-[0_10px_30px_rgba(0,0,0,0.2)] text-center space-y-2">
+                        <div className="text-[11px] text-emerald-200 font-bold uppercase tracking-wider font-jakarta">
                           Estimasi Nilai Ekonomi
                         </div>
-                        <div className="font-mono text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold text-[#177A47] tracking-tight leading-tight [text-shadow:0_0_24px_rgba(47,168,102,0.35),0_1px_3px_rgba(23,122,71,0.15)]">
+                        <div className="font-mono text-3xl sm:text-4xl lg:text-[2.65rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-emerald-100 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] tracking-tight leading-tight">
                           ≈ Rp <SpringNumber value={estimatedMin} />
-                          <span className="text-[#A9D3B8] font-light mx-2">–</span>
+                          <span className="text-emerald-200/60 font-light mx-2">–</span>
                           <SpringNumber value={estimatedMax} />
                         </div>
-                        <p className="text-[11px] text-[#5D7065] pt-0.5">
+                        <p className="text-[11px] text-white/70 pt-0.5">
                           *Kisaran nilai indikatif dari agregator & bank sampah terverifikasi.
                         </p>
                       </div>
 
-                      {/* =============================================================
-                          COMPLETELY BORDERLESS ACCORDIONS
-                          - Borderless container
-                          - Subtle mint background on hover (hover:bg-mint-100/50)
-                          ============================================================= */}
+                      {/* COMPLETELY BORDERLESS ACCORDIONS */}
                       <div className="space-y-1.5 pt-1">
                         {/* Accordion 1: Bagaimana dihitung? */}
                         <div className="rounded-2xl overflow-hidden transition-colors">
                           <button
                             type="button"
                             onClick={() => toggleAccordion('math')}
-                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#0F1F17] rounded-2xl hover:bg-mint-100/50 transition-colors cursor-pointer group"
+                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-white rounded-2xl hover:bg-white/15 transition-colors cursor-pointer group"
                           >
                             <span className="flex items-center gap-2">
-                              <FileText className="w-4 h-4 text-[#177A47]" />
+                              <FileText className="w-4 h-4 text-emerald-300" />
                               Bagaimana angka ini dihitung?
                             </span>
                             <div className={`transition-transform duration-200 ${openAccordions.math ? 'rotate-180' : ''}`}>
-                              <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#177A47]" />
+                              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-emerald-300" />
                             </div>
                           </button>
 
@@ -1386,32 +1347,32 @@ export function InteractiveScanner() {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="overflow-hidden px-4 py-3 text-xs space-y-2.5 rounded-2xl bg-mint-50/50"
+                                className="overflow-hidden px-4 py-3 text-xs space-y-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white"
                               >
-                                <div className="space-y-1.5 font-mono text-[11px] text-[#4A5D52]">
-                                  <div className="p-2.5 rounded-xl bg-white/70 shadow-2xs">
-                                    <strong>Formula:</strong> Nilai = Berat (kg) × Harga Acuan × Fq
+                                <div className="space-y-1.5 font-mono text-[11px] text-white/90">
+                                  <div className="p-2.5 rounded-xl bg-white/15 border border-white/20 shadow-2xs">
+                                    <strong className="text-emerald-200">Formula:</strong> Nilai = Berat (kg) × Harga Acuan × Fq
                                   </div>
-                                  <div className="p-2.5 rounded-xl bg-white/70 shadow-2xs space-y-1">
+                                  <div className="p-2.5 rounded-xl bg-white/15 border border-white/20 shadow-2xs space-y-1">
                                     <div>
-                                      <strong>Min:</strong> {weightKg} kg × Rp{' '}
+                                      <strong className="text-emerald-200">Min:</strong> {weightKg} kg × Rp{' '}
                                       {activeSubcategory.minPrice.toLocaleString('id-ID')} ×{' '}
                                       {activeQuality.factor} ={' '}
-                                      <span className="text-[#177A47] font-bold">
+                                      <span className="text-emerald-300 font-bold">
                                         Rp <SpringNumber value={estimatedMin} />
                                       </span>
                                     </div>
                                     <div>
-                                      <strong>Maks:</strong> {weightKg} kg × Rp{' '}
+                                      <strong className="text-emerald-200">Maks:</strong> {weightKg} kg × Rp{' '}
                                       {activeSubcategory.maxPrice.toLocaleString('id-ID')} ×{' '}
                                       {activeQuality.factor} ={' '}
-                                      <span className="text-[#177A47] font-bold">
+                                      <span className="text-emerald-300 font-bold">
                                         Rp <SpringNumber value={estimatedMax} />
                                       </span>
                                     </div>
                                   </div>
                                 </div>
-                                <p className="text-[11px] text-[#5D7065] font-jakarta leading-relaxed">
+                                <p className="text-[11px] text-white/70 font-jakarta leading-relaxed">
                                   ELOVIA mengedepankan transparansi: angka di atas adalah perkiraan
                                   acuan sebelum material ditimbang nyata oleh mitra penerima.
                                 </p>
@@ -1425,14 +1386,14 @@ export function InteractiveScanner() {
                           <button
                             type="button"
                             onClick={() => toggleAccordion('factors')}
-                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#0F1F17] rounded-2xl hover:bg-mint-100/50 transition-colors cursor-pointer group"
+                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-white rounded-2xl hover:bg-white/15 transition-colors cursor-pointer group"
                           >
                             <span className="flex items-center gap-2">
-                              <Layers className="w-4 h-4 text-[#0E7C7B]" />
+                              <Layers className="w-4 h-4 text-emerald-300" />
                               6 Faktor Penentu Nilai (PRD 7.4)
                             </span>
                             <div className={`transition-transform duration-200 ${openAccordions.factors ? 'rotate-180' : ''}`}>
-                              <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#0E7C7B]" />
+                              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-emerald-300" />
                             </div>
                           </button>
 
@@ -1442,7 +1403,7 @@ export function InteractiveScanner() {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="overflow-hidden px-4 py-3 text-xs space-y-2 rounded-2xl bg-mint-50/50"
+                                className="overflow-hidden px-4 py-3 text-xs space-y-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white"
                               >
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                   {VALUE_FACTORS_LIST.map((factor) => {
@@ -1450,17 +1411,17 @@ export function InteractiveScanner() {
                                     return (
                                       <div
                                         key={factor.num}
-                                        className="p-2.5 rounded-xl bg-white/70 hover:bg-white transition-colors text-[11px] shadow-2xs"
+                                        className="p-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 transition-colors text-[11px] shadow-2xs"
                                       >
-                                        <div className="flex items-center gap-2 font-bold text-[#0F1F17] mb-1">
+                                        <div className="flex items-center gap-2 font-bold text-white mb-1">
                                           <div
-                                            className={`w-5 h-5 rounded-lg flex items-center justify-center ${factor.color}`}
+                                            className="w-5 h-5 rounded-lg flex items-center justify-center bg-white/20 text-emerald-300"
                                           >
                                             <IconComp className="w-3 h-3" />
                                           </div>
                                           <span>{factor.title}</span>
                                         </div>
-                                        <p className="text-[10px] text-[#5D7065] leading-snug">
+                                        <p className="text-[10px] text-white/80 leading-snug">
                                           {factor.desc}
                                         </p>
                                       </div>
@@ -1477,14 +1438,14 @@ export function InteractiveScanner() {
                           <button
                             type="button"
                             onClick={() => toggleAccordion('guide')}
-                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#0F1F17] rounded-2xl hover:bg-mint-100/50 transition-colors cursor-pointer group"
+                            className="w-full py-3 px-3.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-white rounded-2xl hover:bg-white/15 transition-colors cursor-pointer group"
                           >
                             <span className="flex items-center gap-2">
-                              <Leaf className="w-4 h-4 text-[#2FA866]" />
+                              <Leaf className="w-4 h-4 text-emerald-300" />
                               Panduan Pemilahan {activeCategory.title}
                             </span>
                             <div className={`transition-transform duration-200 ${openAccordions.guide ? 'rotate-180' : ''}`}>
-                              <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-[#2FA866]" />
+                              <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-emerald-300" />
                             </div>
                           </button>
 
@@ -1494,18 +1455,18 @@ export function InteractiveScanner() {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="overflow-hidden px-4 py-3 text-xs space-y-3 rounded-2xl bg-mint-50/50"
+                                className="overflow-hidden px-4 py-3 text-xs space-y-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white"
                               >
                                 {/* DOs */}
-                                <div className="p-3 rounded-xl bg-emerald-50/60 space-y-1.5">
-                                  <div className="text-[11px] font-bold text-[#177A47] flex items-center gap-1.5">
+                                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400/30 space-y-1.5">
+                                  <div className="text-[11px] font-bold text-emerald-300 flex items-center gap-1.5">
                                     <CheckCircle2 className="w-3.5 h-3.5" />
                                     Lakukan:
                                   </div>
-                                  <ul className="space-y-1 text-[11px] text-[#4A5D52] pl-1">
+                                  <ul className="space-y-1 text-[11px] text-white/90 pl-1">
                                     {activeCategory.sortingGuide.dos.map((item, idx) => (
                                       <li key={idx} className="flex items-start gap-1.5">
-                                        <span className="text-[#177A47] font-bold">•</span>
+                                        <span className="text-emerald-300 font-bold">•</span>
                                         <span>{item}</span>
                                       </li>
                                     ))}
@@ -1513,15 +1474,15 @@ export function InteractiveScanner() {
                                 </div>
 
                                 {/* DONTs */}
-                                <div className="p-3 rounded-xl bg-rose-50/60 space-y-1.5">
-                                  <div className="text-[11px] font-bold text-red-600 flex items-center gap-1.5">
+                                <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-400/30 space-y-1.5">
+                                  <div className="text-[11px] font-bold text-rose-300 flex items-center gap-1.5">
                                     <AlertCircle className="w-3.5 h-3.5" />
                                     Hindari:
                                   </div>
-                                  <ul className="space-y-1 text-[11px] text-[#4A5D52] pl-1">
+                                  <ul className="space-y-1 text-[11px] text-white/90 pl-1">
                                     {activeCategory.sortingGuide.donts.map((item, idx) => (
                                       <li key={idx} className="flex items-start gap-1.5">
-                                        <span className="text-red-500 font-bold">•</span>
+                                        <span className="text-rose-400 font-bold">•</span>
                                         <span>{item}</span>
                                       </li>
                                     ))}
@@ -1533,18 +1494,16 @@ export function InteractiveScanner() {
                         </div>
                       </div>
 
-                      {/* =============================================================
-                          ACTION BUTTONS (Dreamy elevated CTA buttons)
-                          ============================================================= */}
+                      {/* ACTION BUTTONS */}
                       <div className="space-y-2.5 pt-2">
                         {/* Primary Button: Tambah ke Keranjang */}
                         <button
                           type="button"
                           onClick={handleAddToCart}
-                          className={`w-full py-4 px-5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-[0_8px_20px_rgba(23,122,71,0.25)] hover:shadow-[0_12px_28px_rgba(23,122,71,0.32)] active:scale-[0.99] ${
+                          className={`w-full py-4 px-5 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-[0.99] backdrop-blur-md border ${
                             addedToCart
-                              ? 'bg-[#0F5F37] text-white'
-                              : 'bg-gradient-to-r from-[#177A47] via-[#2FA866] to-[#177A47] bg-[length:200%_auto] hover:bg-right text-white'
+                              ? 'bg-emerald-700 text-white border-emerald-400'
+                              : 'bg-emerald-600/90 hover:bg-emerald-500 text-white border-emerald-400/50 hover:shadow-emerald-500/40'
                           }`}
                         >
                           {addedToCart ? (
@@ -1563,17 +1522,17 @@ export function InteractiveScanner() {
                         {/* Secondary Button: Lihat Mitra yang Menerima */}
                         <Link
                           href={`/pasar?material=${activeCategory.id}`}
-                          className="w-full py-3.5 px-4 rounded-2xl bg-white hover:bg-mint-50/80 text-[#0F1F17] font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs border border-white/60"
+                          className="w-full py-3.5 px-4 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm border border-white/30 backdrop-blur-md"
                         >
                           <span>Lihat Mitra yang Menerima</span>
-                          <ExternalLink className="w-4 h-4 text-[#177A47]" />
+                          <ExternalLink className="w-4 h-4 text-emerald-300" />
                         </Link>
 
                         {/* Tertiary Button: Cek Material Lain */}
                         <button
                           type="button"
                           onClick={handleResetAll}
-                          className="w-full py-2.5 px-4 text-xs font-semibold text-[#5D7065] hover:text-[#0F1F17] hover:bg-mint-50/50 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                          className="w-full py-2.5 px-4 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
                           <span>Cek Material Lain (Mulai Ulang)</span>
@@ -1584,9 +1543,9 @@ export function InteractiveScanner() {
                 </AnimatePresence>
               </div>
 
-              {/* Verified Partner Network Trust Banner (Soft glass pill) */}
-              <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-white/70 backdrop-blur-md shadow-xs text-xs text-[#4A5D52]">
-                <ShieldCheck className="w-5 h-5 text-[#177A47] shrink-0" />
+              {/* Verified Partner Network Trust Banner */}
+              <div className="flex items-center gap-3.5 p-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-xs text-xs text-white/80">
+                <ShieldCheck className="w-5 h-5 text-emerald-300 shrink-0" />
                 <span className="leading-snug">
                   Data harga diperbarui mingguan dari jaringan bank sampah dan agregator daur ulang
                   tersertifikasi di Jabodetabek & sekitarnya.
@@ -1595,7 +1554,6 @@ export function InteractiveScanner() {
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }

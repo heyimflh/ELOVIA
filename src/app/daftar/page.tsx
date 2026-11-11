@@ -42,6 +42,10 @@ function GoogleIcon({ className = 'w-4 h-4' }: { className?: string }) {
 
 export default function DaftarPage() {
   const router = useRouter();
+
+  // Role State: 'warga' (Standard User) or 'mitra' (Admin / Partner)
+  const [role, setRole] = useState<'warga' | 'mitra'>('warga');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,26 +68,32 @@ export default function DaftarPage() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      router.push('/');
+      if (role === 'warga') {
+        router.push('/dompet');
+      } else {
+        router.push('/mitra');
+      }
     }, 1000);
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col-reverse lg:flex-row overflow-hidden">
-      {/* 1. ORGANIC EXPANDING CIRCLE REVEAL NIGHT BACKGROUND */}
-      <motion.div
-        initial={{ clipPath: 'circle(0% at 80% 50%)' }}
-        animate={{ clipPath: 'circle(150% at 50% 50%)' }}
-        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute inset-0 bg-cover bg-center -z-20"
-        style={{ backgroundImage: "url('/images/login/background2.png')" }}
-      />
+    // 1. GLOBAL WRAPPER: Strict Full Screen with 100dvh
+    <main className="relative w-full h-[100dvh] overflow-hidden flex flex-col lg:flex-row bg-slate-900">
+      {/* 2. BACKGROUND IMAGE HANDLING with Responsive Overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/login/background2.png"
+          alt="ELOVIA Eco Night Background"
+          fill
+          priority
+          className="w-full h-full object-cover"
+        />
+        {/* Mobile: dark translucent overlay & soft blur for pristine contrast; Desktop: crystal clear */}
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px] lg:bg-transparent lg:backdrop-blur-none" />
+      </div>
 
-      {/* Ambient dark fade mask on the RIGHT to protect right-aligned typography */}
-      <div className="absolute inset-y-0 right-0 w-full lg:w-1/2 bg-gradient-to-l from-black/60 via-black/25 to-transparent -z-10 pointer-events-none" />
-
-      {/* TOP NAVIGATION (Absolute positioned, z-20) */}
-      <header className="absolute top-8 left-8 z-20">
+      {/* TOP NAVIGATION (Absolute Header) */}
+      <header className="absolute top-4 left-6 lg:top-8 lg:left-12 z-20 flex items-center">
         <Link
           href="/"
           className="inline-flex items-center hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-white/70 rounded-lg"
@@ -94,25 +104,37 @@ export default function DaftarPage() {
             alt="ELOVIA Logo"
             width={140}
             height={40}
-            className="h-9 md:h-10 w-auto object-contain drop-shadow-md"
+            className="h-7 sm:h-8 lg:h-10 w-auto object-contain drop-shadow-md"
             priority
           />
         </Link>
       </header>
 
-      <div className="absolute top-8 right-8 hidden md:flex items-center gap-4 text-white/80 text-sm font-light z-20 drop-shadow-sm">
+      <div className="absolute top-8 right-12 hidden md:flex items-center gap-4 text-white/80 text-sm font-light z-20 drop-shadow-sm">
         <div className="w-12 h-px bg-white/50" />
         <span className="tracking-wide">A New Value for Every Resource</span>
       </div>
 
-      {/* LEFT COLUMN (The Bright Frosted Glassmorphism Form) */}
-      <motion.div
-        initial={{ x: -80, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.3, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-8 lg:p-16 relative z-10 pb-16 lg:pb-12"
-      >
-        <div className="w-full max-w-md bg-white/25 backdrop-blur-2xl border border-white/50 shadow-[0_8px_32px_rgba(255,255,255,0.15)] rounded-[2rem] p-8 md:p-10 flex flex-col relative overflow-hidden">
+      {/* MOBILE TOP: Concise Header (Visible only on mobile to save vertical space) */}
+      <div className="lg:hidden relative z-10 w-full pt-14 pb-1 px-6 flex-shrink-0 text-center">
+        <div className="inline-flex items-center gap-1.5 border border-white/25 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 text-[11px] sm:text-xs font-medium text-white shadow-xs mb-1.5">
+          <CheckCircle2 size={12} className="text-emerald-300 stroke-[2.2]" />
+          <span>Mulai Perjalanan Hijau</span>
+        </div>
+        <h1 className="text-lg sm:text-xl font-light tracking-tight text-white drop-shadow-sm leading-snug">
+          Ubah aksi kecilmu jadi <span className="font-serif italic font-normal text-emerald-200">nilai nyata</span>
+        </h1>
+      </div>
+
+      {/* LEFT SIDE (Desktop Form) / BOTTOM-CENTER (Mobile Form) */}
+      <div className="relative z-10 w-full lg:w-1/2 h-full flex items-center justify-center p-3 sm:p-6 lg:p-12 flex-1 min-h-0">
+        {/* REFINED PRISTINE GLASS CONTAINER: bg-white/10 + Hidden Scrollbar */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          className="w-full max-w-md bg-white/10 backdrop-blur-2xl border border-white/20 p-6 sm:p-8 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex flex-col max-h-[85dvh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative"
+        >
           {/* Subtle white inner glow at top edge */}
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
 
@@ -120,84 +142,125 @@ export default function DaftarPage() {
           <Image
             src="/images/logo/elovia-logo-green.png"
             alt="ELOVIA"
-            width={48}
-            height={48}
-            className="w-12 h-12 object-contain mx-auto mb-2 drop-shadow-xs"
+            width={44}
+            height={44}
+            className="w-9 h-9 sm:w-11 sm:h-11 object-contain mx-auto mb-1 drop-shadow-xs"
             priority
           />
 
-          {/* Title with High Contrast */}
-          <h2 className="text-2xl font-bold text-slate-900 text-center tracking-tight mt-1">
+          {/* 1. HIGH CONTRAST TITLE: Pure white with drop-shadow */}
+          <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md mb-2 text-center">
             Mulai Perjalanan Hijau
           </h2>
 
-          {/* Subtitle with Crisp Text */}
-          <p className="text-sm font-medium text-slate-700 text-center mt-2 mb-6 leading-relaxed px-2">
-            Daftar sekarang dan ambil bagian dalam revolusi sirkular ELOVIA.
+          {/* 1. HIGH CONTRAST SUBTITLE: Crisp white/85 with drop-shadow */}
+          <p className="text-sm text-white/85 font-medium leading-relaxed drop-shadow-sm mb-6 text-center">
+            {role === 'warga'
+              ? 'Daftar sekarang dan ambil bagian dalam revolusi sirkular ELOVIA.'
+              : 'Daftar sebagai mitra pengelola daur ulang dan kembangkan operasional hijau Anda.'}
           </p>
+
+          {/* 3. VERTICAL COMPACTION: Segmented Control (mb-5) */}
+          <div className="flex bg-slate-900/30 backdrop-blur-md p-1 rounded-2xl mb-5 border border-white/20 relative w-full flex-shrink-0">
+            {/* Button 1: Warga */}
+            <button
+              type="button"
+              onClick={() => setRole('warga')}
+              className={`relative w-1/2 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center z-10 transition-colors duration-300 cursor-pointer outline-none ${
+                role === 'warga' ? 'text-emerald-700' : 'text-white/80 hover:text-white'
+              }`}
+            >
+              {role === 'warga' && (
+                <motion.div
+                  layoutId="activeRegisterRoleIndicator"
+                  className="absolute inset-0 bg-white rounded-xl shadow-sm -z-10"
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                />
+              )}
+              <span className="relative z-10">Warga</span>
+            </button>
+
+            {/* Button 2: Mitra / Admin */}
+            <button
+              type="button"
+              onClick={() => setRole('mitra')}
+              className={`relative w-1/2 py-2 sm:py-2.5 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center z-10 transition-colors duration-300 cursor-pointer outline-none ${
+                role === 'mitra' ? 'text-emerald-700' : 'text-white/80 hover:text-white'
+              }`}
+            >
+              {role === 'mitra' && (
+                <motion.div
+                  layoutId="activeRegisterRoleIndicator"
+                  className="absolute inset-0 bg-white rounded-xl shadow-sm -z-10"
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                />
+              )}
+              <span className="relative z-10">Mitra / Admin</span>
+            </button>
+          </div>
 
           {/* Sign Up Form */}
           <form onSubmit={handleSubmit} className="flex flex-col">
-            {/* Input 1 (Nama Lengkap) */}
-            <div className="relative flex items-center bg-white/70 border border-white/60 rounded-xl mb-3.5 overflow-hidden focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/50 focus-within:border-emerald-500/60 shadow-xs transition-all">
-              <User size={18} className="text-slate-600 absolute left-4 pointer-events-none" />
+            {/* 3. Input 1 (Nama Lengkap) - mb-3 spacing */}
+            <div className="relative flex items-center bg-white/15 border border-white/25 rounded-xl mb-3 overflow-hidden focus-within:bg-white/20 focus-within:border-white/50 focus-within:ring-2 focus-within:ring-emerald-400/40 shadow-xs transition-all">
+              <User size={16} className="text-white/70 absolute left-3.5 pointer-events-none" />
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama Lengkap"
-                className="w-full bg-transparent px-12 py-3.5 text-sm text-slate-900 placeholder-slate-500 font-medium outline-none"
+                className="w-full bg-transparent pl-11 pr-4 py-2.5 sm:py-3 text-xs sm:text-sm text-white placeholder-white/60 font-medium outline-none"
               />
             </div>
 
-            {/* Input 2 (Alamat Email) */}
-            <div className="relative flex items-center bg-white/70 border border-white/60 rounded-xl mb-3.5 overflow-hidden focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/50 focus-within:border-emerald-500/60 shadow-xs transition-all">
-              <Mail size={18} className="text-slate-600 absolute left-4 pointer-events-none" />
+            {/* 3. Input 2 (Alamat Email) - mb-3 spacing */}
+            <div className="relative flex items-center bg-white/15 border border-white/25 rounded-xl mb-3 overflow-hidden focus-within:bg-white/20 focus-within:border-white/50 focus-within:ring-2 focus-within:ring-emerald-400/40 shadow-xs transition-all">
+              <Mail size={16} className="text-white/70 absolute left-3.5 pointer-events-none" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Alamat Email"
-                className="w-full bg-transparent px-12 py-3.5 text-sm text-slate-900 placeholder-slate-500 font-medium outline-none"
+                className="w-full bg-transparent pl-11 pr-4 py-2.5 sm:py-3 text-xs sm:text-sm text-white placeholder-white/60 font-medium outline-none"
               />
             </div>
 
-            {/* Input 3 (Password) */}
-            <div className="relative flex items-center bg-white/70 border border-white/60 rounded-xl mb-4 overflow-hidden focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/50 focus-within:border-emerald-500/60 shadow-xs transition-all">
-              <Lock size={18} className="text-slate-600 absolute left-4 pointer-events-none" />
+            {/* 3. Input 3 (Password) - mb-3 spacing */}
+            <div className="relative flex items-center bg-white/15 border border-white/25 rounded-xl mb-3 overflow-hidden focus-within:bg-white/20 focus-within:border-white/50 focus-within:ring-2 focus-within:ring-emerald-400/40 shadow-xs transition-all">
+              <Lock size={16} className="text-white/70 absolute left-3.5 pointer-events-none" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full bg-transparent px-12 py-3.5 text-sm text-slate-900 placeholder-slate-500 font-medium outline-none"
+                className="w-full bg-transparent pl-11 pr-10 py-2.5 sm:py-3 text-xs sm:text-sm text-white placeholder-white/60 font-medium outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-600 absolute right-4 cursor-pointer hover:text-slate-900 transition p-1 focus:outline-none"
+                className="text-white/70 absolute right-3 cursor-pointer hover:text-white transition p-1 focus:outline-none"
                 aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
               >
-                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
               </button>
             </div>
 
-            {/* Agreement Checkbox */}
-            <div className="flex items-start gap-2 mb-6 text-xs text-slate-800 leading-snug">
+            {/* 3. Agreement Checkbox - my-4 with high-contrast text-white/80 */}
+            <div className="flex items-start gap-2 my-4 text-xs text-white/80 leading-snug">
               <input
                 type="checkbox"
                 id="agree"
                 checked={agreeTerms}
                 onChange={(e) => setAgreeTerms(e.target.checked)}
                 required
-                className="rounded border-slate-400 text-emerald-600 focus:ring-emerald-500 bg-white/70 accent-emerald-600 cursor-pointer mt-0.5"
+                className="rounded border-white/40 text-emerald-500 focus:ring-emerald-400 bg-white/20 accent-emerald-500 cursor-pointer mt-0.5"
               />
-              <label htmlFor="agree" className="cursor-pointer select-none text-slate-800 font-medium">
+              <label htmlFor="agree" className="cursor-pointer select-none text-white/80 font-medium">
                 Saya menyetujui{' '}
-                <span className="font-semibold text-emerald-800 hover:underline">
+                <span className="font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
                   Syarat & Ketentuan
                 </span>{' '}
                 serta Kebijakan Privasi ELOVIA.
@@ -208,26 +271,26 @@ export default function DaftarPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 bg-gradient-to-r from-[#6A9A65] to-[#88B882] hover:opacity-90 active:scale-[0.99] text-white rounded-xl text-sm font-semibold shadow-lg transition-all flex justify-center items-center gap-2 cursor-pointer disabled:opacity-75"
+              className="w-full py-3 bg-gradient-to-r from-[#6A9A65] to-[#88B882] hover:opacity-90 active:scale-[0.99] text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg transition-all flex justify-center items-center gap-2 cursor-pointer disabled:opacity-75"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-                    <ArrowRight size={13} className="text-white" />
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/20 flex items-center justify-center">
+                    <ArrowRight size={12} className="text-white" />
                   </div>
-                  <span>Daftar Sekarang</span>
+                  <span>Daftar sebagai {role === 'warga' ? 'Warga' : 'Mitra'}</span>
                 </>
               )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-5">
-            <hr className="flex-1 border-white/60" />
-            <span className="text-xs font-semibold text-slate-700">atau</span>
-            <hr className="flex-1 border-white/60" />
+          {/* Divider - reduced margin my-3.5 */}
+          <div className="flex items-center gap-3 my-3.5">
+            <hr className="flex-1 border-white/20" />
+            <span className="text-[11px] sm:text-xs font-semibold text-white/60">atau</span>
+            <hr className="flex-1 border-white/20" />
           </div>
 
           {/* Google Button */}
@@ -235,48 +298,51 @@ export default function DaftarPage() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={isLoading}
-            className="w-full py-3.5 bg-white/90 hover:bg-white text-slate-900 rounded-xl text-sm font-semibold shadow-sm border border-white transition-all flex justify-center items-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-75"
+            className="w-full py-3 bg-white/90 hover:bg-white text-slate-900 rounded-xl text-xs sm:text-sm font-semibold shadow-sm border border-white transition-all flex justify-center items-center gap-2 cursor-pointer active:scale-[0.99] disabled:opacity-75"
           >
             <GoogleIcon className="w-4 h-4" />
             <span>Daftar dengan Google</span>
           </button>
 
-          {/* Footer Link to Login */}
-          <p className="text-xs font-medium text-slate-800 mt-6 text-center">
+          {/* Footer Link to Login - mt-4 with text-white/80 */}
+          <p className="text-[11px] sm:text-xs font-medium text-white/80 mt-4 text-center">
             Sudah punya akun?{' '}
             <Link
               href="/masuk"
-              className="font-bold cursor-pointer text-emerald-800 hover:text-emerald-950 transition"
+              className="font-bold cursor-pointer text-emerald-400 hover:text-emerald-300 transition ml-1"
             >
               Masuk di sini &rarr;
             </Link>
           </p>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
-      {/* RIGHT COLUMN (The Typography - Sign Up Focused & Right-Aligned) */}
-      <motion.div
-        initial={{ x: 80, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-start lg:items-end text-left lg:text-right p-8 lg:p-20 relative z-10 pt-28 lg:pt-12"
-      >
-        <div className="max-w-xl flex flex-col items-start lg:items-end w-full">
+      {/* DESKTOP ONLY: Right Side Typography (Right-Aligned) */}
+      <div className="hidden lg:flex relative z-10 w-1/2 h-full flex-col justify-center items-end text-right px-12 xl:px-24">
+        {/* Ambient dark fade mask on the RIGHT to protect right-aligned typography */}
+        <div className="absolute inset-y-0 right-0 w-full bg-gradient-to-l from-black/60 via-black/25 to-transparent -z-10 pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          className="max-w-xl flex flex-col items-end w-full"
+        >
           {/* Pill Badge */}
           <div className="inline-flex items-center gap-2 border border-white/30 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 w-max mb-6 text-xs sm:text-sm font-medium text-white shadow-sm">
             <CheckCircle2 size={16} className="text-emerald-300 stroke-[2.2]" />
             <span>Mulai Perjalanan Hijau</span>
           </div>
 
-          {/* New Sign Up Headline (Symmetrical 3-line format) */}
-          <h1 className="text-3xl sm:text-4xl lg:text-[3.25rem] font-light leading-[1.18] tracking-tight text-white drop-shadow-lg mb-6 max-w-xl text-left lg:text-right ml-auto">
-            Sirkularitas bermula, <br className="hidden sm:block" />
-            dari <span className="font-serif italic font-normal text-white drop-shadow-xl">aksi kecilmu</span> <br className="hidden sm:block" />
+          {/* Sign Up Headline */}
+          <h1 className="text-3xl sm:text-4xl lg:text-[3.25rem] font-light leading-[1.18] tracking-tight text-white drop-shadow-lg mb-6 max-w-xl text-right ml-auto">
+            Sirkularitas bermula, <br />
+            dari <span className="font-serif italic font-normal text-white drop-shadow-xl">aksi kecilmu</span> <br />
             hari ini.
           </h1>
 
-          {/* New Sign Up Subtitle */}
-          <p className="text-white/95 font-normal text-sm sm:text-base leading-relaxed max-w-md mb-8 text-left lg:text-right ml-auto [text-shadow:_0_2px_8px_rgba(0,0,0,0.7)]">
+          {/* Sign Up Subtitle */}
+          <p className="text-white/95 font-normal text-sm sm:text-base leading-relaxed max-w-md mb-8 text-right ml-auto [text-shadow:_0_2px_8px_rgba(0,0,0,0.7)]">
             Bergabung bersama ELOVIA. Ubah sampah menjadi nilai, dan wujudkan masa depan yang berkelanjutan.
           </p>
 
@@ -288,8 +354,8 @@ export default function DaftarPage() {
             <PlayCircle size={18} className="group-hover:scale-110 transition-transform" />
             <span>Jelajahi ELOVIA</span>
           </Link>
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+    </main>
   );
 }
