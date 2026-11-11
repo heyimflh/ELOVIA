@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { ArrowUpRight, BookOpen, X, Sparkles, Scale, Info, CheckCircle2 } from 'lucide-react';
@@ -240,13 +241,14 @@ export function ActionPill() {
                   Close
                 </button>
               </Dialog.Close>
-              <button
-                type="button"
+              <Link
+                href="/pasar"
                 onClick={() => setScannerOpen(false)}
-                className="px-6 py-2.5 rounded-full bg-[#177A47] hover:bg-[#0F5F37] text-white text-xs font-semibold shadow-md transition-colors"
+                className="px-6 py-2.5 rounded-full bg-[#177A47] hover:bg-[#0F5F37] text-white text-xs font-semibold shadow-md transition-colors inline-flex items-center gap-1.5"
               >
-                Proceed to Marketplace
-              </button>
+                <span>Proceed to Marketplace</span>
+                <ArrowUpRight size={14} />
+              </Link>
             </div>
           </Dialog.Content>
         </Dialog.Portal>
@@ -357,13 +359,21 @@ export function ActionPill() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <Link
+                href="/metodologi"
+                onClick={() => setMethodologyOpen(false)}
+                className="px-5 py-2.5 rounded-full bg-[#E8F4EC] hover:bg-[#D3EBDB] text-[#177A47] text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>Lihat Metodologi Lengkap</span>
+                <ArrowUpRight size={14} />
+              </Link>
               <Dialog.Close asChild>
                 <button
                   type="button"
                   className="px-6 py-2.5 rounded-full bg-[#0F1F17] hover:bg-[#177A47] text-white text-xs font-semibold shadow-md transition-colors"
                 >
-                  Understood
+                  Tutup
                 </button>
               </Dialog.Close>
             </div>

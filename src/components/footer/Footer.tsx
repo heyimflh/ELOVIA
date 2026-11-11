@@ -159,6 +159,7 @@ export function Footer() {
     <footer
       ref={footerRef}
       id="footer"
+      suppressHydrationWarning
       aria-labelledby="footer-heading"
       className="relative w-full overflow-hidden bg-[#0F1F17] text-white selection:bg-[#E8F4EC] selection:text-[#177A47] pt-24 sm:pt-32 lg:pt-36"
     >
@@ -265,7 +266,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/marketplace"
+                  href="/pasar"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Recycle Marketplace</span>
@@ -273,7 +274,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/penyaluran"
+                  href="/salur/baru"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Pickup &amp; Drop-off</span>
@@ -281,7 +282,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/taman"
+                  href="/impact-garden"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Impact Garden</span>
@@ -289,7 +290,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/ecowallet"
+                  href="/dompet"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>EcoWallet</span>
@@ -331,15 +332,15 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/metodologi#standar-sni"
+                  href="/material"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
-                  <span>Standar Mutu SNI</span>
+                  <span>Katalog Mutu Material</span>
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/komunitas"
+                  href="/coming-soon"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Circular Champions</span>
@@ -357,7 +358,7 @@ export function Footer() {
             <ul className="space-y-2.5 pt-1 text-sm font-jakarta text-[#E8F4EC]/85">
               <li>
                 <Link
-                  href="/tentang"
+                  href="/metodologi"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Tentang ELOVIA</span>
@@ -373,7 +374,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/bantuan"
+                  href="/coming-soon"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Pusat Bantuan &amp; FAQ</span>
@@ -381,7 +382,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/kebijakan-privasi"
+                  href="/coming-soon"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Kebijakan Privasi</span>
@@ -389,7 +390,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/syarat-ketentuan"
+                  href="/coming-soon"
                   className="hover:text-white hover:translate-x-1 inline-flex items-center gap-1 transition-all duration-200"
                 >
                   <span>Syarat &amp; Ketentuan</span>
@@ -597,19 +598,19 @@ export function Footer() {
             {/* Right: Legal links */}
             <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2 text-xs sm:text-sm">
               <Link
-                href="/kebijakan-privasi"
+                href="/coming-soon"
                 className="hover:text-white transition-colors duration-200"
               >
                 Privacy Policy
               </Link>
               <Link
-                href="/syarat-ketentuan"
+                href="/coming-soon"
                 className="hover:text-white transition-colors duration-200"
               >
                 Terms &amp; Conditions
               </Link>
               <Link
-                href="/kredit"
+                href="/coming-soon"
                 className="hover:text-white transition-colors duration-200"
               >
                 Licenses

@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Search, Sparkles, X, SlidersHorizontal } from 'lucide-react';
+import { Search, Sparkles, X, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
 
 interface MaterialHeroSearchProps {
   searchQuery: string;
@@ -79,6 +80,22 @@ export function MaterialHeroSearch({
       >
         Cari jenis sampahmu, ketahui estimasi harga pasar real-time, dan pelajari cara preparasinya sebelum disalurkan.
       </motion.p>
+
+      {/* Hero CTA: Uji Simulasi Rumus */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+        className="relative z-10 mt-5"
+      >
+        <Link
+          href="/pindai"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95"
+        >
+          <span>Uji Simulasi Rumus</span>
+          <ArrowUpRight size={15} />
+        </Link>
+      </motion.div>
 
       {/* ── 4. The Search Bar (Ultra-Premium Frosted Glass) ── */}
       <motion.div

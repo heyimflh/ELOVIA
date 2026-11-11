@@ -31,7 +31,7 @@ const NAV_ITEMS = [
   { label: 'Permintaan', href: '/mitra/permintaan', icon: Inbox, badge: '4' },
   { label: 'Katalog Harga', href: '/mitra/harga', icon: Tag },
   { label: 'Jadwal Armada', href: '/mitra/jadwal', icon: CalendarClock },
-  { label: 'Analitik Dampak', href: '/dampak', icon: BarChart3, external: true },
+  { label: 'Analitik Dampak', href: '/impact-garden', icon: BarChart3, external: true },
   { label: 'Pengaturan Toko', href: '/mitra/profil', icon: Settings },
 ];
 

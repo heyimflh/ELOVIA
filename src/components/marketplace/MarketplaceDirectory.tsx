@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RotateCcw,
@@ -415,12 +416,21 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 lg:bottom-10 right-8 z-50 bg-green-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-jakarta text-xs sm:text-sm border border-green-600"
+            className="fixed bottom-24 lg:bottom-10 right-4 sm:right-8 z-50 bg-emerald-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-jakarta text-xs sm:text-sm border border-emerald-600/60 backdrop-blur-md"
           >
-            <div className="w-6 h-6 rounded-full bg-green-500/30 flex items-center justify-center text-green-300 shrink-0">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-300 shrink-0">
               <Check className="w-4 h-4" />
             </div>
             <span className="font-medium">{toastMessage}</span>
+            {selectedPartner && (
+              <Link
+                href={`/salur/baru?mitra=${selectedPartner.slug}`}
+                className="ml-2 px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-lg transition-colors flex items-center gap-1 shrink-0"
+              >
+                <span>Salur</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

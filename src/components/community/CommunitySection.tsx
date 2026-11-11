@@ -112,7 +112,7 @@ export function CommunitySection() {
         >
           {/* Primary Green CTA Button */}
           <Link
-            href="/komunitas"
+            href="/impact-garden#eco-leaderboard"
             className="group relative inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-[#177A47] hover:bg-[#0F5F37] text-white font-jakarta font-semibold text-base shadow-[0_4px_16px_rgba(23,122,71,0.22)] hover:shadow-[0_8px_24px_rgba(23,122,71,0.3)] transition-all duration-300 focus:outline-hidden focus-visible:ring-3 focus-visible:ring-[#177A47]/40 active:scale-[0.98]"
           >
             <span>Lihat Peringkat &amp; Gabung Kelompok</span>

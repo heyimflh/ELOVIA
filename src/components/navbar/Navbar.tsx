@@ -32,7 +32,7 @@ const NAV_LINKS: NavItem[] = [
   },
   {
     label: 'Impact Garden',
-    href: '/dampak',
+    href: '/impact-garden',
     description: 'Visualisasi dampak ekologis dan reduksi karbon',
   },
   {
@@ -64,7 +64,9 @@ export function Navbar() {
     pathname.startsWith('/metodologi') ||
     pathname.startsWith('/akun') ||
     pathname.startsWith('/material') ||
-    pathname.startsWith('/dampak')
+    pathname.startsWith('/dampak') ||
+    pathname.startsWith('/impact-garden') ||
+    pathname.startsWith('/coming-soon')
   );
   const effectiveScrolled = (mounted && isScrolled) || isLightPage;
 
@@ -162,6 +164,7 @@ export function Navbar() {
     <>
       {/* Outer Floating Wrapper: Animates in/out with ultra-smooth spring physics */}
       <motion.header
+        suppressHydrationWarning
         variants={{
           visible: {
             y: 0,

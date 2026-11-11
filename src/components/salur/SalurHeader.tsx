@@ -39,7 +39,7 @@ const DEFAULT_STEPS: CheckoutStep[] = [
   { id: 1, label: '1. Keranjang', href: '/keranjang' },
   { id: 2, label: '2. Pilih Mitra', href: '/pasar' },
   { id: 3, label: '3. Detail & Jadwal', href: '/salur/baru' },
-  { id: 4, label: '4. Konfirmasi', href: '/salur/konfirmasi' },
+  { id: 4, label: '4. Konfirmasi' },
 ];
 
 export function SalurHeader({

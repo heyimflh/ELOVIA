@@ -9,6 +9,7 @@ import {
   Leaf,
   Sprout,
   ArrowRight,
+  ArrowDown,
   Play,
   Clock,
   Recycle,
@@ -401,6 +402,22 @@ export default function EdukasiPage() {
                 </button>
               ))}
             </motion.div>
+
+            {/* Hero CTA: Mulai Perjalanan */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65, duration: 0.5 }}
+              className="mt-8 flex items-center justify-center"
+            >
+              <a
+                href="#jalur-belajar"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95"
+              >
+                <span>Mulai Perjalanan</span>
+                <ArrowDown size={15} />
+              </a>
+            </motion.div>
           </div>
         </motion.div>
       </section>
@@ -408,7 +425,7 @@ export default function EdukasiPage() {
       {/* ═════════════════════════════════════════════════════════════════════ */}
       {/* SECTION 2: JALUR PEMBELAJARAN (LEARNING PATHS CAROUSEL)              */}
       {/* ═════════════════════════════════════════════════════════════════════ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+      <section id="jalur-belajar" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20 scroll-mt-28">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold uppercase tracking-wider mb-3">

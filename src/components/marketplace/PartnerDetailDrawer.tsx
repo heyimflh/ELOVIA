@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -17,6 +18,7 @@ import {
   Package,
   Layers,
   Phone,
+  ArrowUpRight,
 } from 'lucide-react';
 import type { PartnerItem, PriceCatalogItem } from './partnerData';
 
@@ -542,19 +544,18 @@ export function PartnerDetailDrawer({
                 <span>Tanya Mitra</span>
               </button>
 
-              {/* Primary CTA: Massive, glowing green button */}
-              {/* bg-green-600 hover:bg-green-700 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-[0_8px_25px_rgba(22,163,74,0.3)] hover:-translate-y-0.5 transition-all */}
-              <button
-                type="button"
+              {/* Primary CTA: Directly navigates to /salur/baru */}
+              <Link
+                href={`/salur/baru${partner?.slug ? `?mitra=${partner.slug}` : ''}`}
                 onClick={() => {
-                  onSelectPartner(partner);
+                  if (partner) onSelectPartner(partner);
                   onClose();
                 }}
-                className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold text-base sm:text-lg px-5 sm:px-8 py-3.5 sm:py-4 rounded-2xl shadow-[0_8px_25px_rgba(22,163,74,0.3)] hover:shadow-[0_12px_32px_rgba(22,163,74,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer font-jakarta text-center tracking-tight"
+                className="flex-1 flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm sm:text-base px-4 sm:px-6 py-3.5 sm:py-4 rounded-2xl shadow-[0_8px_25px_rgba(4,120,87,0.3)] hover:shadow-[0_12px_32px_rgba(4,120,87,0.4)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer font-jakarta text-center tracking-tight"
               >
                 <span className="truncate">Pilih & Salurkan ke Mitra Ini</span>
-                <span className="text-xl leading-none">↗</span>
-              </button>
+                <ArrowUpRight className="w-5 h-5 shrink-0" />
+              </Link>
             </div>
           </motion.aside>
         </div>

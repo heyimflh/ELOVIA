@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PasarPage() {
   return (
-    <main className="w-full min-h-screen bg-[#F6FAF7]">
+    <main className="w-full min-h-screen bg-[#F6FAF7]" suppressHydrationWarning>
       {/* Interactive Marketplace Directory with 3D Parallax Header & Filters */}
       <MarketplaceDirectory />
 

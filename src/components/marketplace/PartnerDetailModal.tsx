@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -13,6 +14,7 @@ import {
   CheckCircle2,
   ExternalLink,
   Sparkles,
+  ArrowUpRight,
 } from 'lucide-react';
 import type { PartnerItem } from './partnerData';
 
@@ -187,17 +189,17 @@ export function PartnerDetailModal({
               >
                 Tutup
               </button>
-              <button
-                type="button"
+              <Link
+                href={`/salur/baru${partner?.slug ? `?mitra=${partner.slug}` : ''}`}
                 onClick={() => {
-                  onSelectPartner(partner);
+                  if (partner) onSelectPartner(partner);
                   onClose();
                 }}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-semibold font-jakarta shadow-md shadow-green-600/20 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold font-jakarta shadow-md shadow-emerald-700/20 transition-all cursor-pointer"
               >
-                <CheckCircle2 className="w-4 h-4" />
                 <span>Pilih Mitra Ini</span>
-              </button>
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
             </div>
           </motion.div>
         </div>

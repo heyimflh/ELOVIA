@@ -284,7 +284,7 @@ export function ImpactGardenPreview() {
             {/* Call to Action Button: Prominent & Tactile */}
             <div className="space-y-2 pt-2">
               <Link
-                href="/taman"
+                href="/impact-garden"
                 className="group relative w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-lg shadow-emerald-700/25 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-700 cursor-pointer"
               >
                 <span>Mulai Tumbuhkan Tamanmu</span>
