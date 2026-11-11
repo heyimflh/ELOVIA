@@ -53,7 +53,7 @@ export function Hero() {
       />
 
       {/* 4. Hero Center Block (z-20) with clearance for Fixed Global Navbar */}
-      <div className="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-10 flex-1 flex flex-col justify-center items-center">
+      <div className="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 min-[390px]:pt-24 sm:pt-28 pb-8 sm:pb-10 flex-1 flex flex-col justify-center items-center">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -61,8 +61,8 @@ export function Hero() {
           className="w-full flex flex-col items-center text-center"
         >
           {/* Top Pill / Badge in Pure White / Light Mint */}
-          <motion.div variants={itemVariants} className="mb-5 sm:mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/45 border border-white/25 text-[#E8F4EC] text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase shadow-[0_4px_16px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <motion.div variants={itemVariants} className="mb-4 sm:mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-black/45 border border-white/25 text-[#E8F4EC] text-[10px] min-[360px]:text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase shadow-[0_4px_16px_rgba(0,0,0,0.5)] backdrop-blur-md">
               <RefreshCw className="w-3.5 h-3.5 text-[#E8F4EC] animate-[spin_10s_linear_infinite]" />
               <span>CIRCULAR ECONOMY PLATFORM</span>
             </div>
@@ -71,7 +71,7 @@ export function Hero() {
           {/* Main Headline: Strictly ONE single line without breaking, with dreamy aesthetic keyword coloring */}
           <motion.h1
             variants={itemVariants}
-            className="font-fraunces text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.5rem] leading-none tracking-tight font-normal text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] max-w-none mx-auto mb-4 sm:mb-6 whitespace-nowrap select-none"
+            className="font-fraunces text-[1.45rem] min-[380px]:text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.5rem] leading-none tracking-tight font-normal text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] max-w-none mx-auto mb-3.5 sm:mb-6 whitespace-nowrap select-none"
           >
             Your{' '}
             <span className="relative inline-block bg-gradient-to-r from-[#A7F3D0] via-[#6EE7B7] to-[#5EEAD4] bg-clip-text text-transparent font-medium drop-shadow-[0_0_24px_rgba(110,231,183,0.55)]">
@@ -86,7 +86,7 @@ export function Hero() {
           {/* Supporting Subheadline in Light Mint / Pure White */}
           <motion.p
             variants={itemVariants}
-            className="font-jakarta text-sm sm:text-base md:text-lg lg:text-xl text-[#E8F4EC] max-w-2xl mx-auto leading-relaxed font-medium mb-8 sm:mb-10 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]"
+            className="font-jakarta text-xs min-[380px]:text-sm sm:text-base md:text-lg lg:text-xl text-[#E8F4EC] max-w-xl sm:max-w-2xl mx-auto leading-relaxed font-medium mb-6 sm:mb-10 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] px-2 sm:px-0"
           >
             Discover value in discarded materials. Turn better waste habits into
             real opportunities.

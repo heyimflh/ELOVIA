@@ -358,10 +358,10 @@ export function HowItWorks() {
             })}
           </div>
         </div>
-
-        {/* 3. 'Value Factors' Block (PRD Requirement - Refined based on SIAGA Trust Infrastructure) */}
-        <ValueFactors />
       </div>
+
+      {/* 3. 'Value Factors' Block (PRD Requirement - ELOVIA Enam Faktor Nilai) */}
+      <ValueFactors />
     </section>
   );
 }

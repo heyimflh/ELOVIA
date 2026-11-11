@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { GardenStageId } from './types';
 
@@ -11,7 +11,14 @@ interface GardenSceneProps {
 }
 
 export function GardenScene({ stage, activeHighlight, onElementClick }: GardenSceneProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  const rawReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const shouldReduceMotion = mounted && Boolean(rawReducedMotion);
 
   // Organic spring physics transition
   const springTransition = {
@@ -36,11 +43,11 @@ export function GardenScene({ stage, activeHighlight, onElementClick }: GardenSc
           shouldReduceMotion
             ? { y: 0 }
             : {
-                y: [0, -8, 0],
+                y: [0, -10, 0],
               }
         }
         transition={{
-          duration: 5.5,
+          duration: 4,
           repeat: Infinity,
           ease: 'easeInOut',
         }}

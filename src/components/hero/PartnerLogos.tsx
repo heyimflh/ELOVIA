@@ -2,14 +2,14 @@
 
 export function PartnerLogos() {
   return (
-    <div className="w-full max-w-5xl mx-auto px-6 text-center">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 text-center">
       {/* Bottom Kicker / Text Area in Pure White / Light Mint */}
-      <p className="text-xs sm:text-sm font-semibold text-[#E8F4EC] tracking-wider uppercase mb-6 sm:mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+      <p className="text-[10px] min-[360px]:text-[11px] sm:text-sm font-semibold text-[#E8F4EC] tracking-wider uppercase mb-5 sm:mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
         Partnered with certified recycling centers &amp; eco-initiatives
       </p>
 
       {/* 4 Brand / Partner Logos in Pure White / Light Mint */}
-      <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 lg:gap-18 opacity-90 hover:opacity-100 transition-opacity">
+      <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-14 lg:gap-18 opacity-90 hover:opacity-100 transition-opacity">
         {/* Partner 1: Waste4Change */}
         <div className="group flex items-center gap-2 cursor-pointer transition-transform duration-300 hover:scale-105">
           <svg

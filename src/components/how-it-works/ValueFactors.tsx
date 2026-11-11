@@ -1,7 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/purity */
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
+import { gsap } from 'gsap';
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  animate,
+  useScroll,
+  useSpring,
+  AnimatePresence,
+  useMotionTemplate,
+} from 'framer-motion';
 import {
   Layers,
   Sparkles,
@@ -9,536 +21,936 @@ import {
   Scale,
   TrendingUp,
   Truck,
-  ArrowRight,
-  Info,
-  CheckCircle2,
-  AlertCircle,
-  Plus,
-  Minus,
-  Check,
-  ShieldCheck,
+  Play,
+  X,
+  ArrowUpRight,
+  Leaf,
 } from 'lucide-react';
-import Link from 'next/link';
+import Image from 'next/image';
 
-export function ValueFactors() {
-  // Interactive state for Card 1 (Polymer type comparison)
-  const [polymerTab, setPolymerTab] = useState<'mono' | 'multi'>('mono');
+interface ChartProps {
+  isHovered: boolean;
+  color: string;
+}
 
-  // Interactive state for Card 4 (Weight scale stepper)
-  const [weightKg, setWeightKg] = useState<number>(15);
+const MiniBarChart = ({ isHovered, color }: ChartProps) => (
+  <div className="flex items-end gap-1.5 sm:gap-2 h-10 mt-4">
+    {[40, 70, 50, 90, 60].map((height, i) => (
+      <motion.div
+        key={i}
+        initial={{ height: 0 }}
+        animate={{
+          height: isHovered ? [`${height}%`, `${Math.random() * 50 + 50}%`, `${height}%`] : `${height}%`,
+          backgroundColor: isHovered ? '#FFFFFF' : color,
+        }}
+        transition={{
+          duration: isHovered ? 0.3 : 1,
+          delay: isHovered ? i * 0.05 : 0.5 + i * 0.1,
+          repeat: isHovered ? Infinity : 0,
+          ease: isHovered ? 'circInOut' : 'easeOut',
+        }}
+        className="w-3 sm:w-4 rounded-t-sm"
+      />
+    ))}
+  </div>
+);
 
-  // Interactive state for Card 6 (Logistics mode)
-  const [logisticsMode, setLogisticsMode] = useState<'dropoff' | 'pickup'>('dropoff');
+const MiniRingChart = ({ isHovered, color }: ChartProps) => (
+  <motion.div
+    animate={{ rotate: isHovered ? 360 : 0 }}
+    transition={{ duration: isHovered ? 1.5 : 1, repeat: isHovered ? Infinity : 0, ease: 'linear' }}
+    className="relative w-10 h-10 sm:w-12 sm:h-12 mt-2"
+  >
+    <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+      <path
+        className="text-white/20"
+        strokeWidth="4"
+        stroke="currentColor"
+        fill="none"
+        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+      <motion.path
+        animate={{
+          strokeDasharray: isHovered ? ['10, 100', '90, 100', '10, 100'] : '75, 100',
+          color: isHovered ? '#FFFFFF' : color,
+        }}
+        transition={{ duration: isHovered ? 1 : 1.5, repeat: isHovered ? Infinity : 0, ease: 'easeInOut' }}
+        className="text-[#0F172A]"
+        strokeWidth="4"
+        strokeLinecap="round"
+        stroke="currentColor"
+        fill="none"
+        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+    </svg>
+  </motion.div>
+);
 
-  const handleWeightDelta = (delta: number) => {
-    setWeightKg((prev) => Math.max(3, Math.min(60, prev + delta)));
+const MiniTrendLine = ({ isHovered }: ChartProps) => (
+  <div className="w-20 h-8 sm:w-24 sm:h-10 mt-4 relative">
+    <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible">
+      <motion.path
+        animate={{
+          pathLength: isHovered ? [0.2, 1, 0.2] : 1,
+          stroke: isHovered ? '#FFFFFF' : '#0F172A',
+        }}
+        transition={{ duration: isHovered ? 0.8 : 1.5, repeat: isHovered ? Infinity : 0, ease: 'easeInOut' }}
+        d="M0,40 Q20,30 40,35 T80,15 T100,0"
+        fill="none"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <motion.circle
+        animate={{
+          scale: isHovered ? [1, 1.5, 1] : 1,
+          fill: isHovered ? '#FFFFFF' : '#10B981',
+        }}
+        transition={{ duration: isHovered ? 0.4 : 2, repeat: isHovered ? Infinity : 0 }}
+        cx="100"
+        cy="0"
+        r="4"
+      />
+    </svg>
+  </div>
+);
+
+const MiniGaugeChart = ({ isHovered, color }: ChartProps) => (
+  <div className="relative w-14 h-7 sm:w-16 sm:h-8 mt-4 overflow-visible">
+    <svg viewBox="0 0 100 50" className="w-full h-full overflow-visible">
+      <path
+        d="M 10 50 A 40 40 0 0 1 90 50"
+        fill="none"
+        stroke={isHovered ? 'rgba(255,255,255,0.3)' : 'rgba(16,185,129,0.2)'}
+        strokeWidth="8"
+        strokeLinecap="round"
+      />
+      <motion.path
+        animate={{
+          stroke: isHovered ? '#FFFFFF' : '#10B981',
+          pathLength: isHovered ? [0.4, 0.9, 0.4] : 0.85,
+        }}
+        transition={{ duration: isHovered ? 0.5 : 1.5, repeat: isHovered ? Infinity : 0, ease: 'easeInOut' }}
+        d="M 10 50 A 40 40 0 0 1 90 50"
+        fill="none"
+        strokeWidth="8"
+        strokeLinecap="round"
+      />
+      <motion.line
+        animate={{
+          rotate: isHovered ? [20, 100, 20] : 60,
+          stroke: isHovered ? '#FFFFFF' : '#0F172A',
+        }}
+        transition={{
+          duration: isHovered ? 0.3 : 1.5,
+          repeat: isHovered ? Infinity : 0,
+          type: isHovered ? 'tween' : 'spring',
+          bounce: 0.4,
+        }}
+        style={{ transformOrigin: '50px 50px' }}
+        x1="50"
+        y1="50"
+        x2="20"
+        y2="20"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <motion.circle cx="50" cy="50" r="6" animate={{ fill: isHovered ? '#FFFFFF' : '#0F172A' }} />
+    </svg>
+  </div>
+);
+
+export const eloviaCardData = [
+  {
+    id: 1,
+    title: 'Kemurnian Material',
+    value: 35,
+    unit: '% Bobot',
+    description: 'Monomaterial dihargai tertinggi.',
+    fullExplanation:
+      'Polimer murni (PET bening/kardus kraft) bernilai tinggi karena mudah dilebur tanpa pemisahan kimiawi yang rumit.',
+    bgImage: '/images/materials/plastic.jpg',
+    color: '#10B981', // Emerald
+    icon: <Layers size={24} />,
+    pos: { left: '2%', top: '4%' },
+    rotation: -4,
+    floatDelay: 0,
+    Visual: MiniBarChart,
+    cablePath: 'M 200 150 C 400 200, 500 500, 600 500',
+    nodeX: 200,
+    nodeY: 150,
+  },
+  {
+    id: 2,
+    title: 'Kondisi Fisik',
+    value: 20,
+    unit: '% Bobot',
+    description: 'Utuh, kering, tidak robek.',
+    fullExplanation:
+      'Kardus utuh dan tidak basah menjaga kekuatan serat alami, menghemat tenaga sortir manual di fasilitas daur ulang.',
+    bgImage: '/images/materials/paper_cardboard.jpg',
+    color: '#0F172A', // Dark
+    icon: <Sparkles size={24} />,
+    pos: { right: '2%', top: '4%' },
+    rotation: 5,
+    floatDelay: 0.5,
+    Visual: MiniRingChart,
+    cablePath: 'M 1000 150 C 800 200, 700 500, 600 500',
+    nodeX: 1000,
+    nodeY: 150,
+  },
+  {
+    id: 3,
+    title: 'Standar Kebersihan',
+    value: 20,
+    unit: '% Bobot',
+    description: 'Bebas residu minyak/makanan.',
+    fullExplanation:
+      'Material yang dibilas bersih menghemat jutaan liter air pencucian di pabrik, sehingga langsung dihargai tarif tertinggi.',
+    bgImage: '/images/materials/glass.jpg',
+    color: '#10B981',
+    icon: <Droplets size={24} />,
+    pos: { left: '0%', top: '42%' },
+    rotation: 2,
+    floatDelay: 1,
+    Visual: MiniGaugeChart,
+    cablePath: 'M 150 500 C 350 500, 500 500, 600 500',
+    nodeX: 150,
+    nodeY: 500,
+  },
+  {
+    id: 4,
+    title: 'Kuantitas & Berat',
+    value: 15,
+    unit: 'Kg Optimal',
+    description: 'Skala besar lebih efisien.',
+    fullExplanation:
+      'Setoran dalam jumlah besar mempercepat operasional dan mengurangi jejak karbon transportasi per kilogram material.',
+    bgImage: '/images/materials/metal.jpg',
+    color: '#0F172A',
+    icon: <Scale size={24} />,
+    pos: { right: '0%', top: '42%' },
+    rotation: -2,
+    floatDelay: 1.2,
+    Visual: MiniTrendLine,
+    cablePath: 'M 1050 500 C 850 500, 700 500, 600 500',
+    nodeX: 1050,
+    nodeY: 500,
+  },
+  {
+    id: 5,
+    title: 'Indeks Pasar',
+    value: 14.8,
+    unit: '% Naik',
+    description: 'Fluktuasi harga B2B aktual.',
+    fullExplanation:
+      'Harga ELOVIA tersinkronisasi otomatis dengan indeks permintaan pabrik off-taker skala nasional secara transparan.',
+    bgImage: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=800',
+    color: '#059669',
+    icon: <TrendingUp size={24} />,
+    pos: { left: '3%', bottom: '4%' },
+    rotation: -5,
+    floatDelay: 1.5,
+    Visual: MiniBarChart,
+    cablePath: 'M 250 850 C 400 800, 500 500, 600 500',
+    nodeX: 250,
+    nodeY: 850,
+  },
+  {
+    id: 6,
+    title: 'Biaya Logistik',
+    value: 1.2,
+    unit: 'Km Jarak',
+    description: 'Drop-off vs Jemput Armada.',
+    fullExplanation:
+      'Pengguna yang melakukan drop-off mandiri menerima 100% nilai bersih, tanpa potongan biaya bensin armada penjemput.',
+    bgImage: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800',
+    color: '#0F172A',
+    icon: <Truck size={24} />,
+    pos: { right: '3%', bottom: '4%' },
+    rotation: 4,
+    floatDelay: 1.8,
+    Visual: MiniRingChart,
+    cablePath: 'M 950 850 C 800 800, 700 500, 600 500',
+    nodeX: 950,
+    nodeY: 850,
+  },
+];
+
+const reelImages1 = [
+  '/images/materials/plastic.jpg',
+  '/images/materials/paper_cardboard.jpg',
+  '/images/materials/metal.jpg',
+  '/images/materials/glass.jpg',
+];
+const repeatedReel1 = [...reelImages1, ...reelImages1, ...reelImages1, ...reelImages1];
+
+const AnimatedNumber = ({ value }: { value: number }) => {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) =>
+    value % 1 === 0 ? Math.floor(latest).toLocaleString() : latest.toFixed(1)
+  );
+
+  useEffect(() => {
+    const controls = animate(count, value, { duration: 2, ease: [0.16, 1, 0.3, 1] });
+    return () => controls.stop();
+  }, [count, value]);
+
+  return <motion.span>{rounded}</motion.span>;
+};
+
+const TiltCard = ({
+  children,
+  className,
+  isDesktop,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  isDesktop: boolean;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], isDesktop ? ['12deg', '-12deg'] : ['0deg', '0deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], isDesktop ? ['-12deg', '12deg'] : ['0deg', '0deg']);
+
+  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ['100%', '0%']);
+  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ['100%', '0%']);
+
+  const glareBackground = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,0.9) 0%, transparent 60%)`;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current || !isDesktop) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isDesktop) return;
+    x.set(0);
+    y.set(0);
   };
 
   return (
-    <div className="relative mt-24 sm:mt-32 pt-12">
-      {/* Connector line and center node at top (Reference: SIAGA Trust Infrastructure) */}
-      <div className="flex flex-col items-center justify-center mb-8" aria-hidden="true">
-        <div className="w-[2px] h-12 bg-gradient-to-b from-[#177A47] to-[#D3EBDB]" />
-        <div className="w-7 h-7 rounded-full border-2 border-[#177A47] bg-white flex items-center justify-center shadow-xs">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#177A47] animate-pulse" />
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+      className={`relative overflow-hidden group ${className}`}
+    >
+      <div className="absolute -inset-full bg-linear-to-tr from-transparent via-white/40 to-transparent w-[300%] h-[300%] -rotate-45 translate-x-[-60%] pointer-events-none mix-blend-overlay" />
+      {isDesktop && (
+        <motion.div
+          className="absolute inset-0 z-50 pointer-events-none opacity-60 mix-blend-overlay transition-opacity duration-300"
+          style={{ background: glareBackground }}
+        />
+      )}
+      {children}
+    </motion.div>
+  );
+};
+
+export function ValueFactors() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const leftEyeRef = useRef<HTMLDivElement>(null);
+  const rightEyeRef = useRef<HTMLDivElement>(null);
+  const smileyContainerRef = useRef<HTMLDivElement>(null);
+
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [isHoveringVideo, setIsHoveringVideo] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+
+  const magnetX = useMotionValue(0);
+  const magnetY = useMotionValue(0);
+  const smoothMagnetX = useSpring(magnetX, { stiffness: 100, damping: 15, mass: 0.5 });
+  const smoothMagnetY = useSpring(magnetY, { stiffness: 100, damping: 15, mass: 0.5 });
+
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
+  const cursorSpringX = useSpring(cursorX, { stiffness: 300, damping: 25 });
+  const cursorSpringY = useSpring(cursorY, { stiffness: 300, damping: 25 });
+
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
+  const springScroll = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+
+  const reel1X = useTransform(springScroll, [0, 1], ['0%', '-40%']);
+  const reel2X = useTransform(springScroll, [0, 1], ['-40%', '0%']);
+
+  const sec2Scale = useTransform(scrollYProgress, [0.4, 1], [0.7, 1]);
+  const sec2Rotate = useTransform(scrollYProgress, [0.4, 1], [8.5, 0]);
+
+  useEffect(() => {
+    const checkDevice = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDesktop) return;
+
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+
+      if (smileyContainerRef.current) {
+        const { left, top, width, height } = smileyContainerRef.current.getBoundingClientRect();
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+        const distX = e.clientX - centerX;
+        const distY = e.clientY - centerY;
+        const distance = Math.hypot(distX, distY);
+
+        if (distance < 300) {
+          magnetX.set(distX * 0.4);
+          magnetY.set(distY * 0.4);
+        } else {
+          magnetX.set(0);
+          magnetY.set(0);
+        }
+
+        const eyes = [leftEyeRef.current, rightEyeRef.current];
+        eyes.forEach((eye) => {
+          if (!eye) return;
+          const rect = eye.getBoundingClientRect();
+          const angle = Math.atan2(e.clientY - (rect.top + rect.height / 2), e.clientX - (rect.left + rect.width / 2));
+          const eyeDist = Math.min(8, distance / 10);
+          gsap.to(eye, { x: Math.cos(angle) * eyeDist, y: Math.sin(angle) * eyeDist, duration: 0.3, ease: 'power2.out' });
+        });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('resize', checkDevice);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [isDesktop, magnetX, magnetY, cursorX, cursorY]);
+
+  return (
+    <div
+      id="transparansi"
+      ref={containerRef}
+      className="relative w-full max-w-full overflow-x-hidden font-jakarta bg-[#F6FAF7] lg:h-[240vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none mt-16 sm:mt-24 pt-8"
+    >
+      <style jsx global>{`
+        #transparansi *::-webkit-scrollbar {
+          display: none !important;
+        }
+        #transparansi * {
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
+        }
+      `}</style>
+
+      {/* Floating Interactive Play Cursor for Video Hover */}
+      {isDesktop && (
+        <motion.div
+          style={{ x: cursorSpringX, y: cursorSpringY, translateX: '-50%', translateY: '-50%' }}
+          animate={{
+            scale: isHoveringVideo && !showModal ? 1 : 0,
+            opacity: isHoveringVideo && !showModal ? 1 : 0,
+          }}
+          className="fixed top-0 left-0 z-150 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-full flex flex-col items-center justify-center text-white shadow-[0_10px_30px_rgba(16,185,129,0.5)] pointer-events-none"
+        >
+          <Play fill="white" size={32} className="ml-1" />
+          <span className="text-[10px] font-black uppercase tracking-widest mt-1">Play</span>
+        </motion.div>
+      )}
+
+      {/* SECTION 1: ENAM FAKTOR NILAI KAMI (Sticky Orbit Playground) */}
+      <section className="relative lg:sticky lg:top-0 w-full max-w-full overflow-hidden min-h-screen z-20 flex flex-col pt-12 lg:pt-8 px-4 lg:px-0 pb-10">
+        {/* Background Parallax Reels and Glow Spheres */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0 flex flex-col justify-center gap-10"
+          >
+            <motion.div style={{ x: reel1X }} className="flex gap-6 w-max max-w-none -rotate-6 transform-gpu">
+              {repeatedReel1.map((src, idx) => (
+                <div
+                  key={`reel1-${idx}`}
+                  className="w-75 md:w-100 h-50 md:h-62.5 rounded-3xl overflow-hidden shrink-0 shadow-sm border border-[#10B981]/15 max-w-none"
+                >
+                  <img src={src} alt="Background Material Reel" className="w-full h-full object-cover max-w-none" />
+                </div>
+              ))}
+            </motion.div>
+            <motion.div style={{ x: reel2X }} className="flex gap-6 w-max max-w-none -rotate-3 transform-gpu">
+              {repeatedReel1.map((src, idx) => (
+                <div
+                  key={`reel2-${idx}`}
+                  className="w-75 md:w-100 h-50 md:h-62.5 rounded-3xl overflow-hidden shrink-0 shadow-sm border border-[#10B981]/15 max-w-none"
+                >
+                  <img src={src} alt="Background Material Reel" className="w-full h-full object-cover max-w-none" />
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          <div className="absolute inset-0 bg-[#F6FAF7]/85 z-0" />
+          <div
+            className="absolute inset-0 opacity-[0.22]"
+            style={{
+              backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)',
+              backgroundSize: '32px 32px',
+            }}
+          />
+          <motion.div
+            animate={{ x: [0, 100, 0], y: [0, -50, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-[5%] right-[5%] w-75 lg:w-150 h-75 lg:h-150 bg-[#10B981] rounded-full blur-[100px] lg:blur-[150px] opacity-20"
+          />
+          <motion.div
+            animate={{ x: [0, -100, 0], y: [0, 50, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute bottom-[20%] left-[5%] w-75 lg:w-125 h-75 lg:h-125 bg-[#0F172A] rounded-full blur-[100px] lg:blur-[150px] opacity-10"
+          />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="hidden lg:block absolute top-[30%] left-[25%] text-[#10B981]/15 z-0 pointer-events-none"
+          >
+            <motion.div animate={{ y: [0, -30, 0], rotate: [0, 15, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
+              <Leaf size={80} />
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Header Block */}
-      <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E8F4EC] border border-[#D3EBDB] text-[#177A47] font-mono text-xs font-semibold tracking-wider uppercase mb-4 shadow-2xs"
-        >
-          <Info className="w-3.5 h-3.5 text-[#177A47]" />
-          [ TRANSPARANSI NILAI ]
-        </motion.div>
+        {/* Top Header Block: TRANSPARANSI PENUH · ENAM FAKTOR NILAI KAMI */}
+        <div className="relative lg:absolute lg:top-0 w-full flex flex-col items-center justify-center text-center z-30 pt-16 lg:pt-24 mb-0 select-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.4, rotate: -20, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: -3, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ type: 'spring', stiffness: 150, damping: 12, mass: 0.8 }}
+            className="bg-[#0F172A] text-white text-[9px] sm:text-xs font-black uppercase tracking-[0.3em] px-3.5 py-1.5 rounded-md shadow-md mb-2 inline-flex items-center gap-1.5"
+          >
+            <span>TRANSPARANSI PENUH</span>
+          </motion.div>
 
-        <motion.h3
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-fraunces text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#0F1F17] leading-[1.2]"
-        >
-          Transparansi Penuh, dengan{' '}
-          <span className="text-[#177A47] relative inline-block">
-            Enam Faktor Nilai.
-            <span className="absolute -bottom-1 left-0 right-0 h-1.5 bg-[#E3F6B5] -z-10 rounded-full" />
-          </span>
-        </motion.h3>
+          <h2 className="relative font-black uppercase tracking-tighter leading-[0.85] flex flex-col items-center">
+            <motion.span
+              initial={{ y: 80, opacity: 0, scale: 0.9 }}
+              whileInView={{ y: 0, opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
+              className="text-[38px] sm:text-[60px] md:text-[75px] lg:text-[85px] text-[#0F172A] block tracking-tight font-fraunces"
+            >
+              ENAM FAKTOR
+            </motion.span>
 
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-jakarta text-sm sm:text-base text-[#4A5D52] mt-4 max-w-2xl mx-auto leading-relaxed"
-        >
-          Tidak semua sampah otomatis bernilai tinggi. ELOVIA menerapkan sistem penilaian terbuka
-          berbasis 6 faktor objektif agar adil, presisi, dan dapat dipertanggungjawabkan.
-        </motion.p>
-      </div>
+            <motion.span
+              initial={{ scale: 0.4, opacity: 0, rotate: 15, y: 30 }}
+              whileInView={{ scale: 1, opacity: 1, rotate: -1.5, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, type: 'spring', stiffness: 150, damping: 12 }}
+              className="text-[20px] sm:text-[32px] md:text-[40px] lg:text-[44px] mt-2 px-4 py-1 rounded-xl bg-gradient-to-r from-[#10B981] to-[#059669] text-white shadow-lg drop-shadow-sm font-black tracking-wider"
+            >
+              NILAI KAMI
+            </motion.span>
+          </h2>
 
-      {/* 6 Interactive Cards Grid (Reference: SIAGA Trust Infrastructure 4-column style, adapted to 6 factors) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-        {/* ========================================================
-            CARD 01: Jenis Material (Kemurnian Polimer)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#177A47]/60 hover:shadow-[0_20px_45px_rgba(23,122,71,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#177A47]" />
+          <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] mt-3 max-w-xl mx-auto leading-relaxed px-4">
+            Tidak semua sampah otomatis bernilai sama. ELOVIA menerapkan 6 faktor objektif agar penentuan harga adil, presisi, dan terbuka.
+          </p>
+        </div>
 
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Polymer Purity Matrix */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2.5">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Purity Matrix:</span>
-                <span className="text-[#177A47] font-semibold">Sentuh untuk membandingkan</span>
-              </div>
+        {/* Orbit Stage: SVG Animated Cables + Central Smiley + 6 Interactive TiltCards */}
+        <div className="relative w-full max-w-7xl mx-auto flex flex-col lg:block h-auto lg:h-[1000px] justify-center z-20 pt-20 lg:pt-36 overflow-hidden">
+          {/* Animated SVG Cables with Pulse Effect (Desktop) */}
+          {isDesktop && (
+            <svg viewBox="0 0 1200 1000" className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
+              <defs>
+                {eloviaCardData.map((card) => (
+                  <linearGradient key={`grad-${card.id}`} id={`cableGrad-${card.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor={card.color} stopOpacity="1" />
+                  </linearGradient>
+                ))}
+              </defs>
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPolymerTab('mono')}
-                  className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
-                    polymerTab === 'mono'
-                      ? 'bg-white border-[#177A47] ring-1 ring-[#177A47]/30 shadow-xs'
-                      : 'bg-white/60 border-[#D3EBDB] opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <div className="text-[10px] font-bold text-[#177A47] flex items-center gap-1">
-                    <Check className="w-3 h-3 stroke-[3]" /> Monomaterial
-                  </div>
-                  <div className="text-[11px] font-semibold text-[#0F1F17] mt-0.5">PET / Kardus</div>
-                  <div className="mt-1.5 w-full bg-[#E8F4EC] h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-[#177A47] h-full w-[95%]" />
-                  </div>
-                  <div className="text-[9px] font-mono text-[#177A47] mt-1 font-bold">Grade A+ (95%)</div>
-                </button>
+              {eloviaCardData.map((card) => {
+                const isHovered = hoveredCard === card.id;
+                return (
+                  <motion.g
+                    key={`cable-group-${card.id}`}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, delay: card.floatDelay }}
+                  >
+                    {/* Background faint cable path */}
+                    <path d={card.cablePath} fill="none" stroke="#0F172A" strokeWidth="2" strokeOpacity="0.12" />
 
-                <button
-                  type="button"
-                  onClick={() => setPolymerTab('multi')}
-                  className={`p-2 rounded-lg border text-left transition-all cursor-pointer ${
-                    polymerTab === 'multi'
-                      ? 'bg-white border-amber-600 ring-1 ring-amber-600/30 shadow-xs'
-                      : 'bg-white/60 border-[#D3EBDB] opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <div className="text-[10px] font-bold text-amber-700 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" /> Multilayer
-                  </div>
-                  <div className="text-[11px] font-semibold text-[#0F1F17] mt-0.5">Sachet Campur</div>
-                  <div className="mt-1.5 w-full bg-amber-100 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-amber-600 h-full w-[25%]" />
-                  </div>
-                  <div className="text-[9px] font-mono text-amber-700 mt-1 font-bold">Grade D (25%)</div>
-                </button>
-              </div>
-            </div>
+                    {/* Active glowing gradient cable path */}
+                    <motion.path
+                      d={card.cablePath}
+                      fill="none"
+                      stroke={`url(#cableGrad-${card.id})`}
+                      strokeWidth={isHovered ? '4' : '0'}
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: isHovered ? 1 : 0, strokeDasharray: isHovered ? '10, 5' : '0' }}
+                      transition={{ duration: 0.5, ease: 'easeInOut' }}
+                      className="drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                    />
 
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-[#E8F4EC] border border-[#D3EBDB] text-[#177A47] flex items-center justify-center">
-              <Layers className="w-5 h-5" />
-            </div>
+                    {/* Pulsing light bead when card is hovered */}
+                    {isHovered && (
+                      <motion.path
+                        d={card.cablePath}
+                        fill="none"
+                        stroke="#FFFFFF"
+                        strokeWidth="2.5"
+                        strokeDasharray="15, 150"
+                        animate={{ strokeDashoffset: [-165, 0] }}
+                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                      />
+                    )}
 
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Kemurnian Jenis Material
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Polimer murni (seperti botol PET bening atau kardus kraft) bernilai daur ulang tertinggi
-                karena mudah dilebur kembali oleh pabrik tanpa proses pemisahan kimia yang rumit.
-              </p>
-            </div>
-          </div>
+                    {/* Terminal connection node */}
+                    <circle cx={card.nodeX} cy={card.nodeY} r="8" fill="#0F172A" fillOpacity="0.1" />
+                    <motion.circle
+                      cx={card.nodeX}
+                      cy={card.nodeY}
+                      r="4"
+                      fill={isHovered ? card.color : '#0F172A'}
+                      animate={{ scale: isHovered ? [1, 1.5, 1] : 1, opacity: isHovered ? 1 : 0.3 }}
+                      transition={{ duration: 1, repeat: isHovered ? Infinity : 0 }}
+                    />
+                  </motion.g>
+                );
+              })}
+            </svg>
+          )}
 
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#177A47]">Bobot 35%</span>
-          </div>
-        </motion.div>
-
-        {/* ========================================================
-            CARD 02: Kondisi Fisik (Keutuhan Serat)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#0E7C7B]/60 hover:shadow-[0_20px_45px_rgba(14,124,123,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#0E7C7B]" />
-
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Structural Integrity Gauge */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Integrity Gauge:</span>
-                <span className="text-[#0E7C7B] font-bold">● 98% Serat Utuh</span>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-white border border-[#D3EBDB] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-bold text-xs">
-                    📦
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#0F1F17]">Kardus Utuh & Kering</div>
-                    <div className="text-[10px] text-[#5D7065]">Struktur serat karton kokoh</div>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold bg-[#E8F4EC] text-[#177A47] px-2 py-0.5 rounded">
-                  1.0x Rate
-                </span>
-              </div>
-            </div>
-
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 text-[#0E7C7B] flex items-center justify-center">
-              <Sparkles className="w-5 h-5" />
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Kondisi Fisik Terjaga
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Kardus yang tidak robek hancur atau botol kaca yang tidak pecah berkeping menjaga
-                kekuatan serat alami, menghemat tenaga sortir manual, dan mencegah bahaya pecahan bagi kurir.
-              </p>
-            </div>
-          </div>
-
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#0E7C7B]">Bobot 20%</span>
-          </div>
-        </motion.div>
-
-        {/* ========================================================
-            CARD 03: Kebersihan (Bebas Residu)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#2FA866]/60 hover:shadow-[0_20px_45px_rgba(47,168,102,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#2FA866]" />
-
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Wash & Purity Checklist */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Purity Scanner:</span>
-                <span className="text-[#2FA866] font-bold">0% Residu Minyak</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="p-1.5 rounded-md bg-white border border-[#D3EBDB] text-[10px] font-medium text-[#177A47] flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-[#177A47] shrink-0" />
-                  <span>Dibilas Bersih</span>
-                </div>
-                <div className="p-1.5 rounded-md bg-white border border-[#D3EBDB] text-[10px] font-medium text-[#177A47] flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-[#177A47] shrink-0" />
-                  <span>Kering Total</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-[#2FA866] flex items-center justify-center">
-              <Droplets className="w-5 h-5" />
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Standar Kebersihan Higienis
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Material yang telah dibilas dan bebas residu minyak atau sisa makanan menghemat jutaan liter air
-                pencucian di fasilitas daur ulang, sehingga langsung dihargai dengan tarif tertinggi.
-              </p>
-            </div>
-          </div>
-
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#2FA866]">Bobot 20%</span>
-          </div>
-        </motion.div>
-
-        {/* ========================================================
-            CARD 04: Berat & Kuantitas (Skala Logistik)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#0F5F37]/60 hover:shadow-[0_20px_45px_rgba(15,95,55,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#0F5F37]" />
-
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Scale Stepper */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Timbangan Interaktif:</span>
-                <span className="text-[#0F5F37] font-bold">
-                  {weightKg >= 15 ? 'Skala Optimal' : 'Ambang Dasar'}
-                </span>
-              </div>
-
-              <div className="p-2 rounded-lg bg-white border border-[#D3EBDB] flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => handleWeightDelta(-5)}
-                  className="w-7 h-7 rounded-md bg-[#F6FAF7] hover:bg-[#E8F4EC] border border-[#D3EBDB] flex items-center justify-center text-[#0F1F17] cursor-pointer"
-                  aria-label="Kurang berat"
-                >
-                  <Minus className="w-3.5 h-3.5" />
-                </button>
-
-                <div className="text-center">
-                  <span className="font-mono text-base font-bold text-[#0F1F17]">
-                    {weightKg.toFixed(1)} kg
-                  </span>
-                  <div className="text-[9px] font-mono text-[#177A47]">
-                    {weightKg >= 15 ? '✓ Gratis Jemput Armada' : 'Min. jemput 10 kg'}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleWeightDelta(5)}
-                  className="w-7 h-7 rounded-md bg-[#F6FAF7] hover:bg-[#E8F4EC] border border-[#D3EBDB] flex items-center justify-center text-[#0F1F17] cursor-pointer"
-                  aria-label="Tambah berat"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-[#E8F4EC] border border-[#D3EBDB] text-[#0F5F37] flex items-center justify-center">
-              <Scale className="w-5 h-5" />
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Kuantitas & Efisiensi Berat
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Mitra pengumpul memiliki biaya operasional armada tetap. Mengumpulkan kuantitas yang lebih
-                besar menekan rasio biaya logistik per kilogram dan menghasilkan margin yang lebih menguntungkan.
-              </p>
-            </div>
-          </div>
-
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#0F5F37]">Bobot 15%</span>
-          </div>
-        </motion.div>
-
-        {/* ========================================================
-            CARD 05: Permintaan Industri (Pasar Sekunder)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#D97706]/60 hover:shadow-[0_20px_45px_rgba(217,119,6,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#D97706]" />
-
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Secondary Market Demand Index */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Indeks Pasar Industri:</span>
-                <span className="text-[#D97706] font-bold">● Likuiditas Tinggi</span>
-              </div>
-
-              <div className="p-2.5 rounded-lg bg-white border border-[#D3EBDB] flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] text-[#5D7065] font-mono">Daya Serap Off-Taker</div>
-                  <div className="font-mono text-sm font-bold text-[#177A47] flex items-center gap-1">
-                    +14.8% <span className="text-[10px] text-[#5D7065] font-normal">Bulan Ini</span>
-                  </div>
-                </div>
-
-                {/* Micro Sparkline Trend Graphic */}
-                <svg className="w-16 h-7 overflow-visible" viewBox="0 0 60 24" fill="none">
-                  <path
-                    d="M2 18 L16 14 L28 17 L42 8 L58 4"
-                    stroke="#D97706"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="58" cy="4" r="3" fill="#D97706" className="animate-ping" />
-                  <circle cx="58" cy="4" r="2.5" fill="#D97706" />
+          {/* Central Interactive Smiley Face with GSAP Eye-Tracking & Orbiting Text */}
+          <motion.div
+            ref={smileyContainerRef}
+            initial={{ scale: 0, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, type: 'spring', bounce: 0.5, delay: 0.3 }}
+            style={isDesktop ? { x: smoothMagnetX, y: smoothMagnetY } : {}}
+            className="relative lg:absolute lg:left-1/2 lg:top-[50%] lg:-translate-x-1/2 lg:-translate-y-1/2 z-20 flex items-center justify-center mb-16 sm:mb-20 lg:mb-0 mt-8 sm:mt-12 lg:mt-0"
+          >
+            {/* Spinning Circular Text Ring */}
+            {isDesktop && (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+                className="absolute w-72 h-72 pointer-events-none opacity-25"
+              >
+                <svg viewBox="0 0 200 200" className="w-full h-full fill-[#0F172A]">
+                  <path id="textPath" d="M 100, 100 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0" fill="none" />
+                  <text className="text-[14px] font-black uppercase tracking-[0.2em]">
+                    <textPath href="#textPath" startOffset="0%">
+                      RECYCLE • REUSE • REDUCE • SUSTAIN •{' '}
+                    </textPath>
+                  </text>
                 </svg>
-              </div>
-            </div>
+              </motion.div>
+            )}
 
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-[#D97706] flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Permintaan Pabrik Off-Taker
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Harga beli bergerak mengikuti siklus bahan baku komoditas daur ulang dan kuota serap pabrik
-                manufaktur. ELOVIA menyajikan data acuan ini secara terbuka tanpa manipulasi.
-              </p>
-            </div>
-          </div>
-
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#D97706]">Dinamis Pasar</span>
-          </div>
-        </motion.div>
-
-        {/* ========================================================
-            CARD 06: Biaya Pengumpulan (Opsi Logistik)
-           ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          whileHover={{ y: -4, transition: { duration: 0.25 } }}
-          className="relative rounded-2xl bg-white border border-[#D3EBDB] shadow-[0_15px_35px_rgba(15,31,23,0.05)] overflow-hidden flex flex-col justify-between group hover:border-[#16A34A]/60 hover:shadow-[0_20px_45px_rgba(22,163,74,0.08)] transition-all"
-        >
-          {/* Top colored accent line */}
-          <div className="h-1.5 w-full bg-[#16A34A]" />
-
-          <div className="p-5 sm:p-6 space-y-4">
-            {/* Interactive Micro-Widget: Logistics Switcher */}
-            <div className="p-3 rounded-xl bg-[#F6FAF7] border border-[#D3EBDB]/80 space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#5D7065]">
-                <span>Opsi Penyerahan:</span>
-                <span className="text-[#16A34A] font-bold">1.2 km dari Anda</span>
+            {/* Central Animated Face */}
+            <div className="relative w-36 h-36 sm:w-44 sm:h-44 xl:w-48 xl:h-48 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] shadow-[0_25px_50px_rgba(16,185,129,0.35)] flex flex-col items-center justify-center border-4 sm:border-[5px] border-white backdrop-blur-md cursor-none z-20 transition-transform duration-300">
+              {/* Eyes with GSAP Cursor Tracking */}
+              <div className="flex gap-4 sm:gap-5 xl:gap-6 mb-2 sm:mb-3">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 xl:w-10 xl:h-10 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden border border-black/5">
+                  <div ref={leftEyeRef} className="flex items-center justify-center w-full h-full">
+                    <motion.div
+                      animate={{ scale: hoveredCard ? 2.5 : 1 }}
+                      transition={{ duration: 0.3, type: 'spring', bounce: 0.5 }}
+                      className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 xl:w-4 bg-[#0F172A] rounded-full"
+                    />
+                  </div>
+                </div>
+                <div className="w-7 h-7 sm:w-9 sm:h-9 xl:w-10 xl:h-10 bg-white rounded-full flex items-center justify-center shadow-inner overflow-hidden border border-black/5">
+                  <div ref={rightEyeRef} className="flex items-center justify-center w-full h-full">
+                    <motion.div
+                      animate={{ scale: hoveredCard ? 2.5 : 1 }}
+                      transition={{ duration: 0.3, type: 'spring', bounce: 0.5 }}
+                      className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 xl:w-4 bg-[#0F172A] rounded-full"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setLogisticsMode('dropoff')}
-                  className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
-                    logisticsMode === 'dropoff'
-                      ? 'bg-white border-[#16A34A] ring-1 ring-[#16A34A]/30 font-bold text-[#16A34A]'
-                      : 'bg-white/60 border-[#D3EBDB] text-[#5D7065]'
-                  }`}
+              {/* Dynamic Mouth Shape */}
+              <motion.div
+                animate={{
+                  width: hoveredCard ? '1.25rem' : '2.5rem',
+                  height: hoveredCard ? '1.75rem' : '0.65rem',
+                  borderRadius: hoveredCard ? '50%' : '9999px',
+                }}
+                transition={{ duration: 0.3, type: 'spring', bounce: 0.5 }}
+                className="mt-1.5 opacity-80 xl:h-3.5 sm:h-3 bg-[#0F172A]"
+              />
+            </div>
+          </motion.div>
+
+          {/* 6 Orbiting Factor Cards: Desktop Absolute Orbit, Mobile Responsive Grid */}
+          <div className="w-full max-w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:block relative z-30 px-4 sm:px-6 lg:px-0 h-full pb-4 overflow-hidden">
+            {eloviaCardData.map((card, idx) => {
+              const isHovered = hoveredCard === card.id;
+
+              return (
+                <motion.div
+                  key={card.id}
+                  onMouseEnter={() => setHoveredCard(card.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  style={
+                    isDesktop
+                      ? {
+                          position: 'absolute',
+                          ...card.pos,
+                          zIndex: isHovered ? 40 : 30,
+                          width: '100%',
+                          maxWidth: '300px',
+                          perspective: '1000px',
+                        }
+                      : {}
+                  }
+                  className="w-full relative lg:absolute"
                 >
-                  <div className="text-[10px]">Drop-off Mandiri</div>
-                  <div className="text-[9px] font-mono font-bold text-[#177A47]">100% Nilai Bersih</div>
-                </button>
+                  <motion.div
+                    initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1, rotate: isDesktop ? card.rotation : 0 }}
+                    viewport={{ once: true, margin: '-5%' }}
+                    transition={{
+                      duration: 0.8,
+                      delay: isDesktop ? 0.3 + idx * 0.12 : 0.2,
+                      type: 'spring',
+                      bounce: 0.4,
+                    }}
+                  >
+                    <motion.div
+                      animate={isDesktop ? { y: [0, -12, 0] } : {}}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: card.floatDelay }}
+                    >
+                      <TiltCard isDesktop={isDesktop} className="w-full rounded-[20px] sm:rounded-[28px]">
+                        <motion.div
+                          animate={{
+                            backgroundColor: isHovered ? card.color : '#FFFFFF',
+                            borderColor: isHovered ? card.color : '#E2E8F0',
+                            scale: isHovered ? 1.03 : 1,
+                          }}
+                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          className="flex flex-col h-full relative border-2 p-4 sm:p-5 rounded-[20px] sm:rounded-[28px] shadow-[0_12px_40px_rgba(0,0,0,0.06)] overflow-hidden"
+                        >
+                          <motion.div
+                            animate={{ color: isHovered ? '#FFFFFF' : '#0F172A' }}
+                            style={{ transform: isDesktop ? 'translateZ(40px)' : 'none' }}
+                            className="flex flex-col h-full relative z-10"
+                          >
+                            {/* Card Top Row: Icon badge & Mini Animated Chart */}
+                            <div className="flex items-start justify-between mb-2">
+                              <motion.div
+                                animate={{
+                                  backgroundColor: isHovered ? 'rgba(255,255,255,0.2)' : 'rgba(246,250,247,1)',
+                                  color: isHovered ? '#FFFFFF' : card.color,
+                                  rotate: isHovered ? [0, -10, 10, -10, 0] : 0,
+                                }}
+                                transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0, repeatDelay: 1 }}
+                                className="p-2 sm:p-2.5 rounded-xl shadow-inner border border-black/5"
+                              >
+                                {card.icon}
+                              </motion.div>
+                              <div className="h-8 sm:h-10 flex items-center">
+                                <card.Visual isHovered={isHovered} color={card.color} />
+                              </div>
+                            </div>
 
-                <button
-                  type="button"
-                  onClick={() => setLogisticsMode('pickup')}
-                  className={`p-1.5 rounded-lg border text-center transition-all cursor-pointer ${
-                    logisticsMode === 'pickup'
-                      ? 'bg-white border-[#16A34A] ring-1 ring-[#16A34A]/30 font-bold text-[#16A34A]'
-                      : 'bg-white/60 border-[#D3EBDB] text-[#5D7065]'
-                  }`}
-                >
-                  <div className="text-[10px]">Jemput Armada</div>
-                  <div className="text-[9px] font-mono text-[#4A5D52]">Praktis di Rumah</div>
-                </button>
-              </div>
-            </div>
+                            {/* Card Content & Metrics */}
+                            <div className="mt-1 relative">
+                              <motion.h3
+                                animate={{ color: isHovered ? 'rgba(255,255,255,0.7)' : 'rgba(15,23,42,0.55)' }}
+                                className="text-[10px] font-black uppercase tracking-[0.15em] mb-0.5"
+                              >
+                                {card.title}
+                              </motion.h3>
 
-            {/* Icon Badge */}
-            <div className="w-10 h-10 rounded-xl bg-lime-50 border border-lime-200 text-[#16A34A] flex items-center justify-center">
-              <Truck className="w-5 h-5" />
-            </div>
+                              <div className="flex items-baseline gap-1 mb-0.5">
+                                <span className="text-2xl sm:text-3xl font-black tracking-tighter leading-none drop-shadow-xs font-fraunces">
+                                  <AnimatedNumber value={card.value} />
+                                </span>
+                              </div>
 
-            {/* Title & Description */}
-            <div>
-              <h4 className="font-jakarta text-base sm:text-lg font-bold text-[#0F1F17] mb-2">
-                Efisiensi Biaya Logistik
-              </h4>
-              <p className="font-jakarta text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Jarak penjemputan armada dan tenaga sortir memengaruhi margin akhir. Anda bebas memilih opsi
-                penjemputan ke alamat atau menyetor mandiri (drop-off) demi imbal hasil maksimal.
-              </p>
-            </div>
-          </div>
+                              <motion.p
+                                animate={{ color: isHovered ? '#FFFFFF' : '#10B981' }}
+                                className="text-[9px] font-bold uppercase tracking-wider mb-1.5"
+                              >
+                                {card.unit}
+                              </motion.p>
 
-          <div className="px-5 sm:px-6 py-3 bg-[#F6FAF7] border-t border-[#D3EBDB]/70 flex items-center justify-between text-xs font-mono text-[#5D7065]">
-            <span>Faktor Pengaruh:</span>
-            <span className="font-bold text-[#16A34A]">Pilihan Fleksibel</span>
-          </div>
-        </motion.div>
-      </div>
+                              <motion.div
+                                animate={{
+                                  background: isHovered
+                                    ? 'linear-gradient(90deg, rgba(255,255,255,0.3) 0%, transparent 100%)'
+                                    : 'linear-gradient(90deg, rgba(15,23,42,0.1) 0%, transparent 100%)',
+                                }}
+                                className="w-full h-px mb-1.5"
+                              />
 
-      {/* Bottom Methodology Audit Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="mt-8 p-4 sm:p-5 rounded-2xl bg-white border border-[#D3EBDB] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#E8F4EC] border border-[#D3EBDB] flex items-center justify-center text-[#177A47] shrink-0">
-            <ShieldCheck className="w-4 h-4" />
-          </div>
-          <div>
-            <p className="text-xs sm:text-sm font-semibold text-[#0F1F17]">
-              Semua rumus estimasi dan faktor bobot mutu dapat diaudit secara terbuka.
-            </p>
-            <p className="text-[11px] text-[#5D7065]">
-              Prinsip integritas data ELOVIA P1 – P11 mengikat seluruh algoritma perhitungan.
-            </p>
+                              <motion.p
+                                animate={{ color: isHovered ? 'rgba(255,255,255,0.92)' : 'rgba(15,23,42,0.7)' }}
+                                className="text-xs font-medium leading-relaxed"
+                              >
+                                {card.description}
+                              </motion.p>
+
+                              {/* Arrow button icon in lower right corner */}
+                              <motion.div
+                                animate={{ opacity: isHovered ? 0 : 1 }}
+                                transition={{ duration: 0.2 }}
+                                className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#0F172A]/5 backdrop-blur-xs flex items-center justify-center text-[#0F172A]/60 transition-colors group-hover:bg-transparent"
+                              >
+                                <ArrowUpRight size={16} />
+                              </motion.div>
+
+                              {/* Expanded Explanation on Hover with Picture */}
+                              <motion.div
+                                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                animate={{
+                                  height: isHovered ? 'auto' : 0,
+                                  opacity: isHovered ? 1 : 0,
+                                  marginTop: isHovered ? 12 : 0,
+                                }}
+                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                className="overflow-hidden flex flex-col gap-2.5"
+                              >
+                                <p className="text-[12px] leading-relaxed text-white/95 font-medium bg-black/15 p-2.5 rounded-xl border border-white/10 backdrop-blur-xs">
+                                  {card.fullExplanation}
+                                </p>
+                                <div className="w-full h-24 rounded-xl overflow-hidden shadow-md relative border border-white/20">
+                                  <Image
+                                    width={400}
+                                    height={200}
+                                    src={card.bgImage}
+                                    alt={card.title}
+                                    className="w-full h-full object-cover transform scale-105 group-hover:scale-100 transition-transform duration-700"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                </div>
+                              </motion.div>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      </TiltCard>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
+      </section>
 
-        <Link
-          href="/metodologi"
-          className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#F6FAF7] hover:bg-[#E8F4EC] border border-[#D3EBDB] text-xs sm:text-sm font-semibold text-[#177A47] hover:text-[#0F5F37] transition-all cursor-pointer shrink-0"
-        >
-          <span>Pelajari Metodologi Penentuan Nilai Kami</span>
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </Link>
-      </motion.div>
+      {/* Spacer between orbit stage and interactive video section */}
+      <div className="w-full h-[5vh] lg:h-[12vh] pointer-events-none z-10 relative" />
+
+      {/* SECTION 2: 3D ROTATING INTERACTIVE VIDEO BANNER */}
+      <motion.section
+        style={isDesktop ? { scale: sec2Scale, rotate: sec2Rotate, transformOrigin: 'bottom center' } : {}}
+        className="relative z-10 w-full max-w-full overflow-hidden lg:h-[120vh] flex items-center justify-center px-4 md:px-6 pt-16 pb-24 lg:py-0"
+      >
+        <TiltCard isDesktop={isDesktop} className="w-full max-w-6xl mx-auto aspect-4/3 sm:aspect-video rounded-3xl sm:rounded-4xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] border border-white/50">
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: 0.8, type: 'spring', bounce: 0.3 }}
+            onMouseEnter={() => setIsHoveringVideo(true)}
+            onMouseLeave={() => setIsHoveringVideo(false)}
+            onClick={() => setShowModal(true)}
+            className="w-full h-full lg:cursor-none transition-transform hover:scale-[1.01] duration-500 relative"
+          >
+            <div className="absolute inset-0 w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500">
+              <iframe
+                className="w-full h-full pointer-events-none scale-105"
+                src="https://www.youtube.com/embed/ishA6kry8nc?autoplay=1&mute=1&loop=1&playlist=ishA6kry8nc&controls=0&modestbranding=1&rel=0"
+                allow="autoplay; encrypted-media"
+                title="ELOVIA Circular Economy Education"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#0F172A]/20 to-transparent z-10 pointer-events-none" />
+
+            <div className="absolute bottom-6 md:bottom-24 left-6 md:left-12 right-6 md:right-12 z-20 text-white pointer-events-none">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="flex items-center gap-3 mb-4 md:mb-5"
+              >
+                <div className="h-1.5 w-10 md:w-14 bg-[#10B981] rounded-full" />
+                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/80">
+                  Click to Play with Sound
+                </span>
+              </motion.div>
+              <motion.h3
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+                className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-[0.9] font-fraunces"
+              >
+                Sirkularitas Nyata,<br />
+                <span className="text-[#10B981]">Nilai Berkelanjutan.</span>
+              </motion.h3>
+            </div>
+
+            {!isDesktop && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#10B981] rounded-full flex items-center justify-center text-white shadow-lg pointer-events-none z-20">
+                <Play fill="white" size={24} className="ml-1" />
+              </div>
+            )}
+          </motion.div>
+        </TiltCard>
+      </motion.section>
+
+      {/* Video Modal Popup */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-200 bg-[#0F172A]/90 backdrop-blur-xl flex items-center justify-center p-4 md:p-10"
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 sm:top-6 right-4 sm:right-6 text-[#0F172A] hover:text-[#10B981] transition-colors z-210 bg-white p-2 sm:p-3 rounded-full shadow-lg hover:shadow-xl cursor-pointer"
+            >
+              <X size={20} className="sm:w-6 sm:h-6" />
+            </button>
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="relative w-full max-w-6xl aspect-video rounded-2xl sm:rounded-4xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.35)] border border-white/50"
+            >
+              <iframe
+                className="w-full h-full bg-[#0F172A]"
+                src="https://www.youtube.com/embed/ishA6kry8nc?autoplay=1&mute=0&controls=1&rel=0"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title="ELOVIA Circular Economy Education Video"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+export default ValueFactors;

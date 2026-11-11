@@ -40,26 +40,50 @@ export function ActionPill() {
   return (
     <Tooltip.Provider delayDuration={200}>
       <div className="w-full max-w-[560px] mx-auto">
-        {/* Floating Capsule Container: Recreates exact search bar form, shadow & layout from reference */}
-        <div className="relative group bg-white/95 backdrop-blur-md rounded-full p-1.5 sm:p-2 pl-4 sm:pl-6 border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.35)] hover:shadow-[0_16px_50px_rgba(0,0,0,0.45)] transition-all duration-300 flex items-center justify-between gap-2 sm:gap-4">
+        {/* MOBILE LAYOUT (< sm): Proportional, centered, thumb-friendly dual CTA */}
+        <div className="flex flex-col sm:hidden w-full max-w-[340px] mx-auto gap-2.5">
+          {/* Primary CTA Button: Explore material value ↗ (Centered, prominent, high-contrast tactile pill) */}
+          <button
+            type="button"
+            onClick={() => setScannerOpen(true)}
+            className="group/btn relative w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-[#0F1F17] hover:bg-[#E8F4EC] text-xs min-[360px]:text-sm font-semibold tracking-wide transition-all duration-200 shadow-[0_12px_36px_rgba(0,0,0,0.45)] active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer border border-white/90"
+          >
+            <Sparkles className="w-4 h-4 text-[#177A47] shrink-0" />
+            <span>Explore material value</span>
+            <ArrowUpRight className="w-4 h-4 text-[#177A47] shrink-0 transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+          </button>
+
+          {/* Secondary Action: Learn Methodology (Frosted glass pill, balanced under primary) */}
+          <button
+            type="button"
+            onClick={() => setMethodologyOpen(true)}
+            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-black/40 hover:bg-black/60 active:bg-black/70 text-[#E8F4EC] hover:text-white text-xs font-semibold tracking-wide transition-all duration-200 border border-white/20 backdrop-blur-md outline-none focus-visible:ring-2 focus-visible:ring-white/40 cursor-pointer shadow-sm"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#6EE7B7] shrink-0" />
+            <span>Learn Methodology</span>
+          </button>
+        </div>
+
+        {/* DESKTOP LAYOUT (sm:flex): Floating Capsule Container */}
+        <div className="hidden sm:flex relative group bg-white/95 backdrop-blur-md rounded-full p-2 pl-6 border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.35)] hover:shadow-[0_16px_50px_rgba(0,0,0,0.45)] transition-all duration-300 items-center justify-between gap-4">
           {/* Secondary Action: Learn Methodology (left side) */}
           <button
             type="button"
             onClick={() => setMethodologyOpen(true)}
-            className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#0F1F17] hover:text-[#177A47] hover:bg-[#E8F4EC]/80 active:bg-[#D3EBDB] px-3 sm:px-4 py-2 sm:py-2.5 rounded-full transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#177A47] cursor-pointer text-left"
+            className="flex items-center gap-2 text-sm font-semibold text-[#0F1F17] hover:text-[#177A47] hover:bg-[#E8F4EC]/80 active:bg-[#D3EBDB] px-4 py-2.5 rounded-full transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#177A47] cursor-pointer text-left"
           >
-            <BookOpen className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#177A47] shrink-0" />
+            <BookOpen className="w-4 h-4 text-[#177A47] shrink-0" />
             <span className="truncate">Learn Methodology</span>
           </button>
 
           {/* Subtle Vertical Divider */}
-          <div className="hidden sm:block w-px h-6 bg-[#0F1F17]/15" />
+          <div className="w-px h-6 bg-[#0F1F17]/15" />
 
           {/* Primary CTA Button: Explore material value ↗ (right side, dominant pill) */}
           <button
             type="button"
             onClick={() => setScannerOpen(true)}
-            className="group/btn relative inline-flex items-center justify-center gap-1.5 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-[#0F1F17] hover:bg-[#177A47] text-white text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 shadow-md hover:shadow-xl active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0F1F17] cursor-pointer shrink-0"
+            className="group/btn relative inline-flex items-center justify-center gap-1.5 px-7 py-3.5 rounded-full bg-[#0F1F17] hover:bg-[#177A47] text-white text-sm font-semibold tracking-wide transition-all duration-200 shadow-md hover:shadow-xl active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0F1F17] cursor-pointer shrink-0"
           >
             <span>Explore material value</span>
             <span className="text-base leading-none transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5">
@@ -68,10 +92,23 @@ export function ActionPill() {
           </button>
         </div>
 
-        {/* Micro-hint under pill: Pure White / Light Mint for high contrast readability */}
-        <p className="mt-3 text-center text-xs font-medium text-[#E8F4EC] drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] tracking-wide">
-          Transparent price benchmarks · Zero mandatory app installs · Verified partners
-        </p>
+        {/* Micro-hint under pill: Clean verified chips that wrap gracefully without orphan punctuation */}
+        <div className="mt-3.5 sm:mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] sm:text-xs font-medium text-[#E8F4EC]/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] tracking-wide px-2">
+          <span className="inline-flex items-center gap-1.5">
+            <CheckCircle2 className="w-3 h-3 text-[#6EE7B7] shrink-0" />
+            <span>Transparent price benchmarks</span>
+          </span>
+          <span className="hidden sm:inline text-white/40">·</span>
+          <span className="inline-flex items-center gap-1.5">
+            <CheckCircle2 className="w-3 h-3 text-[#6EE7B7] shrink-0" />
+            <span>Zero mandatory app installs</span>
+          </span>
+          <span className="hidden sm:inline text-white/40">·</span>
+          <span className="inline-flex items-center gap-1.5">
+            <CheckCircle2 className="w-3 h-3 text-[#6EE7B7] shrink-0" />
+            <span>Verified partners</span>
+          </span>
+        </div>
       </div>
 
       {/* MODAL 1: Radix UI Dialog for 'Explore material value' (Interactive Waste Value Scanner) */}

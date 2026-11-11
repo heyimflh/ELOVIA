@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, useInView, useReducedMotion, type Variants } from 'framer-motion';
 import {
@@ -21,7 +21,15 @@ import { MaterialLegend } from './MaterialLegend';
 export function ImpactGardenPreview() {
   const containerRef = useRef<HTMLElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: '-60px' });
-  const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  const rawReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const shouldReduceMotion = mounted && Boolean(rawReducedMotion);
+  const isAnimateVisible = mounted && isInView;
 
   // Active growth stage state
   const [currentStage, setCurrentStage] = useState<GardenStageId>('rimbun');
@@ -61,7 +69,8 @@ export function ImpactGardenPreview() {
       ref={containerRef}
       id="impact-garden-preview"
       aria-labelledby="impact-garden-heading"
-      className="relative w-full py-20 sm:py-28 lg:py-32 overflow-hidden bg-gradient-to-b from-white via-[#F6FAF7] to-[#E8F4EC] selection:bg-[#E8F4EC] selection:text-[#177A47]"
+      suppressHydrationWarning
+      className="relative w-full py-12 sm:py-20 lg:py-28 overflow-hidden bg-gradient-to-b from-white via-[#F6FAF7] to-[#E8F4EC] selection:bg-[#E8F4EC] selection:text-[#177A47]"
     >
       {/* =====================================================================
           1. SOOTHING AMBIENT LIGHTING & ECO TECH PATTERN
@@ -81,13 +90,13 @@ export function ImpactGardenPreview() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
         {/* =====================================================================
-            2. SECTION HEADER
+            2. SECTION HEADER (Center Aligned, Breathable Spacing)
             ===================================================================== */}
         <motion.div
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          animate={isAnimateVisible ? 'visible' : 'hidden'}
           variants={headerVariants}
-          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-4"
+          className="text-center max-w-3xl mx-auto mb-8 sm:mb-14 space-y-3 sm:space-y-4 px-2"
         >
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-[#D3EBDB] shadow-2xs">
@@ -100,13 +109,13 @@ export function ImpactGardenPreview() {
           {/* Section Headline using Fraunces */}
           <h2
             id="impact-garden-heading"
-            className="font-fraunces text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-[#0F1F17] leading-[1.15]"
+            className="font-fraunces text-2xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-[#0F1F17] leading-[1.15]"
           >
             Grow Your <span className="italic font-normal text-[#177A47]">Impact Garden</span>
           </h2>
 
           {/* Subheadline using Plus Jakarta Sans */}
-          <p className="font-jakarta text-base sm:text-lg text-[#4A5D52] max-w-2xl mx-auto leading-relaxed">
+          <p className="font-jakarta text-xs sm:text-base lg:text-lg text-[#4A5D52] max-w-2xl mx-auto leading-relaxed">
             Setiap material yang terverifikasi selesai disalurkan akan menumbuhkan taman virtual Anda.
             Saksikan dampak nyata dari kebiasaan kecil.
           </p>
@@ -114,40 +123,39 @@ export function ImpactGardenPreview() {
 
         {/* =====================================================================
             3. COCKPIT LAYOUT (SPLIT SCREEN: ISLAND ON LEFT, DASHBOARD ON RIGHT)
-            Solves Issue #1: User can see both the island and material cards
-            simultaneously without scrolling up and down!
+            Breathable gaps and responsive columns
             ===================================================================== */}
         <motion.div
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          animate={isAnimateVisible ? 'visible' : 'hidden'}
           variants={containerVariants}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center max-w-6xl mx-auto"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start max-w-6xl mx-auto"
         >
           {/* ===================================================================
               LEFT COLUMN (7 cols): THE 2.5D REALISTIC ISOMETRIC ISLAND STAGE
               =================================================================== */}
-          <div className="lg:col-span-7 flex flex-col items-center">
-            <div className="relative w-full rounded-3xl p-4 sm:p-6 bg-white/50 backdrop-blur-xl border border-white/90 shadow-[0_20px_50px_rgba(23,122,71,0.08)] ring-1 ring-[#D3EBDB]/60 overflow-hidden">
+          <div className="lg:col-span-7 flex flex-col items-center w-full">
+            <div className="relative w-full rounded-3xl p-4 sm:p-6 bg-white/70 backdrop-blur-xl border border-white/90 shadow-[0_20px_50px_rgba(23,122,71,0.08)] ring-1 ring-[#D3EBDB]/60 overflow-hidden">
               {/* Floating fireflies and pollen particles */}
               <FloatingParticles count={18} />
 
               {/* Status Header inside the Island Frame */}
-              <div className="relative flex items-center justify-between gap-3 mb-2 px-2 z-20">
+              <div className="relative flex items-center justify-between gap-2 mb-2 px-1 z-20">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-[#D3EBDB] text-xs font-semibold text-[#0F1F17] shadow-2xs">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#177A47]" />
-                  <span className="font-mono text-[11px] text-[#177A47]">
+                  <span className="font-mono text-[10px] sm:text-[11px] text-[#177A47]">
                     Taman Aktif • Terverifikasi
                   </span>
                 </div>
 
-                <div className="inline-flex items-center gap-1 text-[11px] font-mono text-[#5D7065] bg-white/80 px-2.5 py-1 rounded-full border border-[#D3EBDB]/60">
+                <div className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-mono text-[#5D7065] bg-white/80 px-2.5 py-1 rounded-full border border-[#D3EBDB]/60">
                   <span className="w-2 h-2 rounded-full bg-[#177A47]" />
                   <span>Ambang: {activeStageObj.weight}</span>
                 </div>
               </div>
 
-              {/* The 2.5D Realistic Isometric SVG Garden */}
-              <div className="relative z-10">
+              {/* The 2.5D Realistic Isometric SVG Garden Container tuned for Mobile */}
+              <div className="relative z-10 w-full max-w-[280px] sm:max-w-[340px] md:max-w-[480px] lg:max-w-[620px] aspect-square sm:aspect-[4/3] mx-auto my-4 sm:my-8 flex items-center justify-center">
                 <GardenScene
                   stage={currentStage}
                   activeHighlight={activeHighlight}
@@ -188,9 +196,9 @@ export function ImpactGardenPreview() {
           {/* ===================================================================
               RIGHT COLUMN (5 cols): LIVE IMPACT GARDEN COCKPIT & METRICS
               =================================================================== */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
+          <div className="lg:col-span-5 flex flex-col gap-6 sm:gap-8 w-full">
             {/* Real Impact Live Verified Stats Card */}
-            <div className="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-[#D3EBDB] shadow-sm shadow-[#177A47]/5 space-y-4">
+            <div className="p-4 sm:p-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/80 shadow-sm shadow-[#177A47]/5 space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#177A47]">
@@ -205,66 +213,66 @@ export function ImpactGardenPreview() {
                 </span>
               </div>
 
-              {/* 2 Live Metric Cards */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-[#F6FAF7] border border-[#D3EBDB]/70">
-                  <div className="flex items-center gap-1.5 text-[#5D7065] text-xs mb-1">
-                    <Scale className="w-3.5 h-3.5 text-[#177A47]" />
+              {/* 2 Live Metric Cards (Mobile Grid) */}
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="p-3 sm:p-4 rounded-2xl bg-[#F6FAF7] border border-[#D3EBDB]/70 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5 text-[#5D7065] text-[10px] sm:text-xs mb-1">
+                    <Scale className="w-3.5 h-3.5 text-[#177A47] shrink-0" />
                     <span>Berat Disalurkan</span>
                   </div>
-                  <div className="text-xl font-bold font-mono text-[#0F1F17]">
+                  <div className="text-lg sm:text-2xl font-bold font-mono text-[#0F1F17]">
                     {activeStageObj.verifiedKg} <span className="text-xs text-[#5D7065]">kg</span>
                   </div>
-                  <span className="text-[10px] text-[#177A47] font-medium flex items-center gap-1 mt-1">
-                    <CheckCircle2 className="w-3 h-3" />
-                    {activeStageObj.transactionsCount} setoran selesai
+                  <span className="text-[10px] text-[#177A47] font-medium flex items-center gap-1 mt-1 truncate">
+                    <CheckCircle2 className="w-3 h-3 shrink-0" />
+                    <span>{activeStageObj.transactionsCount} setoran selesai</span>
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#F6FAF7] border border-[#D3EBDB]/70">
-                  <div className="flex items-center gap-1.5 text-[#5D7065] text-xs mb-1">
-                    <CloudSun className="w-3.5 h-3.5 text-[#0E7C7B]" />
+                <div className="p-3 sm:p-4 rounded-2xl bg-[#F6FAF7] border border-[#D3EBDB]/70 flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5 text-[#5D7065] text-[10px] sm:text-xs mb-1">
+                    <CloudSun className="w-3.5 h-3.5 text-[#0E7C7B] shrink-0" />
                     <span>Emisi Dicegah</span>
                   </div>
-                  <div className="text-xl font-bold font-mono text-[#0F1F17]">
+                  <div className="text-lg sm:text-2xl font-bold font-mono text-[#0F1F17]">
                     ~{activeStageObj.emissionsAvoidedKg} <span className="text-xs text-[#5D7065]">kg CO₂e</span>
                   </div>
                   <Link
                     href="/metodologi"
-                    className="text-[10px] text-[#0E7C7B] hover:underline flex items-center gap-0.5 mt-1"
+                    className="text-[10px] text-[#0E7C7B] hover:underline flex items-center gap-0.5 mt-1 truncate"
                   >
                     <span>Estimasi berdasar metodologi</span>
-                    <ExternalLink className="w-2.5 h-2.5" />
+                    <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                   </Link>
                 </div>
               </div>
 
-              {/* Verified Partner Stamp */}
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#E8F4EC]/60 text-xs text-[#2A4B37]">
+              {/* Verified Partner Stamp with Soft Emerald Styling */}
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/60 border border-emerald-100/80 text-xs text-[#2A4B37] leading-snug">
                 <ShieldCheck className="w-4 h-4 text-[#177A47] shrink-0" />
-                <span className="leading-tight">
+                <span>
                   Diverifikasi oleh: <strong className="font-semibold">{activeStageObj.partnerName}</strong>
                 </span>
               </div>
 
               {/* Milestone Achieved Banner */}
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-[#E8F4EC] to-[#F6FAF7] border border-[#D3EBDB]">
-                <div className="w-8 h-8 rounded-xl bg-[#177A47] text-white flex items-center justify-center shrink-0">
+              <div className="flex items-start sm:items-center gap-3 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-[#E8F4EC] to-[#F6FAF7] border border-[#D3EBDB]">
+                <div className="w-8 h-8 rounded-xl bg-[#177A47] text-white flex items-center justify-center shrink-0 shadow-xs">
                   <Award className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-[#0F1F17]">
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-[#0F1F17] truncate">
                     {activeStageObj.milestoneTitle}
                   </h4>
-                  <p className="text-[11px] text-[#4A5D52] leading-snug">
+                  <p className="text-[11px] text-[#4A5D52] leading-snug mt-0.5 line-clamp-2">
                     {activeStageObj.description}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Transformasi 4 Material Daur Ulang (Side by Side in Cockpit) */}
-            <div className="p-5 rounded-3xl bg-white/80 backdrop-blur-xl border border-[#D3EBDB] shadow-sm shadow-[#177A47]/5">
+            {/* Transformasi 4 Material Daur Ulang (The List) */}
+            <div className="p-4 sm:p-6 rounded-3xl bg-white/75 backdrop-blur-xl border border-white/80 shadow-sm shadow-[#177A47]/5">
               <MaterialLegend
                 currentStage={currentStage}
                 activeHighlight={activeHighlight}
@@ -273,20 +281,16 @@ export function ImpactGardenPreview() {
               />
             </div>
 
-            {/* Primary Action Button */}
-            <div className="space-y-2 pt-1">
+            {/* Call to Action Button: Prominent & Tactile */}
+            <div className="space-y-2 pt-2">
               <Link
                 href="/taman"
-                className="group relative w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-[#177A47] hover:bg-[#0F5F37] text-white text-sm sm:text-base font-semibold shadow-lg shadow-[#177A47]/20 hover:shadow-xl hover:shadow-[#177A47]/30 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#177A47]"
+                className="group relative w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm sm:text-base font-bold shadow-lg shadow-emerald-700/25 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-700 cursor-pointer"
               >
                 <span>Mulai Tumbuhkan Tamanmu</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                <span
-                  className="absolute inset-0 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  aria-hidden="true"
-                />
               </Link>
-              <p className="text-[11px] text-center text-[#5D7065] leading-relaxed">
+              <p className="text-[11px] text-center text-[#5D7065] leading-relaxed px-2">
                 Taman Anda tumbuh permanen setiap kali transaksi penyaluran material diselesaikan.
               </p>
             </div>

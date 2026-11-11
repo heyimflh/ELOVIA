@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 interface Particle {
@@ -17,7 +17,14 @@ interface Particle {
 }
 
 export function FloatingParticles({ count = 22 }: { count?: number }) {
-  const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  const rawReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const shouldReduceMotion = mounted && Boolean(rawReducedMotion);
 
   const particles: Particle[] = useMemo(() => {
     const colors = [

@@ -7,6 +7,7 @@ import { CommunitySection } from '@/components/community';
 import { ClosingCTA } from '@/components/closing-cta';
 import { Footer } from '@/components/footer';
 
+// ELOVIA Circular Economy Platform - Main Home Experience
 export default function HomePage() {
   return (
     <main className="w-full">
