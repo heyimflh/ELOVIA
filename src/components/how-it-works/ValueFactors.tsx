@@ -366,7 +366,6 @@ export function ValueFactors() {
   const smileyContainerRef = useRef<HTMLDivElement>(null);
 
   const [isDesktop, setIsDesktop] = useState(true);
-  const [isHoveringVideo, setIsHoveringVideo] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
@@ -374,11 +373,6 @@ export function ValueFactors() {
   const magnetY = useMotionValue(0);
   const smoothMagnetX = useSpring(magnetX, { stiffness: 100, damping: 15, mass: 0.5 });
   const smoothMagnetY = useSpring(magnetY, { stiffness: 100, damping: 15, mass: 0.5 });
-
-  const cursorX = useMotionValue(0);
-  const cursorY = useMotionValue(0);
-  const cursorSpringX = useSpring(cursorX, { stiffness: 300, damping: 25 });
-  const cursorSpringY = useSpring(cursorY, { stiffness: 300, damping: 25 });
 
   // Parallax progress scoped naturally to this section without scroll-locking
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start end', 'end start'] });
@@ -399,9 +393,6 @@ export function ValueFactors() {
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDesktop) return;
-
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
 
       // Throttled GSAP eye-tracking to avoid redundant recalculations per frame
       if (rafId !== null) return;
@@ -458,7 +449,7 @@ export function ValueFactors() {
       window.removeEventListener('resize', checkDevice);
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isDesktop, magnetX, magnetY, cursorX, cursorY]);
+  }, [isDesktop, magnetX, magnetY]);
 
   return (
     <section
@@ -466,21 +457,6 @@ export function ValueFactors() {
       ref={containerRef}
       className="relative w-full min-h-screen py-24 flex flex-col items-center justify-center overflow-clip bg-slate-50 font-jakarta"
     >
-      {/* Floating Interactive Play Cursor for Video Hover */}
-      {isDesktop && (
-        <motion.div
-          style={{ x: cursorSpringX, y: cursorSpringY, translateX: '-50%', translateY: '-50%' }}
-          animate={{
-            scale: isHoveringVideo && !showModal ? 1 : 0,
-            opacity: isHoveringVideo && !showModal ? 1 : 0,
-          }}
-          className="fixed top-0 left-0 z-150 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-full flex flex-col items-center justify-center text-white shadow-[0_10px_30px_rgba(16,185,129,0.5)] pointer-events-none transform-gpu will-change-transform"
-        >
-          <Play fill="white" size={32} className="ml-1" />
-          <span className="text-[10px] font-black uppercase tracking-widest mt-1">Play</span>
-        </motion.div>
-      )}
-
       {/* Background Parallax Reels and Hardware-Accelerated Ambient Glow */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -881,57 +857,64 @@ export function ValueFactors() {
         style={isDesktop ? { scale: sec2Scale, rotate: sec2Rotate, transformOrigin: 'bottom center' } : {}}
         className="relative z-10 w-full max-w-full overflow-hidden flex items-center justify-center px-4 md:px-6 pt-16 pb-12 lg:py-20 transform-gpu will-change-transform"
       >
-        <TiltCard isDesktop={isDesktop} className="w-full max-w-6xl mx-auto aspect-4/3 sm:aspect-video rounded-3xl sm:rounded-4xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] border border-white/60">
+        <TiltCard
+          isDesktop={isDesktop}
+          className="w-full max-w-5xl mx-auto aspect-video rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_60px_rgba(4,47,46,0.15)] border border-white/40 overflow-hidden group cursor-pointer"
+        >
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-10%' }}
             transition={{ duration: 0.8, type: 'spring', bounce: 0.3 }}
-            onMouseEnter={() => setIsHoveringVideo(true)}
-            onMouseLeave={() => setIsHoveringVideo(false)}
             onClick={() => setShowModal(true)}
-            className="w-full h-full lg:cursor-none transition-transform hover:scale-[1.01] duration-500 relative transform-gpu will-change-transform"
+            className="w-full h-full transition-transform hover:scale-[1.01] duration-500 relative transform-gpu will-change-transform"
           >
+            {/* Background Looping Silent Preview Video */}
             <div className="absolute inset-0 w-full h-full opacity-90 group-hover:opacity-100 transition-opacity duration-500">
               <iframe
                 className="w-full h-full pointer-events-none scale-105"
-                src="https://www.youtube.com/embed/ishA6kry8nc?autoplay=1&mute=1&loop=1&playlist=ishA6kry8nc&controls=0&modestbranding=1&rel=0"
+                src="https://www.youtube.com/embed/juJq4dH-GK4?autoplay=1&mute=1&loop=1&playlist=juJq4dH-GK4&controls=0&modestbranding=1&rel=0"
                 allow="autoplay; encrypted-media"
                 title="ELOVIA Circular Economy Education"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/90 via-[#0F172A]/20 to-transparent z-10 pointer-events-none" />
 
-            <div className="absolute bottom-6 md:bottom-24 left-6 md:left-12 right-6 md:right-12 z-20 text-white pointer-events-none">
+            {/* Dark Gradient Overlay for optimal typography legibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent z-10 pointer-events-none transition-opacity duration-500" />
+
+            {/* Glowing Frosted Glass Play Button */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-xl border border-white/50 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.3)] group-hover:scale-110 group-hover:bg-white/30 group-hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] transition-all duration-300 z-20 pointer-events-none">
+              <Play fill="white" className="text-white w-7 h-7 sm:w-8 sm:h-8 ml-1 drop-shadow-md" />
+            </div>
+
+            {/* ELOVIA Signature Typography Overlay */}
+            <div className="absolute bottom-8 md:bottom-16 left-8 md:left-16 z-20 pointer-events-none">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3, duration: 0.6 }}
-                className="flex items-center gap-3 mb-4 md:mb-5"
+                className="flex items-center gap-3 mb-4"
               >
-                <div className="h-1.5 w-10 md:w-14 bg-[#10B981] rounded-full" />
-                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-white/80">
-                  Click to Play with Sound
+                <div className="h-1.5 w-12 bg-emerald-400 rounded-full drop-shadow-md" />
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/90 drop-shadow-sm">
+                  Tonton Praktik Nyatanya
                 </span>
               </motion.div>
+
               <motion.h3
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-[0.9] font-fraunces"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]"
               >
-                Sirkularitas Nyata,<br />
-                <span className="text-[#10B981]">Nilai Berkelanjutan.</span>
+                Sirkularitas Nyata, <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-emerald-200 to-teal-300 drop-shadow-[0_2px_15px_rgba(16,185,129,0.5)] font-serif italic">
+                  Nilai Berkelanjutan.
+                </span>
               </motion.h3>
             </div>
-
-            {!isDesktop && (
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-[#10B981] rounded-full flex items-center justify-center text-white shadow-lg pointer-events-none z-20">
-                <Play fill="white" size={24} className="ml-1" />
-              </div>
-            )}
           </motion.div>
         </TiltCard>
       </motion.div>
@@ -959,7 +942,7 @@ export function ValueFactors() {
             >
               <iframe
                 className="w-full h-full bg-[#0F172A]"
-                src="https://www.youtube.com/embed/ishA6kry8nc?autoplay=1&mute=0&controls=1&rel=0"
+                src="https://www.youtube.com/embed/juJq4dH-GK4?autoplay=1&mute=0&controls=1&rel=0"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 title="ELOVIA Circular Economy Education Video"
