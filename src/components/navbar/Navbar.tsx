@@ -58,12 +58,13 @@ export function Navbar() {
   const isMitraPortal = pathname.startsWith('/mitra');
   const isAuthPage = pathname === '/masuk' || pathname === '/daftar';
 
-  // Automatically style as floating glass pill on light background pages like /keranjang or /metodologi
+  // Automatically style as floating glass pill on light background pages like /keranjang, /metodologi, or /dampak
   const isLightPage = Boolean(
     pathname.startsWith('/keranjang') ||
     pathname.startsWith('/metodologi') ||
     pathname.startsWith('/akun') ||
-    pathname.startsWith('/material')
+    pathname.startsWith('/material') ||
+    pathname.startsWith('/dampak')
   );
   const effectiveScrolled = (mounted && isScrolled) || isLightPage;
 

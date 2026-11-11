@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useId } from 'react';
+import React, { useRef, useState, useId } from 'react';
 import {
   motion,
   useMotionValue,
@@ -23,6 +23,12 @@ import {
   ChevronRight,
   Flame,
   Globe2,
+  Trees,
+  Wind,
+  Droplets,
+  BadgeCheck,
+  ArrowRight,
+  CheckCircle,
 } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -34,8 +40,6 @@ export interface AchievementBadge {
   subtitle: string;
   tier: 'MYTHIC' | 'DIAMOND' | 'GOLD' | 'EMERALD';
   tierLabel: string;
-  tierGradient: string;
-  borderGlow: string;
   requirement: string;
   progressPercent: number;
   unlockedAt: string;
@@ -51,8 +55,6 @@ const BADGES_DATA: AchievementBadge[] = [
     subtitle: 'Atmosphere Guardian',
     tier: 'MYTHIC',
     tierLabel: 'Mythic Tier V',
-    tierGradient: 'from-amber-300 via-emerald-400 to-teal-400',
-    borderGlow: 'hover:border-emerald-400/50 shadow-emerald-500/20',
     requirement: 'Mencegah >1.500 kg emisi CO₂e ke biosfer.',
     progressPercent: 100,
     unlockedAt: '04 Nov 2026',
@@ -66,8 +68,6 @@ const BADGES_DATA: AchievementBadge[] = [
     subtitle: 'Pure Silica Alchemist',
     tier: 'DIAMOND',
     tierLabel: 'Diamond Grade A',
-    tierGradient: 'from-teal-200 via-cyan-400 to-blue-500',
-    borderGlow: 'hover:border-cyan-400/50 shadow-cyan-500/20',
     requirement: 'Menyalurkan >400 kg kaca daur ulang murni.',
     progressPercent: 100,
     unlockedAt: '28 Okt 2026',
@@ -81,8 +81,6 @@ const BADGES_DATA: AchievementBadge[] = [
     subtitle: 'Circular Polymer Pioneer',
     tier: 'GOLD',
     tierLabel: 'Gold Standard',
-    tierGradient: 'from-yellow-300 via-amber-400 to-orange-500',
-    borderGlow: 'hover:border-amber-400/50 shadow-amber-500/20',
     requirement: 'Memilah >500 kg plastik PET terverifikasi.',
     progressPercent: 100,
     unlockedAt: '12 Okt 2026',
@@ -96,8 +94,6 @@ const BADGES_DATA: AchievementBadge[] = [
     subtitle: 'Canopy Custodian',
     tier: 'EMERALD',
     tierLabel: 'Emerald Prime',
-    tierGradient: 'from-lime-300 via-emerald-400 to-green-600',
-    borderGlow: 'hover:border-lime-400/50 shadow-lime-500/20',
     requirement: 'Meregenerasi >30 pohon mangrove di teluk.',
     progressPercent: 100,
     unlockedAt: '02 Nov 2026',
@@ -108,43 +104,33 @@ const BADGES_DATA: AchievementBadge[] = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   1. 3D PHYSICS BADGE CARD (HOVER TILT + DYNAMIC LIGHT GLARE + 2.5D DEPTH)
+   1. 3D PHYSICS BADGE IN TOMBSTONE ARCH FRAME (MATCHING REFERENCE CARDS)
    ───────────────────────────────────────────────────────────────────────────── */
-function BadgePhysicsCard({ badge }: { badge: AchievementBadge }) {
+function TombstoneBadgeCard({
+  badge,
+  isTall = false,
+}: {
+  badge: AchievementBadge;
+  isTall?: boolean;
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // Mouse coordinate values normalized from -0.5 to 0.5 (center is 0,0)
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // High-inertia physics springs for realistic tactile card weight
-  const mouseXSpring = useSpring(x, { stiffness: 320, damping: 24, mass: 0.6 });
-  const mouseYSpring = useSpring(y, { stiffness: 320, damping: 24, mass: 0.6 });
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 25 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 25 });
 
-  // Map mouse positions to 3D tilt rotations (-15deg to 15deg)
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['14deg', '-14deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-14deg', '14deg']);
-
-  // Dynamic light glare gradient coordinate tracking
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['8deg', '-8deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-8deg', '8deg']);
   const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ['0%', '100%']);
   const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ['0%', '100%']);
-
-  // Specular holographic sheen template
-  const glareBackground = useMotionTemplate`radial-gradient(340px circle at ${glareX} ${glareY}, rgba(255, 255, 255, 0.38), transparent 75%)`;
+  const glareBackground = useMotionTemplate`radial-gradient(260px circle at ${glareX} ${glareY}, rgba(255, 255, 255, 0.6), transparent 70%)`;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
   };
 
   const handleMouseLeave = () => {
@@ -153,7 +139,7 @@ function BadgePhysicsCard({ badge }: { badge: AchievementBadge }) {
   };
 
   return (
-    <div style={{ perspective: 1100 }} className="w-full h-full">
+    <div style={{ perspective: 1000 }} className="w-full h-full">
       <motion.div
         ref={cardRef}
         onMouseMove={handleMouseMove}
@@ -163,89 +149,71 @@ function BadgePhysicsCard({ badge }: { badge: AchievementBadge }) {
           rotateY,
           transformStyle: 'preserve-3d',
         }}
-        whileHover={{ scale: 1.025 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className={`group relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 p-6 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.3)] flex flex-col justify-between transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] ${badge.borderGlow}`}
+        whileHover={{ y: -6 }}
+        transition={{ duration: 0.3 }}
+        className={`group relative rounded-t-[7rem] sm:rounded-t-[8rem] rounded-b-3xl bg-[#F4F7EC] border-2 border-[#DFE7D0] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden ${
+          isTall ? 'min-h-[460px]' : 'min-h-[420px]'
+        }`}
       >
-        {/* ── Dynamic Light Glare (Follows mouse cursor) ──── */}
+        {/* Dynamic Light Glare */}
         <motion.div
-          className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-30"
+          className="pointer-events-none absolute -inset-px rounded-t-[7rem] sm:rounded-t-[8rem] rounded-b-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-30"
           style={{ background: glareBackground }}
           aria-hidden="true"
         />
 
-        {/* ── Top Specular Glass Lip ────────────────────── */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/20 via-white/[0.03] to-transparent z-10"
-          aria-hidden="true"
-        />
-
-        {/* ── Parallax Layer 1: Header & Tier Badge (translateZ: 25px) ── */}
-        <div
-          style={{ transform: 'translateZ(25px)' }}
-          className="relative z-20 flex items-center justify-between gap-3 mb-5"
-        >
-          <span
-            className={`px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-gradient-to-r ${badge.tierGradient} text-[#071f16] shadow-sm`}
-          >
+        {/* ── TOP SECTION: Arched Window with 3D Emblem ── */}
+        <div className="p-8 sm:p-10 flex flex-col items-center text-center relative z-10 flex-1 justify-center">
+          {/* Tier Label Pill */}
+          <span className="px-3.5 py-1 rounded-full text-[11px] font-sans font-bold uppercase tracking-wider bg-white border border-[#DFE7D0] text-[#748E33] shadow-2xs mb-6">
             {badge.tierLabel}
           </span>
-          <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-300/90 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-            TERVERIFIKASI
-          </span>
-        </div>
 
-        {/* ── Parallax Layer 2: 3D Emblem Floating Orb (translateZ: 50px) ── */}
-        <div
-          style={{ transform: 'translateZ(50px)' }}
-          className="relative z-20 flex flex-col items-center text-center my-3"
-        >
-          <div className="relative mb-4">
-            {/* Ambient Emblem Glow */}
-            <div
-              className={`absolute -inset-2 rounded-full bg-gradient-to-r ${badge.tierGradient} opacity-30 blur-xl group-hover:opacity-60 transition-opacity duration-500`}
-            />
-
-            {/* Glass Emblem Ring */}
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/10 backdrop-blur-2xl border-2 border-white/30 flex items-center justify-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] group-hover:border-white/50 transition-colors">
+          {/* Central 3D Tactile Icon Disc */}
+          <div className="relative my-2">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white border-2 border-[#DFE7D0] shadow-md flex items-center justify-center group-hover:scale-105 group-hover:border-[#748E33] transition-all duration-300">
               {badge.iconName === 'shield' && (
-                <ShieldCheck className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400 drop-shadow-[0_4px_12px_rgba(34,197,94,0.5)]" />
+                <ShieldCheck className="w-12 h-12 text-[#748E33]" />
               )}
-              {badge.iconName === 'award' && (
-                <Award className="w-10 h-10 sm:w-12 sm:h-12 text-teal-300 drop-shadow-[0_4px_12px_rgba(45,212,191,0.5)]" />
-              )}
+              {badge.iconName === 'award' && <Award className="w-12 h-12 text-[#748E33]" />}
               {badge.iconName === 'sparkles' && (
-                <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-amber-300 drop-shadow-[0_4px_12px_rgba(251,191,36,0.5)]" />
+                <Sparkles className="w-12 h-12 text-[#748E33]" />
               )}
-              {badge.iconName === 'tree' && (
-                <FileCheck className="w-10 h-10 sm:w-12 sm:h-12 text-lime-300 drop-shadow-[0_4px_12px_rgba(163,230,53,0.5)]" />
-              )}
+              {badge.iconName === 'tree' && <FileCheck className="w-12 h-12 text-[#748E33]" />}
+            </div>
+
+            {/* Micro Checkmark Stamp */}
+            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#CEE045] border-2 border-white flex items-center justify-center text-[#1E2617] shadow-xs">
+              <Check className="w-4 h-4 stroke-[3]" />
             </div>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-            {badge.title}
-          </h3>
-          <p className="text-xs text-white/70 font-medium mt-0.5">{badge.subtitle}</p>
-        </div>
-
-        {/* ── Parallax Layer 3: Metrics & Requirement (translateZ: 35px) ── */}
-        <div style={{ transform: 'translateZ(35px)' }} className="relative z-20 space-y-3 mt-4">
-          <div className="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-            <span className="text-xs text-white/60 font-medium">{badge.statsLabel}</span>
-            <span className="font-mono text-base font-bold text-white tracking-tight">
-              {badge.metricValue}
+          <div className="mt-4 space-y-1">
+            <span className="text-xs font-mono font-bold text-[#748E33]">
+              {badge.statsLabel}: {badge.metricValue}
             </span>
           </div>
+        </div>
 
-          <p className="text-[11px] text-white/60 leading-relaxed text-center">
+        {/* ── BOTTOM SECTION: Olive Green Block (Matching Exact Reference Card Footer) ── */}
+        <div className="bg-[#748E33] text-white p-6 sm:p-7 rounded-b-3xl space-y-2 relative z-20">
+          <h4 className="font-fraunces text-xl sm:text-2xl font-normal text-white tracking-tight leading-snug">
+            {badge.title}
+          </h4>
+          <p className="text-xs text-[#EAF2D5] line-clamp-2 leading-relaxed">
             {badge.requirement}
           </p>
 
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-white/50 font-mono">
-            <span>Unlocked</span>
-            <span className="text-white/80">{badge.unlockedAt}</span>
+          <div className="pt-2 flex items-center justify-between">
+            <span className="text-[10px] font-mono text-[#D7E8BC] uppercase tracking-wider">
+              Unlocked: {badge.unlockedAt}
+            </span>
+
+            {/* Pill button with arrow */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-[11px] font-sans font-semibold transition-all">
+              <span>Detail</span>
+              <ArrowRight className="w-3 h-3 text-white" />
+            </div>
           </div>
         </div>
       </motion.div>
@@ -254,7 +222,7 @@ function BadgePhysicsCard({ badge }: { badge: AchievementBadge }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   2. CERTIFICATE SHOWCASE & MULTI-STEP DOWNLOAD ANIMATION SEQUENCE
+   2. OFFICIAL CERTIFICATE SECTION (EDITORIAL WITH MULTI-STEP STAMPING)
    ───────────────────────────────────────────────────────────────────────────── */
 type SequenceStep = 'idle' | 'stamping' | 'folding' | 'downloading' | 'success';
 
@@ -268,36 +236,25 @@ export function AchievementBadgesSection({
   const [step, setStep] = useState<SequenceStep>('idle');
   const certificateId = useId();
 
-  // Multi-step download sequence orchestration
   const handleStartDownloadSequence = () => {
     if (step !== 'idle') return;
 
-    // STEP 1: The Stamp drops with heavy spring bounce
     setStep('stamping');
-
-    // STEP 2: The Envelope Fold — Certificate slides down into digital envelope
     setTimeout(() => {
       setStep('folding');
     }, 900);
-
-    // STEP 3: The Action — Generate PDF download trigger
     setTimeout(() => {
       setStep('downloading');
       triggerPdfDownload();
     }, 1800);
-
-    // STEP 4: Success checkmark appears
     setTimeout(() => {
       setStep('success');
     }, 2800);
-
-    // RESET: Smoothly return to idle state after 5 seconds
     setTimeout(() => {
       setStep('idle');
     }, 5200);
   };
 
-  // Generates and triggers actual downloadable certificate SVG/PDF document
   const triggerPdfDownload = () => {
     const issueDate = new Date().toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -314,15 +271,15 @@ export function AchievementBadgesSection({
     @page { size: A4 landscape; margin: 0; }
     body {
       margin: 0; padding: 40px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      background: #09261d; color: #ffffff; box-sizing: border-box; width: 100vw; height: 100vh;
+      background: #1e2617; color: #ffffff; box-sizing: border-box; width: 100vw; height: 100vh;
       display: flex; align-items: center; justify-content: center;
     }
     .cert-frame {
-      border: 4px solid #34d399; outline: 2px dashed rgba(255,255,255,0.4); outline-offset: -12px;
+      border: 4px solid #748e33; outline: 2px dashed rgba(255,255,255,0.4); outline-offset: -12px;
       padding: 48px; border-radius: 24px; background: rgba(255,255,255,0.04); text-align: center;
       max-width: 900px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-    .badge { color: #34d399; font-weight: 800; letter-spacing: 3px; font-size: 13px; text-transform: uppercase; }
+    .badge { color: #cee045; font-weight: 800; letter-spacing: 3px; font-size: 13px; text-transform: uppercase; }
     h1 { font-size: 32px; margin: 12px 0 6px; font-weight: 900; letter-spacing: -0.5px; }
     .recip { font-size: 28px; color: #fde047; font-weight: 800; margin: 20px 0; border-bottom: 2px solid rgba(255,255,255,0.2); display: inline-block; padding-bottom: 6px; }
     .meta { display: flex; justify-content: space-around; margin: 30px 0; font-family: monospace; font-size: 14px; }
@@ -363,337 +320,222 @@ export function AchievementBadgesSection({
     <section
       id="achievement-certificates"
       aria-label="Lencana Prestasi & Sertifikat Sirkular"
-      className={`relative w-full py-24 px-4 sm:px-6 lg:px-8 bg-transparent text-white overflow-hidden ${className}`}
+      className={`relative w-full py-28 px-4 sm:px-6 lg:px-8 bg-transparent text-[#1E2617] ${className}`}
     >
-      {/* ── Ambient Radial Atmosphere Blobs ───────────────── */}
-      <div className="absolute top-1/3 -left-40 w-[30rem] h-[30rem] bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-40 w-[32rem] h-[32rem] bg-teal-500/15 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[160px] pointer-events-none" />
-
-      {/* Grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.035] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto space-y-16">
-        {/* ── Section Header ───────────────────────────────── */}
+      <div className="relative z-10 max-w-7xl mx-auto space-y-24">
+        {/* ── Section Header (Editorial Style Matching Reference) ── */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-emerald-300 uppercase tracking-widest shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-            <span>Validasi Institusional &amp; Gamifikasi Sirkular</span>
-          </div>
+          <span className="text-xs uppercase font-sans tracking-[0.2em] text-[#748E33] font-bold block">
+            FROM THE GROUND UP • GAMIFIKASI SIRKULAR
+          </span>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-            Lencana Prestasi &amp; <span className="text-emerald-400">Sertifikat Sirkular</span>
+          <h2 className="font-fraunces text-4xl sm:text-5xl lg:text-6xl font-normal text-[#1E2617] tracking-tight leading-[1.1]">
+            Lencana Prestasi &amp;{' '}
+            <span className="italic font-normal text-[#748E33]">Sertifikat Resmi</span>
           </h2>
 
-          <p className="text-sm sm:text-base text-white/70 font-normal leading-relaxed">
-            Setiap gram material bekas yang diproses melalui sistem AI ELOVIA diakui secara
-            resmi. Raih lencana 3D prestisius dan terbitkan sertifikat emisi terverifikasi standar
-            SNI &amp; ISCC Plus.
+          <p className="text-base sm:text-lg text-[#58634F] font-normal leading-relaxed">
+            Setiap gram material bekas yang diproses melalui sistem AI ELOVIA diakui secara resmi.
+            Raih lencana 3D prestisius bertahap dan terbitkan sertifikat emisi standar SNI &amp;
+            ISCC Plus.
           </p>
+
+          {/* Category Filter Pills (Like Reference "Landscape Service | Lawn Care | Maintenance") */}
+          <div className="flex items-center justify-center gap-6 pt-3 text-xs font-sans font-semibold text-[#58634F]">
+            <span className="text-[#748E33] border-b-2 border-[#748E33] pb-1 cursor-pointer">
+              Semua Lencana (4)
+            </span>
+            <span className="hover:text-[#1E2617] cursor-pointer">Standar Emisi</span>
+            <span className="hover:text-[#1E2617] cursor-pointer">Sertifikasi SNI</span>
+          </div>
         </div>
 
-        {/* ── Two Column Layout: Badges Grid (Left) + Certificate Generator (Right) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* ══════════════════════════════════════════════════════
-              LEFT: 3D PHYSICS BADGE CARDS GRID (7 cols on lg)
-             ══════════════════════════════════════════════════════ */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-lg font-bold text-white tracking-tight">
-                  Koleksi Lencana 3D Holografis
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-emerald-300/80 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                4/4 Unlocked (100%)
+        {/* ── 4 Arched Tombstone Cards (Centerpiece of the Reference Design) ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          {BADGES_DATA.map((badge, idx) => (
+            <TombstoneBadgeCard
+              key={badge.id}
+              badge={badge}
+              isTall={idx === 1 || idx === 2}
+            />
+          ))}
+        </div>
+
+        {/* ══════════════════════════════════════════════════════
+            OFFICIAL CERTIFICATE SHOWCASE (MATCHING "SERVING GILBERT" SECTION)
+           ══════════════════════════════════════════════════════ */}
+        <div className="rounded-[3rem] bg-[#EFF3E4] border-2 border-[#DFE7D0] p-8 sm:p-12 lg:p-16 relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+            {/* Left Narrative */}
+            <div className="lg:col-span-6 space-y-6">
+              <span className="text-xs uppercase font-sans tracking-[0.2em] text-[#748E33] font-bold block">
+                AUDIT LCA ISO 14044 • DOKUMEN SAH
               </span>
-            </div>
 
-            {/* 2x2 Grid of 3D Physics Tilt Badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {BADGES_DATA.map((badge) => (
-                <BadgePhysicsCard key={badge.id} badge={badge} />
-              ))}
-            </div>
+              <h3 className="font-fraunces text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E2617] tracking-tight leading-tight">
+                Sertifikat Emisi &amp;{' '}
+                <span className="italic font-normal text-[#748E33]">Sirkularitas Terakreditasi</span>
+              </h3>
 
-            <p className="text-xs text-white/50 text-center italic">
-              💡 Gerakkan kursor di atas lencana untuk melihat efek 3D tilt fisik dan pantulan cahaya
-              holografis dinamis.
-            </p>
-          </div>
+              <p className="text-base text-[#58634F] leading-relaxed">
+                Diterbitkan secara kriptografis menggunakan audit siklus hidup LCA terverifikasi.
+                Setiap lembar sertifikat sah memuat stempel digital SNI 19-3964-1994, tanda tangan
+                hash SHA-256, dan nomor registrasi unik.
+              </p>
 
-          {/* ══════════════════════════════════════════════════════
-              RIGHT: CERTIFICATE GENERATOR & DOWNLOAD SEQUENCE (5 cols on lg)
-             ══════════════════════════════════════════════════════ */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <FileCheck className="w-5 h-5 text-teal-400" />
-                <h3 className="text-lg font-bold text-white tracking-tight">
-                  Sertifikat Sirkular Resmi
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-white/60">SNI 19-3964-1994</span>
-            </div>
-
-            {/* Main Showcase Glass Card */}
-            <div className="relative rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 p-6 sm:p-7 shadow-[0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden">
-              {/* Specular Highlight */}
-              <div
-                className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/15 via-transparent to-transparent"
-                aria-hidden="true"
-              />
-
-              {/* ── Certificate Preview Container ───────────────── */}
-              <div className="relative min-h-[380px] sm:min-h-[400px] flex items-center justify-center">
-                {/* ── DIGITAL ENVELOPE (Appears during 'folding' step) ── */}
-                <AnimatePresence>
-                  {step === 'folding' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.4 }}
-                      className="absolute inset-x-4 bottom-2 z-30 p-5 rounded-2xl bg-gradient-to-b from-emerald-800/80 to-[#071f16]/95 border border-emerald-400/40 shadow-2xl flex flex-col items-center justify-center text-center space-y-2 backdrop-blur-2xl"
-                    >
-                      <div className="w-12 h-1 rounded-full bg-emerald-400/50 mb-1" />
-                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
-                        <Download className="w-5 h-5 animate-bounce" />
-                      </div>
-                      <span className="text-xs font-bold text-emerald-300 tracking-wide uppercase">
-                        Digital Envelope Pocket
-                      </span>
-                      <p className="text-[11px] text-white/70">
-                        Mengemas sertifikat resmi bertanda tangan kriptografis...
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* ── THE CERTIFICATE PREVIEW (Folds down during 'folding') ── */}
-                <motion.div
-                  animate={
-                    step === 'folding'
-                      ? {
-                          scale: 0.8,
-                          rotate: -3,
-                          y: 100,
-                          opacity: 0,
-                          transition: { duration: 0.65, ease: [0.32, 0, 0.67, 0] },
-                        }
-                      : step === 'downloading' || step === 'success'
-                      ? { opacity: 0, scale: 0.8, y: 80 }
-                      : { scale: 1, rotate: 0, y: 0, opacity: 1 }
-                  }
-                  className="w-full relative rounded-2xl bg-gradient-to-b from-[#0b3323] via-[#092b1f] to-[#071d15] border-2 border-emerald-400/40 p-5 sm:p-6 shadow-xl space-y-4 text-center select-none"
-                >
-                  {/* Watermark Leaf Logo */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                    <Award className="w-48 h-48 text-emerald-400" />
-                  </div>
-
-                  {/* Certificate Top Header */}
-                  <div className="space-y-1">
-                    <div className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold">
-                      REPUBLIK INDONESIA • STANDAR SIRKULARITAS NASIONAL
+              {/* 3 Checkpoints */}
+              <div className="space-y-3 pt-2">
+                {[
+                  'Diakui untuk Portofolio ESG & Pajak Karbon Hijau',
+                  'Verifikasi Publik Instan via Kode QR Kriptografis',
+                  'Terkoneksi Langsung dengan Ledger Biosfer ELOVIA',
+                ].map((text, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-[#748E33] text-white flex items-center justify-center shrink-0">
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     </div>
-                    <h4 className="text-base sm:text-lg font-black tracking-tight text-white uppercase">
-                      SERTIFIKAT KONTRIBUSI EKOLOGIS
-                    </h4>
-                    <p className="text-[10px] font-mono text-white/50">
+                    <span className="text-sm font-sans font-semibold text-[#1E2617]">
+                      {text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Button */}
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={handleStartDownloadSequence}
+                  disabled={step !== 'idle'}
+                  className={`inline-flex items-center gap-3 px-8 py-4 rounded-full font-sans font-semibold text-sm tracking-wide transition-all shadow-md cursor-pointer ${
+                    step === 'idle'
+                      ? 'bg-[#748E33] hover:bg-[#617728] text-white hover:scale-[1.02]'
+                      : step === 'success'
+                      ? 'bg-[#CEE045] text-[#1E2617] cursor-default'
+                      : 'bg-white text-[#58634F] cursor-wait border border-[#DFE7D0]'
+                  }`}
+                >
+                  {step === 'idle' && (
+                    <>
+                      <span>Unduh Sertifikat Resmi (PDF/HTML)</span>
+                      <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <Download className="w-3.5 h-3.5 text-white" />
+                      </span>
+                    </>
+                  )}
+                  {step === 'stamping' && (
+                    <>
+                      <Sparkles className="w-4 h-4 animate-spin text-[#748E33]" />
+                      <span>Menerapkan Stempel SNI...</span>
+                    </>
+                  )}
+                  {step === 'folding' && (
+                    <>
+                      <FileCheck className="w-4 h-4 animate-pulse text-[#748E33]" />
+                      <span>Mengemas Dokumen Kriptografis...</span>
+                    </>
+                  )}
+                  {step === 'downloading' && (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-[#748E33]" />
+                      <span>Mentransfer Berkas Resmi...</span>
+                    </>
+                  )}
+                  {step === 'success' && (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-[#1E2617]" />
+                      <span>Pengunduhan Berhasil Selesai!</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Certificate Paper Preview in Arch Card */}
+            <div className="lg:col-span-6 flex justify-center">
+              <div className="relative w-full max-w-md">
+                {/* Floating Bright Lime Stamp Badge (Top-Right Overlap) */}
+                <div className="absolute -top-4 -right-4 z-30 w-20 h-20 rounded-full bg-[#CEE045] border-2 border-white shadow-lg flex flex-col items-center justify-center text-center rotate-12">
+                  <BadgeCheck className="w-6 h-6 text-[#1E2617]" />
+                  <span className="text-[8px] font-sans font-black uppercase text-[#1E2617] tracking-tight">
+                    SNI 2026
+                  </span>
+                </div>
+
+                {/* Arched Certificate Card */}
+                <div className="relative rounded-t-[5rem] rounded-b-3xl bg-white border-2 border-[#DFE7D0] p-7 sm:p-9 shadow-lg text-center overflow-hidden">
+                  <div className="space-y-1 pb-4 border-b border-[#DFE7D0]">
+                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#748E33] font-bold block">
+                      REPUBLIK INDONESIA • STANDAR SIRKULARITAS NASIONAL
+                    </span>
+                    <h5 className="font-fraunces text-lg sm:text-xl font-normal text-[#1E2617] tracking-tight uppercase">
+                      Sertifikat Kontribusi Ekologis
+                    </h5>
+                    <span className="text-[9px] font-mono text-[#58634F] block">
                       NO. REG: ELV-SNI-2026-984210
-                    </p>
+                    </span>
                   </div>
 
-                  {/* Recipient Box */}
-                  <div className="py-2 px-4 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] text-white/60 uppercase tracking-wider block">
+                  <div className="py-4 my-3 rounded-2xl bg-[#EFF3E4] border border-[#DFE7D0]">
+                    <span className="text-[10px] uppercase text-[#58634F] font-bold block">
                       Diberikan Kepada
                     </span>
-                    <span className="text-lg font-extrabold text-amber-300 font-sans tracking-tight">
+                    <span className="font-fraunces text-xl font-normal text-[#1E2617] block">
                       {userName}
                     </span>
                   </div>
 
-                  {/* Certified Impact Summary */}
-                  <div className="grid grid-cols-3 gap-2 text-center py-2 border-y border-white/10">
+                  {/* 3 Metrics */}
+                  <div className="grid grid-cols-3 gap-2 py-3 border-y border-[#DFE7D0] text-center">
                     <div>
-                      <span className="text-[10px] text-white/50 block">Emisi Cegah</span>
-                      <span className="font-mono text-xs font-bold text-emerald-400">
+                      <span className="text-[10px] text-[#58634F] block">Emisi Cegah</span>
+                      <span className="font-mono text-xs font-bold text-[#748E33]">
                         1.842,5 kg
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-white/50 block">Daur Ulang</span>
-                      <span className="font-mono text-xs font-bold text-teal-300">
+                      <span className="text-[10px] text-[#58634F] block">Daur Ulang</span>
+                      <span className="font-mono text-xs font-bold text-[#748E33]">
                         1.105 kg
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-white/50 block">Bio-Pohon</span>
-                      <span className="font-mono text-xs font-bold text-lime-400">
+                      <span className="text-[10px] text-[#58634F] block">Bio-Pohon</span>
+                      <span className="font-mono text-xs font-bold text-[#748E33]">
                         36 Pohon
                       </span>
                     </div>
                   </div>
 
-                  {/* Footer Seal & Signatures */}
-                  <div className="flex items-center justify-between text-[9px] text-white/60 pt-1 font-mono">
-                    <div className="flex items-center gap-1.5">
-                      <QrCode className="w-6 h-6 text-emerald-400/80" />
-                      <div className="text-left">
-                        <span className="block text-white/80 font-bold">HASH VALID</span>
-                        <span className="text-[8px] text-white/40">SHA-256 ELOVIA</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-emerald-300 font-bold">ISCC PLUS &amp; SNI</span>
-                      <span className="text-[8px] text-white/40">Tercatat di Ledger</span>
-                    </div>
-                  </div>
-
-                  {/* ── STEP 1: THE STAMP (DROPS ONTO CERTIFICATE) ──── */}
+                  {/* Stamp Dropping Animation */}
                   <AnimatePresence>
                     {(step === 'stamping' || step === 'folding') && (
                       <motion.div
                         initial={{ scale: 2.8, opacity: 0, rotate: -35 }}
                         animate={{ scale: 1, opacity: 1, rotate: -12 }}
                         exit={{ opacity: 0 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 10,
-                        }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none"
                       >
-                        <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full border-4 border-dashed border-red-500 bg-red-950/60 backdrop-blur-sm text-red-400 flex flex-col items-center justify-center p-2 text-center shadow-[0_0_30px_rgba(239,68,68,0.4)]">
+                        <div className="w-32 h-32 rounded-full border-4 border-dashed border-[#748E33] bg-[#EFF3E4]/90 text-[#748E33] flex flex-col items-center justify-center p-2 text-center shadow-lg">
                           <span className="text-[9px] uppercase tracking-wider font-mono font-bold">
                             TERVERIFIKASI
                           </span>
-                          <span className="text-xl sm:text-2xl font-black tracking-widest text-red-400 uppercase my-0.5">
+                          <span className="text-2xl font-fraunces font-bold text-[#1E2617] uppercase my-0.5">
                             SAH
                           </span>
-                          <span className="text-[9px] font-mono tracking-widest text-red-300">
+                          <span className="text-[8px] font-mono tracking-widest text-[#748E33]">
                             SNI 19-3964-1994
-                          </span>
-                          <span className="text-[8px] font-mono text-red-400/80 mt-1">
-                            ISCC PLUS 2026
                           </span>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
 
-                {/* ── STEP 3 & 4: DOWNLOADING & SUCCESS OVERLAY ───── */}
-                <AnimatePresence>
-                  {(step === 'downloading' || step === 'success') && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.35 }}
-                      className="absolute inset-0 z-30 flex flex-col items-center justify-center text-center p-6 space-y-4"
-                    >
-                      {step === 'downloading' ? (
-                        <>
-                          <div className="relative w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
-                            <RefreshCw className="w-8 h-8 animate-spin text-emerald-400" />
-                          </div>
-                          <div className="space-y-1">
-                            <h4 className="text-lg font-bold text-white">
-                              Menerbitkan Sertifikat PDF...
-                            </h4>
-                            <p className="text-xs text-white/60">
-                              Menyematkan stempel SNI &amp; hash validasi kriptografis.
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 350, damping: 14 }}
-                            className="w-16 h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.6)]"
-                          >
-                            <Check className="w-8 h-8 stroke-[3]" />
-                          </motion.div>
-                          <div className="space-y-1">
-                            <h4 className="text-lg font-bold text-white">
-                              Sertifikat Berhasil Diunduh!
-                            </h4>
-                            <p className="text-xs text-emerald-300">
-                              Dokumen resmi tersimpan ke perangkat Anda.
-                            </p>
-                          </div>
-                          <span className="text-[11px] font-mono text-white/50">
-                            Sertifikat-Sirkular-ELOVIA.html
-                          </span>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* ── Download Action Button ─────────────────────── */}
-              <div className="mt-6 pt-5 border-t border-white/10 space-y-3">
-                <button
-                  type="button"
-                  onClick={handleStartDownloadSequence}
-                  disabled={step !== 'idle'}
-                  className={`w-full py-4 px-6 rounded-2xl font-bold text-sm tracking-wide flex items-center justify-center gap-2.5 transition-all duration-300 shadow-lg cursor-pointer ${
-                    step === 'idle'
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-[#071f16] shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01]'
-                      : step === 'success'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 cursor-default'
-                      : 'bg-white/10 text-white/70 border border-white/15 cursor-wait'
-                  }`}
-                >
-                  {step === 'idle' && (
-                    <>
-                      <Download className="w-4 h-4 text-[#071f16]" />
-                      <span>Unduh Sertifikat Resmi (PDF/HTML)</span>
-                    </>
-                  )}
-                  {step === 'stamping' && (
-                    <>
-                      <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
-                      <span>Menerapkan Stempel SNI...</span>
-                    </>
-                  )}
-                  {step === 'folding' && (
-                    <>
-                      <FileCheck className="w-4 h-4 text-emerald-400 animate-pulse" />
-                      <span>Mengemas Dokumen Kriptografis...</span>
-                    </>
-                  )}
-                  {step === 'downloading' && (
-                    <>
-                      <RefreshCw className="w-4 h-4 text-emerald-400 animate-spin" />
-                      <span>Mentransfer Berkas Resmi...</span>
-                    </>
-                  )}
-                  {step === 'success' && (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Pengunduhan Berhasil Selesai</span>
-                    </>
-                  )}
-                </button>
-
-                {/* Institutional Accreditation Footnote */}
-                <div className="flex items-center justify-between text-[11px] text-white/50 pt-1">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    Terverifikasi SNI &amp; ISCC Plus
-                  </span>
-                  <span>Standar ISO 14044 LCA</span>
+                  <div className="pt-4 flex items-center justify-between text-[10px] font-mono text-[#58634F]">
+                    <span>STATUS: VALID</span>
+                    <span className="text-[#748E33] font-bold">ISCC PLUS &amp; SNI</span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -6,11 +6,15 @@ import CountUp from 'react-countup';
 import {
   Sparkles,
   TrendingUp,
-  ShieldCheck,
   Leaf,
-  Info,
-  Calendar,
-  Layers,
+  ArrowRight,
+  Wind,
+  Droplets,
+  Coins,
+  Trees,
+  CheckCircle2,
+  Check,
+  ShieldCheck,
   ArrowUpRight,
 } from 'lucide-react';
 
@@ -21,92 +25,76 @@ export interface MetricCardData {
   value: number;
   unit: string;
   decimals?: number;
-  iconSrc: string;
-  iconAlt: string;
   colSpan: string;
   isHero?: boolean;
   benchmark: string;
   trendText: string;
   trendPositive: boolean;
-  accentColor: string;
-  glowColor: string;
+  icon: React.ElementType;
 }
 
 export interface PersonalEcologicalMetricsProps {
   className?: string;
   userName?: string;
   showSectionHeader?: boolean;
-  balanceLastCard?: boolean;
 }
 
 const DEFAULT_METRICS: MetricCardData[] = [
   {
     id: 'emissions',
     title: 'Total Emisi Terhindar',
-    subtitle: 'Total Avoided Carbon Emissions',
+    subtitle: 'Reduksi jejak karbon langsung ke biosfer melalui daur ulang terverifikasi',
     value: 1842.5,
     unit: 'kg CO₂e',
     decimals: 1,
-    iconSrc: '/3dModels/icons/emission-cloud-3d.png',
-    iconAlt: '3D Floating Emission Cloud Icon',
-    colSpan: 'md:col-span-2',
+    colSpan: 'lg:col-span-7',
     isHero: true,
-    benchmark: '⚡ Setara 7,680 km perjalanan mobil listrik nir-emisi atau 82 hari jejak karbon individu.',
+    benchmark: 'Setara 7.680 km perjalanan mobil listrik nir-emisi atau 82 hari jejak karbon individu.',
     trendText: '+28.4% vs bulan lalu',
     trendPositive: true,
-    accentColor: 'text-emerald-400',
-    glowColor: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
+    icon: Wind,
   },
   {
     id: 'glass',
-    title: 'Kaca Didaur Ulang',
-    subtitle: 'Recycled Glass Cullet Grade A',
+    title: 'Kaca & Silika Murni',
+    subtitle: 'Cullet Grade A kemurnian 99.8% siap peleburan ulang industri',
     value: 485,
     unit: 'kg',
     decimals: 0,
-    iconSrc: '/3dModels/icons/recycled-glass-3d.png',
-    iconAlt: '3D Floating Recycled Glass Bottle Icon',
-    colSpan: 'md:col-span-1',
+    colSpan: 'lg:col-span-5',
     isHero: false,
-    benchmark: 'Kemurnian 99.8% siap peleburan ulang tanpa degradasi silika murni.',
+    benchmark: 'Siap peleburan ulang industri tanpa degradasi silika murni.',
     trendText: '+15.2% siklus ini',
     trendPositive: true,
-    accentColor: 'text-teal-300',
-    glowColor: 'from-teal-500/20 via-teal-500/5 to-transparent',
+    icon: Droplets,
   },
   {
     id: 'points',
-    title: 'Poin Reward',
-    subtitle: 'Circular Eco-Tokens Balance',
+    title: 'Poin Reward Ekologis',
+    subtitle: 'Saldo token sirkularitas terverifikasi untuk konversi voucher hijau',
     value: 24850,
     unit: 'Pts',
     decimals: 0,
-    iconSrc: '/3dModels/icons/reward-points-3d.png',
-    iconAlt: '3D Floating Reward Eco-Coin Icon',
-    colSpan: 'md:col-span-1',
+    colSpan: 'lg:col-span-6',
     isHero: false,
     benchmark: 'Estimasi nilai tukar setara Rp 248.500 untuk voucher mitra hijau.',
-    trendText: '+3,200 Pts minggu ini',
+    trendText: '+3.200 Pts minggu ini',
     trendPositive: true,
-    accentColor: 'text-amber-300',
-    glowColor: 'from-amber-500/20 via-amber-500/5 to-transparent',
+    icon: Coins,
   },
   {
     id: 'trees',
-    title: 'Kontribusi Pohon',
-    subtitle: 'Mangrove & Rainforest Canopy',
+    title: 'Bibit Pohon Ditumbuhkan',
+    subtitle: 'Mangrove pesisir & kanopi hutan nusantara melalui mitra konservasi',
     value: 36,
     unit: 'Pohon',
     decimals: 0,
-    iconSrc: '/3dModels/icons/tree-sprout-3d.png',
-    iconAlt: '3D Floating Tree Sprout Icon',
-    colSpan: 'md:col-span-1',
+    colSpan: 'lg:col-span-6',
     isHero: false,
-    benchmark: 'Ditanam di Kawasan Konservasi Mangrove Teluk Jakarta & Banyuwangi.',
-    trendText: '+4 pohon terkonversi',
+    benchmark: 'Menyerap ~792 kg CO₂e kumulatif sepanjang siklus hidup pohon.',
+    trendText: '+8 Pohon kuartal ini',
     trendPositive: true,
-    accentColor: 'text-emerald-300',
-    glowColor: 'from-lime-500/20 via-lime-500/5 to-transparent',
+    icon: Trees,
   },
 ];
 
@@ -114,33 +102,19 @@ export function PersonalEcologicalMetrics({
   className = '',
   userName = 'Rifqi Pratama',
   showSectionHeader = true,
-  balanceLastCard = false,
 }: PersonalEcologicalMetricsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, amount: 0.2 });
+  const isInView = useInView(containerRef, { once: true, amount: 0.15 });
+  const [timeframe, setTimeframe] = useState<'all' | 'month' | 'week'>('all');
 
-  // Handle SSR hydration safety for CountUp
-  const [isMounted, setIsMounted] = useState(false);
-  const [activeTimeframe, setActiveTimeframe] = useState<'all' | 'year' | 'month'>('all');
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Multipliers for timeframe micro-interaction
-  const timeframeMultiplier =
-    activeTimeframe === 'month' ? 0.28 : activeTimeframe === 'year' ? 0.72 : 1.0;
-
-  // Staggered card entrance variants
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 30, scale: 0.98 },
+    hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
-        duration: 0.65,
-        delay: i * 0.12,
+        duration: 0.6,
+        delay: i * 0.1,
         ease: [0.22, 1, 0.36, 1],
       },
     }),
@@ -149,255 +123,221 @@ export function PersonalEcologicalMetrics({
   return (
     <section
       ref={containerRef}
-      id="personal-metrics"
-      aria-label="Personal Ecological Metrics"
-      className={`relative w-full py-20 px-4 sm:px-6 lg:px-8 bg-transparent text-white overflow-hidden ${className}`}
+      id="ecological-metrics"
+      aria-label="Metrik Ekologis Anda"
+      className={`relative w-full py-28 px-4 sm:px-6 lg:px-8 bg-transparent text-[#1E2617] ${className}`}
     >
-      {/* ── Ambient Radial Atmosphere Blobs ───────────────── */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/2 -right-32 w-[28rem] h-[28rem] bg-teal-500/15 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-lime-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Subtle organic grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto space-y-12">
-        {/* ── Section Header ───────────────────────────────── */}
+      <div className="relative z-10 max-w-7xl mx-auto space-y-16">
+        {/* ── Section Header (Editorial Landscape Serif Style) ── */}
         {showSectionHeader && (
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-white/10">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-emerald-300 uppercase tracking-widest">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span>Telemetri Ekologis Personal</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-                Metrik Ekologis <span className="text-emerald-400">{userName}</span>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4 border-b border-[#DFE7D0]">
+            <div className="space-y-3 max-w-2xl">
+              <span className="text-xs uppercase font-sans tracking-[0.2em] text-[#748E33] font-bold block">
+                FROM THE GROUND UP • METRIK EKOLOGIS
+              </span>
+              <h2 className="font-fraunces text-4xl sm:text-5xl lg:text-6xl font-normal text-[#1E2617] tracking-tight leading-[1.1]">
+                Metrik Ekologis &amp;{' '}
+                <span className="italic font-normal text-[#748E33]">Nilai Keberlanjutan</span>
               </h2>
-              <p className="text-sm sm:text-base text-white/70 max-w-2xl font-normal leading-relaxed">
-                Pantau dampak regenerasi biosfer Anda secara transparan. Setiap kilogram sampah
-                yang Anda setorkan dikonversi dengan presisi standar SNI &amp; ISCC Plus.
+              <p className="text-base sm:text-lg text-[#58634F] font-normal leading-relaxed">
+                Setiap material yang Anda salurkan melalui sistem AI ELOVIA meregenerasi tanah,
+                menyerap karbon atmosfer, dan menumbuhkan kanopi vegetasi nyata di biosfer.
               </p>
             </div>
 
-            {/* Timeframe Filter Pills */}
-            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 self-start md:self-end">
-              {(
-                [
-                  { id: 'all', label: 'Semua Waktu' },
-                  { id: 'year', label: '2026' },
-                  { id: 'month', label: 'Bulan Ini' },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTimeframe(tab.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
-                    activeTimeframe === tab.id
-                      ? 'bg-emerald-500 text-white shadow-[0_4px_16px_rgba(34,197,94,0.35)] font-semibold'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* Timeframe Filter Switcher (Matching Reference Pill Buttons) */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-[#EFF3E4] border border-[#DFE7D0]">
+                {(
+                  [
+                    { id: 'all', label: 'Semua Waktu' },
+                    { id: 'month', label: 'Bulan Ini' },
+                    { id: 'week', label: 'Minggu Ini' },
+                  ] as const
+                ).map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setTimeframe(tab.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-sans font-medium transition-all duration-200 cursor-pointer ${
+                      timeframe === tab.id
+                        ? 'bg-[#748E33] text-white shadow-xs font-semibold'
+                        : 'text-[#58634F] hover:text-[#1E2617] hover:bg-white/60'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* ── Bento Grid Container ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {DEFAULT_METRICS.map((metric, index) => {
-            const isHero = metric.isHero;
-            const computedValue =
-              metric.decimals && metric.decimals > 0
-                ? Number((metric.value * timeframeMultiplier).toFixed(metric.decimals))
-                : Math.round(metric.value * timeframeMultiplier);
-
-            // Bento column span mapping: Card 1 is Hero (md:col-span-2), Card 2-4 take 1 column each
-            const colSpanClass =
-              isHero
-                ? 'md:col-span-2'
-                : !isHero && index === 3 && balanceLastCard
-                ? 'md:col-span-1 lg:col-span-2'
-                : 'md:col-span-1';
-
-            return (
-              <motion.div
-                key={metric.id}
-                custom={index}
-                variants={cardVariants}
-                initial="hidden"
-                animate={isInView ? 'visible' : 'hidden'}
-                whileHover={{ y: -4, transition: { duration: 0.25, ease: 'easeOut' } }}
-                className={`group relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)] ${colSpanClass}`}
-              >
-                {/* ── Top Glass Specular Reflection Highlight ──── */}
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/15 via-white/[0.02] to-transparent"
-                  aria-hidden="true"
-                />
-
-                {/* ── Card Ambient Glow ────────────────────────── */}
-                <div
-                  className={`pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-gradient-to-br ${metric.glowColor} blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-500`}
-                  aria-hidden="true"
-                />
-
-                {/* ── Floating 3D Icon Wrapper (Top-Right Corner) ─ */}
-                <motion.div
-                  className="absolute top-5 right-5 sm:top-6 sm:right-6 z-20 pointer-events-none"
-                  animate={{ y: [0, -12, 0] }}
-                  transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                >
-                  <div className="relative">
-                    <img
-                      src={metric.iconSrc}
-                      alt={metric.iconAlt}
-                      loading="lazy"
-                      className={`${
-                        isHero
-                          ? 'w-20 h-20 sm:w-28 sm:h-28'
-                          : 'w-16 h-16 sm:w-20 sm:h-20'
-                      } object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.35)] select-none transition-transform duration-500 group-hover:scale-105`}
-                      onError={(e) => {
-                        // Fallback safety in case the custom image path is missing
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        if (target.parentElement) {
-                          const fallback = target.parentElement.querySelector('.icon-fallback');
-                          if (fallback) (fallback as HTMLElement).style.display = 'flex';
-                        }
-                      }}
-                    />
-                    {/* Graceful Fallback if image fails */}
-                    <div className="icon-fallback hidden w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center text-white/80">
-                      <Sparkles className="w-8 h-8 text-emerald-300" />
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* ── Top Content: Label, Subtitle & Trend Pill ─── */}
-                <div className="relative z-10 space-y-2 pr-20 sm:pr-28">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
-                      {isHero ? 'Metric Utama • Biosfer ELOVIA' : 'Sirkularitas Aktif'}
-                    </span>
-                  </div>
-
-                  <h3
-                    className={`${
-                      isHero
-                        ? 'text-2xl sm:text-3xl font-extrabold tracking-tight text-white'
-                        : 'text-xl sm:text-2xl font-bold tracking-tight text-white'
-                    }`}
-                  >
-                    {metric.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-white/65 font-medium leading-relaxed">
-                    {metric.subtitle}
-                  </p>
-                </div>
-
-                {/* ── Middle Content: Number Counter with font-mono ─ */}
-                <div className={`relative z-10 my-6 sm:my-8 ${isHero ? 'space-y-4' : 'space-y-2'}`}>
-                  <div className="flex items-baseline flex-wrap gap-x-2.5 gap-y-1">
-                    <span
-                      className={`font-mono font-black tracking-tight text-white select-all ${
-                        isHero
-                          ? 'text-5xl sm:text-6xl lg:text-7xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.3)]'
-                          : 'text-4xl sm:text-5xl drop-shadow-[0_2px_12px_rgba(0,0,0,0.25)]'
-                      }`}
-                    >
-                      {isMounted && isInView ? (
-                        <CountUp
-                          start={0}
-                          end={computedValue}
-                          duration={2.5}
-                          separator=","
-                          decimals={metric.decimals || 0}
-                          decimal="."
-                        />
-                      ) : (
-                        (0).toLocaleString('en-US', {
-                          minimumFractionDigits: metric.decimals || 0,
-                          maximumFractionDigits: metric.decimals || 0,
-                        })
-                      )}
-                    </span>
-
-                    <span
-                      className={`font-sans font-bold tracking-normal ${metric.accentColor} ${
-                        isHero ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-lg sm:text-xl'
-                      }`}
-                    >
-                      {metric.unit}
-                    </span>
-                  </div>
-
-                  {/* Micro-Trend Indicator */}
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-medium">
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>{metric.trendText}</span>
-                  </div>
-                </div>
-
-                {/* ── Bottom Content: Benchmark / Contextual Note ── */}
-                <div className="relative z-10 pt-4 border-t border-white/10 flex items-start gap-2.5">
-                  {isHero ? (
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  ) : (
-                    <Leaf className="w-4 h-4 text-emerald-300/80 shrink-0 mt-0.5" />
-                  )}
-                  <p className="text-xs text-white/70 leading-relaxed font-normal">
-                    {metric.benchmark}
-                  </p>
-                </div>
-
-                {/* Hero Extra Micro-Telemetry Bar */}
-                {isHero && (
-                  <div className="relative z-10 mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs text-white/60">
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                        PET: 34%
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-teal-400" />
-                        Kaca: 26%
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-lime-400" />
-                        Lainnya: 40%
-                      </span>
-                    </div>
-                    <span className="font-mono text-[11px] text-emerald-300/90 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
-                      SNI 19-3964-1994 Validated
-                    </span>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
+        {/* ── 4 Values Checkpoints (Matching "History & Values" Section of Reference) ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-2">
+          {[
+            '100% Terverifikasi SNI & ISCC',
+            'Audit LCA ISO 14044',
+            'Reduksi Emisi Nyata Terukur',
+            'Poin Sirkular Dapat Ditukar',
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-[#DFE7D0] shadow-2xs"
+            >
+              <div className="w-5 h-5 rounded-full bg-[#EFF3E4] text-[#748E33] flex items-center justify-center shrink-0">
+                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+              </div>
+              <span className="text-xs font-sans font-semibold text-[#1E2617] tracking-tight">
+                {item}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {/* ── Bottom Transparency Ledger Note ──────────────── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-xs text-white/70">
-          <div className="flex items-center gap-2 text-center sm:text-left">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>
-              Seluruh metrik terikat secara kriptografis dengan bukti timbangan digital mitra ELOVIA.
-            </span>
-          </div>
-          <div className="flex items-center gap-4 text-white/60 font-mono text-[11px]">
-            <span>Audit Ref: #ELV-2026-BIO</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>Sync: Real-Time</span>
+        {/* ── Metrics Grid (Tombstone Arches & Editorial Card Layout) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* ══════════════════════════════════════════════════════
+              HERO CARD: TOTAL EMISI (Tombstone Arch Shape)
+             ══════════════════════════════════════════════════════ */}
+          <motion.div
+            custom={0}
+            variants={cardVariants}
+            initial="hidden"
+            animate={isInView ? 'visible' : 'hidden'}
+            className="lg:col-span-7 relative rounded-t-[6rem] sm:rounded-t-[8rem] rounded-b-3xl bg-[#EFF3E4] border-2 border-[#DFE7D0] p-8 sm:p-12 shadow-sm flex flex-col justify-between overflow-hidden"
+          >
+            {/* Top Arched Header with Rotating Circular Stamp */}
+            <div className="flex items-start justify-between gap-6 relative z-10">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#DFE7D0] text-[11px] font-sans font-bold uppercase tracking-wider text-[#748E33]">
+                  <Wind className="w-3.5 h-3.5 text-[#748E33]" />
+                  <span>Emisi Atmosfer Terhindar</span>
+                </div>
+                <h3 className="font-fraunces text-2xl sm:text-3xl text-[#1E2617] font-normal tracking-tight">
+                  Total Reduksi Jejak Karbon
+                </h3>
+              </div>
+
+              {/* Signature Rotating Circular Stamp Motif (from Reference Image) */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#748E33] text-white flex items-center justify-center border-2 border-dashed border-[#CEE045] shadow-md shrink-0 animate-[spin_24s_linear_infinite]">
+                <svg className="w-full h-full absolute inset-0" viewBox="0 0 100 100">
+                  <path
+                    id="stampPath"
+                    d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+                    fill="none"
+                  />
+                  <text className="text-[9.5px] font-sans uppercase font-bold tracking-[2px] fill-white">
+                    <textPath href="#stampPath" startOffset="0%">
+                      • ELOVIA IMPACT • VERIFIED 2026 •
+                    </textPath>
+                  </text>
+                </svg>
+                <Leaf className="w-6 h-6 text-[#CEE045]" />
+              </div>
+            </div>
+
+            {/* Central Metric Display with CountUp */}
+            <div className="my-8 relative z-10 space-y-2">
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="font-fraunces text-6xl sm:text-7xl lg:text-8xl font-normal text-[#1E2617] tracking-tight leading-none">
+                  {isInView ? (
+                    <CountUp
+                      start={0}
+                      end={DEFAULT_METRICS[0].value}
+                      decimals={DEFAULT_METRICS[0].decimals}
+                      duration={2.5}
+                      separator="."
+                      decimal=","
+                    />
+                  ) : (
+                    '1.842,5'
+                  )}
+                </span>
+                <span className="font-sans text-2xl sm:text-3xl font-bold text-[#748E33]">
+                  {DEFAULT_METRICS[0].unit}
+                </span>
+              </div>
+              <p className="text-sm sm:text-base text-[#58634F] max-w-lg leading-relaxed">
+                {DEFAULT_METRICS[0].benchmark}
+              </p>
+            </div>
+
+            {/* Footer with Pill Button and Trend */}
+            <div className="pt-6 border-t border-[#DFE7D0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-2 text-xs font-sans font-semibold text-[#748E33] bg-white px-3.5 py-1.5 rounded-full border border-[#DFE7D0]">
+                <TrendingUp className="w-4 h-4" />
+                <span>+28.4% efisiensi vs bulan lalu</span>
+              </div>
+
+              {/* Characteristic Pill Button with Arrow Icon (as seen across the reference image) */}
+              <a
+                href="#impact-ledger"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#748E33] hover:bg-[#637a2b] text-white font-sans font-semibold text-xs tracking-wide transition-all shadow-xs group"
+              >
+                <span>Pelajari Metodologi</span>
+                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <ArrowRight className="w-3 h-3 text-white" />
+                </span>
+              </a>
+            </div>
+          </motion.div>
+
+          {/* ══════════════════════════════════════════════════════
+              RIGHT COLUMN: 3 TOMBSTONE SUPPORTING CARDS
+             ══════════════════════════════════════════════════════ */}
+          <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+            {DEFAULT_METRICS.slice(1).map((metric, idx) => {
+              const Icon = metric.icon;
+              return (
+                <motion.div
+                  key={metric.id}
+                  custom={idx + 1}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate={isInView ? 'visible' : 'hidden'}
+                  className="rounded-3xl bg-white border border-[#DFE7D0] p-6 sm:p-7 shadow-2xs hover:shadow-md hover:border-[#748E33]/40 transition-all duration-300 flex items-center justify-between gap-6 group"
+                >
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#748E33]">
+                        {metric.id === 'glass' ? 'Kaca Silika' : metric.id === 'points' ? 'Reward' : 'Vegetasi'}
+                      </span>
+                      <span className="text-xs text-[#58634F]">• {metric.trendText}</span>
+                    </div>
+
+                    <h4 className="font-fraunces text-xl font-normal text-[#1E2617] tracking-tight">
+                      {metric.title}
+                    </h4>
+
+                    <div className="flex items-baseline gap-1.5 pt-1">
+                      <span className="font-fraunces text-3xl sm:text-4xl font-normal text-[#1E2617]">
+                        {isInView ? (
+                          <CountUp
+                            start={0}
+                            end={metric.value}
+                            duration={2.2}
+                            separator="."
+                          />
+                        ) : (
+                          metric.value.toLocaleString('id-ID')
+                        )}
+                      </span>
+                      <span className="font-sans text-sm font-bold text-[#748E33]">
+                        {metric.unit}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#58634F] line-clamp-1">{metric.benchmark}</p>
+                  </div>
+
+                  {/* Circular Olive Icon Container */}
+                  <div className="w-14 h-14 rounded-2xl bg-[#EFF3E4] border border-[#DFE7D0] text-[#748E33] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#748E33] group-hover:text-white transition-all duration-300">
+                    <Icon className="w-7 h-7" />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -406,4 +346,3 @@ export function PersonalEcologicalMetrics({
 }
 
 export default PersonalEcologicalMetrics;
-

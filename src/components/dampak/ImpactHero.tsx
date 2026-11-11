@@ -4,23 +4,19 @@
  * ImpactHero.tsx  —  Hero Impact Garden Section
  * ───────────────────────────────────────────────────────────
  * Hybrid 2D/3D Architecture:
+ *  - Layer 1 (Z-0)  : 2D Background image (hero.png) with soft vignetting
+ *  - Layer 2 (Z-10) : Grounded 3D Diorama Island Canvas with OrbitControls & dynamic petals
+ *  - Layer 3 (Z-20) : Glassmorphism UI Overlay (Biomass Telemetry, Atmospheric Absorption, Converted Materials)
  *
- *  Z-0  │ Layer 1 — Next.js <Image> fixed background (hero.png)
- *  Z-10 │ Layer 2 — MinimalGardenCanvas (transparent R3F, petals + island)
- *  Z-20 │ Layer 3 — Glassmorphism UI overlay (GSAP-animated)
- *
- * The <section> is h-[300vh] so scroll has room to trigger animations.
- * Everything inside the sticky <div> stays in the viewport.
- *
- * GSAP ScrollTrigger drives:
- *  0% → 40%  : Left/Right UI columns fade + translate outward (DOM only).
- *  10% → 60% : Camera dollies forward on Z (lightweight camera.position.z write).
- *  60% → 100%: Camera rotates slightly; bottom overlay slides up.
+ * Polished to SaaS / Apple-grade design standards:
+ *  - Uses standard ELOVIA global <Navbar /> at the top
+ *  - Hero container wrapped in relative w-full h-[100dvh] pt-24 overflow-hidden
+ *  - UI cards wrapped in pointer-events-none flex layout allowing canvas interactions
  */
 
 import React, {
-  useRef,
   useState,
+  useRef,
   useEffect,
   useCallback,
   lazy,
@@ -34,12 +30,6 @@ import {
   Wind,
   Droplets,
   Sun,
-  ShieldCheck,
-  Sparkles as SparklesIcon,
-  ArrowRight,
-  Activity,
-  TreeDeciduous,
-  ExternalLink,
 } from 'lucide-react';
 
 // Lazy-load the R3F canvas so it never blocks the first meaningful paint
@@ -96,12 +86,13 @@ type GardenLevel = 1 | 2 | 3;
 
 // ─────────── Shared glassmorphism CSS-in-JS object ───────────────
 const GLASS: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.30)',
-  backdropFilter: 'blur(16px) saturate(160%)',
-  WebkitBackdropFilter: 'blur(16px) saturate(160%)',
-  border: '1px solid rgba(255, 255, 255, 0.50)',
+  background: 'rgba(255, 255, 255, 0.40)',
+  backdropFilter: 'blur(18px) saturate(160%)',
+  WebkitBackdropFilter: 'blur(18px) saturate(160%)',
+  border: '1px solid rgba(255, 255, 255, 0.65)',
   borderRadius: '20px',
   color: '#0f2922',
+  boxShadow: '0 8px 32px rgba(15, 41, 34, 0.06)',
 };
 
 // ─────────── Safe Error Boundary for 3D Canvas ───────────────────
@@ -123,13 +114,11 @@ class CanvasErrorBoundary extends React.Component<
 }
 
 // ─────────── Biomass Gauge (SVG semi-circle) ──────────────────────
-function BiomassGauge() {
-  // Arc from 180° to 0° (left to right) around cx=100, cy=100, r=72
-  // Full circumference of semicircle ≈ π * 72 = 226.19
-  // 98.2% fill → dashoffset = 226.19 * (1 - 0.982) ≈ 4.07
+function BiomassGauge({ level }: { level: GardenLevel }) {
   const C = Math.PI * 72; // ≈ 226.19
-  const pct = 0.982;
+  const pct = level === 1 ? 0.384 : level === 2 ? 0.725 : 0.982;
   const offset = C * (1 - pct);
+  const label = level === 1 ? '38.4%' : level === 2 ? '72.5%' : '98.2%';
 
   return (
     <div className="relative flex flex-col items-center justify-center my-1">
@@ -137,7 +126,7 @@ function BiomassGauge() {
         viewBox="0 0 200 112"
         className="w-44 h-24 overflow-visible"
         fill="none"
-        aria-label="98.2% Soil Vitality"
+        aria-label={`${label} Soil Vitality`}
       >
         <defs>
           <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -149,7 +138,7 @@ function BiomassGauge() {
         {/* Track */}
         <path
           d="M 28 100 A 72 72 0 0 1 172 100"
-          stroke="rgba(15,41,34,0.10)"
+          stroke="rgba(15,41,34,0.12)"
           strokeWidth="13"
           strokeLinecap="round"
         />
@@ -176,8 +165,8 @@ function BiomassGauge() {
 
       {/* Percentage label */}
       <div className="absolute top-9 flex flex-col items-center">
-        <span className="font-jetbrains text-[1.6rem] font-black leading-none text-[#0f2922]">
-          98.2%
+        <span className="font-jetbrains text-[1.6rem] font-black leading-none text-[#0f2922] transition-all duration-500">
+          {label}
         </span>
         <span className="font-inter-tight text-[10px] font-semibold tracking-widest text-[#0f2922]/70 uppercase mt-0.5">
           Soil Vitality
@@ -189,26 +178,24 @@ function BiomassGauge() {
 
 // ─────────────────────── ImpactHero ──────────────────────────────
 export function ImpactHero() {
-  // ── local state (UI-only, no effect on canvas) ──
-  const [level, setLevel] = useState<GardenLevel>(2);
+  const [activeLevel, setActiveLevel] = useState<GardenLevel>(3);
   const [preset, setPreset] = useState<AtmospherePreset>('purify');
   const [isMounted, setIsMounted] = useState(false);
 
-  // ── DOM refs for GSAP (never cause re-renders) ──
+  // DOM refs for GSAP
   const sectionRef = useRef<HTMLDivElement>(null);
   const leftColRef = useRef<HTMLDivElement>(null);
   const rightColRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const bottomBarRef = useRef<HTMLDivElement>(null);
-  const nextSectionRef = useRef<HTMLDivElement>(null);
 
-  // ── R3F canvas ref (access to live camera) ──
+  // R3F canvas ref
   const canvasRef = useRef<MinimalGardenCanvasHandle>(null);
 
-  // Mount guard for hydration-safe lazy canvas
-  useEffect(() => { setIsMounted(true); }, []);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  // ── GSAP ScrollTrigger setup ──────────────────────────────────
+  // GSAP subtle scroll exit transitions
   useEffect(() => {
     if (!isMounted || typeof window === 'undefined') return;
     gsap.registerPlugin(ScrollTrigger);
@@ -217,478 +204,295 @@ export function ImpactHero() {
     if (!section) return;
 
     const ctx = gsap.context(() => {
-      // ── 1. UI columns: fade + slide outward, 0% → 40% ─────
-      const columnTween = gsap.timeline({
+      // Graceful fade & slide outward when user scrolls down to subsequent sections
+      gsap.to([leftColRef.current, rightColRef.current], {
+        opacity: 0,
+        y: 20,
+        ease: 'power2.inOut',
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '40% top',
-          scrub: 1.4,
-        },
-      });
-      columnTween
-        .to(leftColRef.current, {
-          x: -72,
-          opacity: 0,
-          filter: 'blur(8px)',
-          ease: 'power2.inOut',
-        }, 0)
-        .to(rightColRef.current, {
-          x: 72,
-          opacity: 0,
-          filter: 'blur(8px)',
-          ease: 'power2.inOut',
-        }, 0)
-        .to(headerRef.current, {
-          y: -36,
-          opacity: 0,
-          ease: 'power2.inOut',
-        }, 0)
-        .to(bottomBarRef.current, {
-          y: 48,
-          opacity: 0,
-          ease: 'power2.inOut',
-        }, 0);
-
-      // ── 2. Camera dolly-in: 10% → 60% ─────────────────────
-      ScrollTrigger.create({
-        trigger: section,
-        start: '10% top',
-        end: '60% top',
-        scrub: 1.8,
-        onUpdate: (self) => {
-          const cam = canvasRef.current?.camera;
-          if (!cam) return;
-          // Z goes from 11 → 5.5 (dolly in)
-          const startZ = 11;
-          const endZ = 5.5;
-          cam.position.z = startZ + (endZ - startZ) * self.progress;
-          // Slight downward tilt for a cinematic sweep-low
-          cam.position.y = 2.5 - self.progress * 1.0;
-          cam.lookAt(0, 0.6, 0);
+          end: 'bottom top',
+          scrub: true,
         },
       });
 
-      // ── 3. Camera rotation + next-section overlay: 60% → 100% ──
-      ScrollTrigger.create({
-        trigger: section,
-        start: '60% top',
-        end: 'bottom bottom',
-        scrub: 1.6,
-        onUpdate: (self) => {
-          const cam = canvasRef.current?.camera;
-          if (!cam) return;
-          // Gentle orbit: rotate camera around Y axis by 25°
-          const angle = self.progress * (Math.PI * 0.14);
-          const r = Math.hypot(cam.position.x, cam.position.z);
-          cam.position.x = Math.sin(angle) * r;
-          cam.position.z = Math.cos(angle) * (r > 0 ? r : 5.5);
-          cam.lookAt(0, 0.5, 0);
+      gsap.to(bottomBarRef.current, {
+        opacity: 0,
+        y: 30,
+        ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: section,
+          start: '20% top',
+          end: 'bottom top',
+          scrub: true,
         },
       });
-
-      // Next-section card slides up 60% → 100%
-      gsap.fromTo(
-        nextSectionRef.current,
-        { y: 110, opacity: 0, filter: 'blur(10px)', pointerEvents: 'none' },
-        {
-          y: 0,
-          opacity: 1,
-          filter: 'blur(0px)',
-          pointerEvents: 'auto',
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: section,
-            start: '62% top',
-            end: 'bottom bottom',
-            scrub: 1.6,
-          },
-        }
-      );
     }, sectionRef);
 
     return () => ctx.revert();
   }, [isMounted]);
 
-  // Stable callbacks so level/preset changes don't re-create effects
-  const handleLevel = useCallback((l: GardenLevel) => setLevel(l), []);
+  const handleLevel = useCallback((l: GardenLevel) => setActiveLevel(l), []);
   const handlePreset = useCallback((p: AtmospherePreset) => setPreset(p), []);
+
+  const scrollToNext = useCallback(() => {
+    const nextElem = document.getElementById('personal-metrics') || document.getElementById('impact-ledger');
+    if (nextElem) {
+      nextElem.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+    }
+  }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[300vh]"
+      className="relative w-full h-[100dvh] pt-24 overflow-hidden"
       aria-label="ELOVIA Impact Garden Hero"
     >
       {/* ════════════════════════════════════════════════════════
           LAYER 1 — Fixed 2D Background Image (Z-0)
-          Never animated; stays perfectly still for zero rendering cost.
          ════════════════════════════════════════════════════════ */}
       <div
-        className="fixed inset-0 z-0 w-full h-full pointer-events-none"
+        className="absolute inset-0 z-0 w-full h-full pointer-events-none"
         aria-hidden="true"
       >
         <Image
           src="/images/dampak/hero.png"
-          alt="Breathtaking magical blooming tree with morning mist and sun rays"
+          alt="Magical blooming cherry tree with morning mist and sun rays"
           fill
           priority
-          quality={88}
+          quality={90}
           sizes="100vw"
           className="object-cover"
-          style={{ willChange: 'auto' }} // explicitly opt-out of GPU layer
         />
-        {/* Soft vignette to improve glass card readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/40 pointer-events-none" />
-        {/* Left edge softener */}
-        <div className="absolute inset-y-0 left-0 w-56 bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-        {/* Right edge softener */}
-        <div className="absolute inset-y-0 right-0 w-56 bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
+        {/* Soft vignette to enhance glass card contrast and depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-white/40 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-64 bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-64 bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
       </div>
 
       {/* ════════════════════════════════════════════════════════
-          STICKY VIEWPORT — 100vh, everything inside here
+          LAYER 2 — Transparent Grounded 3D Diorama Canvas (Z-10)
          ════════════════════════════════════════════════════════ */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div
+        className="absolute inset-0 z-10 pointer-events-auto"
+        suppressHydrationWarning
+      >
+        {isMounted ? (
+          <CanvasErrorBoundary>
+            <React.Suspense fallback={null}>
+              <MinimalGardenCanvas ref={canvasRef} level={activeLevel} />
+            </React.Suspense>
+          </CanvasErrorBoundary>
+        ) : null}
+      </div>
 
-        {/* ════════════════════════════════════════════════════
-            LAYER 2 — Transparent R3F Canvas (Z-10)
-            Separated component → no re-renders when UI state changes.
-           ════════════════════════════════════════════════════ */}
+      {/* ════════════════════════════════════════════════════════
+          LAYER 3 — Glassmorphism UI Overlay (Z-20)
+          pointer-events-none container allowing 3D canvas interaction
+         ════════════════════════════════════════════════════════ */}
+      <div className="absolute inset-0 pt-28 pb-10 px-8 flex justify-between items-center pointer-events-none z-10">
+
+        {/* ── LEFT COLUMN ──────────────────────────────────── */}
         <div
-          className="absolute inset-0 z-10 pointer-events-auto"
-          suppressHydrationWarning
+          ref={leftColRef}
+          className="w-72 sm:w-80 flex flex-col gap-4 pointer-events-auto hidden lg:flex"
         >
-          {isMounted ? (
-            <CanvasErrorBoundary>
-              <React.Suspense fallback={null}>
-                <MinimalGardenCanvas ref={canvasRef} />
-              </React.Suspense>
-            </CanvasErrorBoundary>
-          ) : null}
-        </div>
-
-        {/* ════════════════════════════════════════════════════
-            LAYER 3 — Glassmorphism UI Overlay (Z-20)
-           ════════════════════════════════════════════════════ */}
-        <div className="absolute inset-0 z-20 pointer-events-none">
-
-          {/* ── HEADER BAR ───────────────────────────────── */}
+          {/* Card 1 — Biomass Telemetry */}
           <div
-            ref={headerRef}
-            className="absolute top-0 left-0 right-0 flex items-center justify-between gap-4 px-6 sm:px-8 pt-5 pointer-events-auto"
-            style={{ willChange: 'transform, opacity' }}
+            style={GLASS}
+            className="p-5"
           >
-            {/* Brand badge */}
-            <div
-              style={GLASS}
-              className="px-4 py-2 flex items-center gap-2.5 shadow-sm"
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute h-full w-full rounded-full bg-[#22c55e] opacity-70" />
-                <span className="relative h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
+                Biomass Telemetry
               </span>
-              <span className="font-inter-tight text-xs font-bold uppercase tracking-wider text-[#0f2922]">
-                ELOVIA Impact Garden
-              </span>
-              <span className="hidden sm:inline font-jetbrains text-[10px] px-2 py-0.5 rounded-full bg-[#22c55e]/15 text-[#0f2922] font-semibold border border-[#22c55e]/30">
-                REAL-TIME 3D
-              </span>
+              <Leaf className="w-4 h-4 text-[#22c55e]" />
             </div>
 
-            {/* Center nav pills */}
-            <div
-              style={GLASS}
-              className="hidden md:flex items-center gap-5 px-6 py-2.5 shadow-sm"
-            >
-              {[TreeDeciduous, Activity, ShieldCheck].map((Icon, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`p-1 transition-colors ${i === 0 ? 'text-[#22c55e]' : 'text-[#0f2922]/60 hover:text-[#22c55e]'}`}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
+            <BiomassGauge level={activeLevel} />
+
+            {/* 4 mini indicator dots */}
+            <div className="flex justify-center gap-4 mt-2 mb-3">
+              {[
+                { l: 'Moisture', v: '88%' },
+                { l: 'pH', v: '6.8' },
+                { l: 'N₂', v: '94%' },
+                { l: 'Mycelium', v: '99%' },
+              ].map((dot) => (
+                <div key={dot.l} className="flex flex-col items-center gap-1">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full bg-[#22c55e]"
+                    style={{ boxShadow: '0 0 7px #22c55e' }}
+                  />
+                  <span className="font-jetbrains text-[9px] text-[#0f2922]/65 font-medium">
+                    {dot.v}
+                  </span>
+                </div>
               ))}
             </div>
 
-            {/* Stats chip */}
-            <div
-              style={GLASS}
-              className="flex items-center gap-3 px-4 py-2.5 shadow-sm"
-            >
+            <div className="border-t border-white/60 pt-3 flex justify-between items-center">
+              <span className="font-inter-tight text-[11px] text-[#0f2922]/70 font-medium">
+                Soil Ecosystem
+              </span>
+              <span className="font-jetbrains text-[10px] font-bold text-[#22c55e]">
+                ACTIVE ●
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2 — Atmospheric Absorption */}
+          <div
+            style={GLASS}
+            className="p-5"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
+                Atmospheric Absorption
+              </span>
+              <span className="flex items-center gap-1 font-jetbrains text-[10px] font-bold text-[#22c55e]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                LIVE
+              </span>
+            </div>
+
+            {/* Main metric */}
+            <div className="bg-white/40 border border-white/60 rounded-2xl p-3 mb-3 flex items-center justify-between">
               <div>
-                <p className="font-jetbrains text-[9px] text-[#0f2922]/60 uppercase tracking-wider">
-                  CO₂ Captured
+                <p className="font-jetbrains text-xl font-black text-[#0f2922] leading-none transition-all duration-300">
+                  {activeLevel === 1 ? '12 Trees / Yr' : activeLevel === 2 ? '34 Trees / Yr' : '62 Trees / Yr'}
                 </p>
-                <p className="font-jetbrains text-sm font-black text-[#0f2922] tracking-tight leading-none">
-                  1,248.5 <span className="text-[#22c55e] text-[10px]">kg</span>
+                <p className="font-inter-tight text-[10px] text-[#0f2922]/65 mt-0.5 transition-all duration-300">
+                  {activeLevel === 1 ? '≈ 240 kg CO₂e offset' : activeLevel === 2 ? '≈ 685 kg CO₂e offset' : '≈ 1,248 kg CO₂e offset'}
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* ── LEFT COLUMN ──────────────────────────────── */}
-          <div
-            ref={leftColRef}
-            className="absolute left-6 sm:left-8 top-1/2 -translate-y-1/2 w-72 flex flex-col gap-5 pointer-events-auto hidden lg:flex"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            {/* Card 1 — Biomass Telemetry */}
-            <div
-              style={GLASS}
-              className="p-5 shadow-md"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
-                  Biomass Telemetry
-                </span>
-                <Leaf className="w-4 h-4 text-[#22c55e]" />
-              </div>
-
-              <BiomassGauge />
-
-              {/* 4 mini indicator dots */}
-              <div className="flex justify-center gap-4 mt-2 mb-3">
-                {[
-                  { l: 'Moisture', v: '88%' },
-                  { l: 'pH', v: '6.8' },
-                  { l: 'N₂', v: '94%' },
-                  { l: 'Mycelium', v: '99%' },
-                ].map((dot) => (
-                  <div key={dot.l} className="flex flex-col items-center gap-1">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full bg-[#22c55e]"
-                      style={{ boxShadow: '0 0 7px #22c55e' }}
-                    />
-                    <span className="font-jetbrains text-[9px] text-[#0f2922]/65 font-medium">
-                      {dot.v}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-white/60 pt-3 flex justify-between items-center">
-                <span className="font-inter-tight text-[11px] text-[#0f2922]/70 font-medium">
-                  Soil Ecosystem
-                </span>
-                <span className="font-jetbrains text-[10px] font-bold text-[#22c55e]">
-                  ACTIVE ●
-                </span>
+              {/* Temperature dial */}
+              <div className="w-11 h-11 rounded-full bg-white/70 border border-white flex flex-col items-center justify-center shadow-xs">
+                <span className="font-jetbrains text-xs font-bold text-[#0f2922]">24°C</span>
+                <span className="font-inter-tight text-[7px] text-[#22c55e] font-semibold">Optimal</span>
               </div>
             </div>
 
-            {/* Card 2 — Atmospheric Absorption */}
-            <div
-              style={GLASS}
-              className="p-5 shadow-md"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
-                  Atmospheric Absorption
-                </span>
-                <span className="flex items-center gap-1 font-jetbrains text-[10px] font-bold text-[#22c55e]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
-                  LIVE
-                </span>
-              </div>
-
-              {/* Main metric */}
-              <div className="bg-white/40 border border-white/60 rounded-2xl p-3.5 mb-3 flex items-center justify-between">
-                <div>
-                  <p className="font-jetbrains text-xl font-black text-[#0f2922] leading-none">
-                    62 Trees / Yr
-                  </p>
-                  <p className="font-inter-tight text-[10px] text-[#0f2922]/65 mt-0.5">
-                    ≈ 1,248 kg CO₂e offset
-                  </p>
-                </div>
-                {/* Temperature dial */}
-                <div className="w-12 h-12 rounded-full bg-white/70 border border-white flex flex-col items-center justify-center shadow-xs">
-                  <span className="font-jetbrains text-xs font-bold text-[#0f2922]">24°C</span>
-                  <span className="font-inter-tight text-[7px] text-[#22c55e] font-semibold">Optimal</span>
-                </div>
-              </div>
-
-              {/* Quick-action pill buttons */}
-              <div className="grid grid-cols-3 gap-1.5">
-                {ATMOSPHERE_PRESETS.map(({ id, label, Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => handlePreset(id)}
-                    className={`flex flex-col items-center py-2 rounded-xl text-[10px] font-inter-tight font-semibold transition-all duration-200 ${
-                      preset === id
-                        ? 'bg-[#22c55e] text-white shadow-[0_3px_10px_rgba(34,197,94,0.35)]'
-                        : 'bg-white/45 text-[#0f2922]/75 hover:bg-white/70'
-                    }`}
-                  >
-                    <Icon className="w-3 h-3 mb-0.5" />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ── RIGHT COLUMN ─────────────────────────────── */}
-          <div
-            ref={rightColRef}
-            className="absolute right-6 sm:right-8 top-1/2 -translate-y-1/2 w-80 pointer-events-auto hidden lg:block"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            {/* Card — Converted Materials (playlist style) */}
-            <div style={GLASS} className="p-5 shadow-md">
-              <div className="flex items-center justify-between pb-3 mb-2 border-b border-white/55">
-                <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
-                  Converted Materials
-                </span>
-                <span className="font-jetbrains text-[10px] px-2 py-0.5 rounded-md bg-white/55 text-[#0f2922] font-semibold border border-white">
-                  4 ACTIVE
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                {CONVERTED_MATERIALS.map((mat) => (
-                  <div
-                    key={mat.id}
-                    className="flex items-center justify-between p-2.5 rounded-2xl bg-white/30 hover:bg-white/55 border border-white/40 transition-all cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Small circular icon */}
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
-                        style={{ background: `${mat.dot}22`, border: `1.5px solid ${mat.dot}55` }}
-                      >
-                        <Leaf className="w-3.5 h-3.5" style={{ color: mat.dot }} />
-                      </div>
-                      <div>
-                        <p className="font-inter-tight text-xs font-bold text-[#0f2922] leading-tight group-hover:text-[#22c55e] transition-colors">
-                          {mat.label}
-                        </p>
-                        <p className="font-inter-tight text-[10px] text-[#0f2922]/55">
-                          {mat.sub}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-jetbrains text-xs font-bold text-[#0f2922]">{mat.value}</p>
-                      <p className="font-jetbrains text-[9px] text-[#22c55e] font-semibold">{mat.purity}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination dots */}
-              <div className="flex items-center justify-center gap-1.5 pt-3.5">
-                <span className="w-4 h-1.5 rounded-full bg-[#22c55e]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
-              </div>
-            </div>
-          </div>
-
-          {/* ── BOTTOM BAR — Level Toggle + Scroll Hint ──── */}
-          <div
-            ref={bottomBarRef}
-            className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-auto"
-            style={{ willChange: 'transform, opacity' }}
-          >
-            {/* Level toggle pill */}
-            <div
-              style={{ ...GLASS, borderRadius: '9999px', padding: '5px' }}
-              className="flex items-center gap-1 shadow-md"
-            >
-              {([1, 2, 3] as GardenLevel[]).map((l) => (
+            {/* Quick-action pill buttons */}
+            <div className="grid grid-cols-3 gap-1.5">
+              {ATMOSPHERE_PRESETS.map(({ id, label, Icon }) => (
                 <button
-                  key={l}
+                  key={id}
                   type="button"
-                  onClick={() => handleLevel(l)}
-                  className={`px-5 py-2 rounded-full font-inter-tight text-xs font-bold transition-all duration-250 ${
-                    level === l
-                      ? 'bg-[#22c55e] text-white shadow-[0_3px_14px_rgba(34,197,94,0.40)] scale-105'
-                      : 'text-[#0f2922]/70 hover:text-[#0f2922] hover:bg-white/40'
+                  onClick={() => handlePreset(id)}
+                  className={`flex flex-col items-center py-2 rounded-xl text-[10px] font-inter-tight font-semibold transition-all duration-200 ${
+                    preset === id
+                      ? 'bg-[#22c55e] text-white shadow-[0_3px_10px_rgba(34,197,94,0.35)]'
+                      : 'bg-white/45 text-[#0f2922]/75 hover:bg-white/70'
                   }`}
                 >
-                  Level {l}
+                  <Icon className="w-3 h-3 mb-0.5" />
+                  {label}
                 </button>
               ))}
             </div>
-
-            {/* Scroll hint */}
-            <div className="flex items-center gap-1.5 text-[#0f2922]/75 font-inter-tight text-xs font-semibold animate-bounce">
-              <ChevronDown className="w-3.5 h-3.5 text-[#22c55e]" />
-              <span>Scroll for Scrollytelling 3D</span>
-            </div>
           </div>
+        </div>
 
-          {/* ── PHASE 2 OVERLAY — Solutions (slides up at 60%) ── */}
-          <div
-            ref={nextSectionRef}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-3xl pointer-events-none opacity-0"
-            style={{ willChange: 'transform, opacity, filter' }}
-          >
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.60)',
-                backdropFilter: 'blur(28px) saturate(170%)',
-                WebkitBackdropFilter: 'blur(28px) saturate(170%)',
-                border: '1px solid rgba(255, 255, 255, 0.80)',
-                borderRadius: '28px',
-                boxShadow: '0 20px 60px rgba(0, 25, 15, 0.14)',
-              }}
-              className="p-7 sm:p-10 pointer-events-auto"
-            >
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-black/5">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#22c55e]/15 border border-[#22c55e]/30 font-jetbrains text-[10px] font-bold text-[#0f2922] uppercase tracking-wider mb-1.5">
-                    <SparklesIcon className="w-3 h-3 text-[#22c55e]" />
-                    Verified Environmental Solutions
-                  </div>
-                  <h2 className="font-inter-tight text-xl sm:text-2xl font-extrabold text-[#0f2922] tracking-tight">
-                    Circular Impact Ledger & Solutions
-                  </h2>
-                </div>
-                <a
-                  href="#impact-ledger"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-inter-tight text-xs font-bold shadow-md transition-all self-start sm:self-auto hover:scale-105"
+        {/* ── RIGHT COLUMN ─────────────────────────────────── */}
+        <div
+          ref={rightColRef}
+          className="w-80 pointer-events-auto hidden lg:block"
+        >
+          {/* Card — Converted Materials */}
+          <div style={GLASS} className="p-5">
+            <div className="flex items-center justify-between pb-3 mb-2 border-b border-white/55">
+              <span className="font-inter-tight text-sm font-bold text-[#0f2922]">
+                Converted Materials
+              </span>
+              <span className="font-jetbrains text-[10px] px-2 py-0.5 rounded-md bg-white/55 text-[#0f2922] font-semibold border border-white">
+                4 ACTIVE
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {CONVERTED_MATERIALS.map((mat) => (
+                <div
+                  key={mat.id}
+                  className="flex items-center justify-between p-2.5 rounded-2xl bg-white/30 hover:bg-white/55 border border-white/40 transition-all cursor-pointer group"
                 >
-                  Explore Ledger
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
-              {/* Metric cards grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
-                {[
-                  { label: 'Carbon Captured', value: '1,248.5 kg', note: '+14.2% this month', accent: '#22c55e' },
-                  { label: 'Conversion Rate', value: '99.4%', note: 'Zero-landfill cert.', accent: '#14b8a6' },
-                  { label: 'Restored Canopy', value: '4.8 Ha', note: 'Rainforest sanctuary', accent: '#84cc16' },
-                  { label: 'Verification ID', value: '#ELOVIA-89247', note: 'Smart contract ✓', accent: '#22c55e' },
-                ].map((m) => (
-                  <div
-                    key={m.label}
-                    className="p-4 rounded-2xl bg-white/50 border border-white/80"
-                  >
-                    <p className="font-jetbrains text-[9px] text-[#0f2922]/55 uppercase tracking-wider mb-1">
-                      {m.label}
-                    </p>
-                    <p className="font-jetbrains text-lg font-black text-[#0f2922] leading-tight truncate">
-                      {m.value}
-                    </p>
-                    <p className="font-inter-tight text-[10px] font-semibold mt-1" style={{ color: m.accent }}>
-                      {m.note}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
+                      style={{ background: `${mat.dot}22`, border: `1.5px solid ${mat.dot}55` }}
+                    >
+                      <Leaf className="w-3.5 h-3.5" style={{ color: mat.dot }} />
+                    </div>
+                    <div>
+                      <p className="font-inter-tight text-xs font-bold text-[#0f2922] leading-tight group-hover:text-[#22c55e] transition-colors">
+                        {mat.label}
+                      </p>
+                      <p className="font-inter-tight text-[10px] text-[#0f2922]/55">
+                        {mat.sub}
+                      </p>
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <div className="text-right shrink-0">
+                    <p className="font-jetbrains text-xs font-bold text-[#0f2922]">{mat.value}</p>
+                    <p className="font-jetbrains text-[9px] text-[#22c55e] font-semibold">{mat.purity}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination dots */}
+            <div className="flex items-center justify-center gap-1.5 pt-3.5">
+              <span className="w-4 h-1.5 rounded-full bg-[#22c55e]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0f2922]/20" />
             </div>
           </div>
+        </div>
+      </div>
 
-        </div> {/* end Layer 3 */}
-      </div> {/* end sticky viewport */}
+      {/* ── BOTTOM BAR — Level Toggle + Smooth Scroll Indicator ──── */}
+      <div
+        ref={bottomBarRef}
+        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2.5 pointer-events-auto z-20"
+      >
+        {/* Level toggle pill */}
+        <div
+          style={{ ...GLASS, borderRadius: '9999px', padding: '4px' }}
+          className="flex items-center gap-1 shadow-md"
+        >
+          {([1, 2, 3] as GardenLevel[]).map((l) => (
+            <button
+              key={l}
+              type="button"
+              onClick={() => setActiveLevel(l)}
+              className={`px-4 py-1.5 rounded-full font-inter-tight text-xs font-bold transition-all duration-200 ${
+                activeLevel === l
+                  ? 'bg-emerald-500 text-white shadow-[0_3px_12px_rgba(16,185,129,0.35)] scale-105'
+                  : 'text-[#0f2922]/70 hover:text-[#0f2922] hover:bg-white/40'
+              }`}
+            >
+              Level {l}
+            </button>
+          ))}
+        </div>
+
+        {/* Scroll hint button */}
+        <button
+          type="button"
+          onClick={scrollToNext}
+          className="flex items-center gap-1.5 text-[#0f2922]/75 hover:text-[#177A47] font-inter-tight text-xs font-semibold transition-colors duration-200 group"
+          aria-label="Scroll ke rincian metrik ekologis"
+        >
+          <ChevronDown className="w-3.5 h-3.5 text-[#22c55e] transition-transform group-hover:translate-y-0.5 animate-bounce" />
+          <span>Scroll untuk Eksplorasi Metrik</span>
+        </button>
+      </div>
     </section>
   );
 }
+
+export default ImpactHero;
