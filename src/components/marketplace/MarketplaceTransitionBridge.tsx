@@ -1,372 +1,89 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ArrowDown, ArrowRight, Compass, Sparkles, ShieldCheck } from 'lucide-react';
 
 export function MarketplaceTransitionBridge() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const arrowRef = useRef<SVGSVGElement | null>(null);
-  const bottomTextRef = useRef<HTMLDivElement>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!sectionRef.current) return;
-    const rect = sectionRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left - rect.width / 2);
-    mouseY.set(e.clientY - rect.top - rect.height / 2);
+  const handleScrollToGlobe = () => {
+    const el = document.getElementById('marketplace-globe-view');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
-
-  const springConfig = { stiffness: 40, damping: 20, mass: 1 };
-  const mouseXSpring = useSpring(mouseX, springConfig);
-  const mouseYSpring = useSpring(mouseY, springConfig);
-
-  const parallaxX = useTransform(mouseXSpring, [-500, 500], [25, -25]);
-  const parallaxY = useTransform(mouseYSpring, [-500, 500], [25, -25]);
-
-  const invertedParallaxX = useTransform(parallaxX, (v) => -v);
-  const invertedParallaxY = useTransform(parallaxY, (v) => -v);
-
-  // Grouped words data for clean typography wrapping on mobile
-  const wordsGrouped = [
-    {
-      word: 'Setiap',
-      letters: [
-        { letter: 'S', color: '#111827' },
-        { letter: 'e', color: '#111827' },
-        { letter: 't', color: '#111827' },
-        { letter: 'i', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 'p', color: '#111827' },
-      ],
-    },
-    {
-      word: 'material',
-      letters: [
-        { letter: 'm', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 't', color: '#111827' },
-        { letter: 'e', color: '#111827' },
-        { letter: 'r', color: '#111827' },
-        { letter: 'i', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 'l', color: '#111827' },
-      ],
-    },
-    {
-      word: 'terpilah',
-      letters: [
-        { letter: 't', color: '#111827' },
-        { letter: 'e', color: '#111827' },
-        { letter: 'r', color: '#111827' },
-        { letter: 'p', color: '#111827' },
-        { letter: 'i', color: '#111827' },
-        { letter: 'l', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 'h', color: '#111827' },
-      ],
-    },
-    {
-      word: 'memiliki',
-      letters: [
-        { letter: 'm', color: '#16A34A' },
-        { letter: 'e', color: '#16A34A' },
-        { letter: 'm', color: '#16A34A' },
-        { letter: 'i', color: '#16A34A' },
-        { letter: 'l', color: '#16A34A' },
-        { letter: 'i', color: '#16A34A' },
-        { letter: 'k', color: '#16A34A' },
-        { letter: 'i', color: '#16A34A' },
-      ],
-    },
-    {
-      word: 'nilai',
-      letters: [
-        { letter: 'n', color: '#16A34A' },
-        { letter: 'i', color: '#16A34A' },
-        { letter: 'l', color: '#16A34A' },
-        { letter: 'a', color: '#16A34A' },
-        { letter: 'i', color: '#16A34A' },
-      ],
-    },
-    {
-      word: 'untuk',
-      letters: [
-        { letter: 'u', color: '#111827' },
-        { letter: 'n', color: '#111827' },
-        { letter: 't', color: '#111827' },
-        { letter: 'u', color: '#111827' },
-        { letter: 'k', color: '#111827' },
-      ],
-    },
-    {
-      word: 'masa',
-      letters: [
-        { letter: 'm', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 's', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-      ],
-    },
-    {
-      word: 'depan.',
-      letters: [
-        { letter: 'd', color: '#111827' },
-        { letter: 'e', color: '#111827' },
-        { letter: 'p', color: '#111827' },
-        { letter: 'a', color: '#111827' },
-        { letter: 'n', color: '#111827' },
-        { letter: '.', color: '#111827' },
-      ],
-    },
-  ];
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const container = sectionRef.current;
-      const textContainer = textRef.current;
-      const bottomCard = bottomTextRef.current;
-      if (!container || !textContainer) return;
-
-      const isMobile = window.innerWidth < 768;
-      const letters = container.querySelectorAll('.letter');
-
-      if (!isMobile) {
-        const pinnedDistance = 3500;
-        const scrollTween = gsap.timeline({
-          scrollTrigger: {
-            trigger: container,
-            start: 'top top',
-            end: () => `+=${pinnedDistance}`,
-            scrub: 1.2,
-            pin: true,
-            pinSpacing: true,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        scrollTween
-          .fromTo(
-            textContainer,
-            { x: '100vw' },
-            { x: '50vw', ease: 'none', duration: 1 }
-          )
-          .to(textContainer, {
-            x: () => -(textContainer.scrollWidth - window.innerWidth / 2),
-            ease: 'none',
-            duration: 2.2,
-          });
-
-        if (bottomCard) {
-          gsap.fromTo(
-            bottomCard,
-            { scale: 0.85, opacity: 0, y: 50 },
-            {
-              scale: 1,
-              opacity: 1,
-              y: 0,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: container,
-                start: 'top 20%',
-                end: 'top -20%',
-                scrub: 0.8,
-              },
-            }
-          );
-        }
-
-        if (arrowRef.current) {
-          const arrowPaths = arrowRef.current.querySelectorAll('path');
-          arrowPaths.forEach((arrowPath: SVGPathElement) => {
-            const pathLen = arrowPath.getTotalLength ? arrowPath.getTotalLength() : 500;
-            gsap.set(arrowPath, {
-              strokeDasharray: pathLen,
-              strokeDashoffset: pathLen,
-            });
-            gsap.to(arrowPath, {
-              strokeDashoffset: 0,
-              duration: 1.5,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: container,
-                start: 'top 30%',
-                end: 'top 0%',
-                scrub: 0.8,
-              },
-            });
-          });
-        }
-
-        // Desktop Elastic Throwing Letters:
-        // Guaranteed substantial scatter distance (±160px to ±340px) that stays in-bounds
-        // Widen runway (100% to 18%) so letters actively oscillate across 82% of the screen!
-        letters.forEach((letter: Element, index: number) => {
-          const isUp = index % 2 === 0 ? 1 : -1;
-          const yDistance = isUp * (160 + ((index * 47) % 180));
-          const rotAngle = -isUp * (35 + ((index * 31) % 65));
-          const startScale = 0.6 + ((index * 19) % 50) / 100;
-
-          gsap.fromTo(
-            letter,
-            {
-              y: yDistance,
-              rotation: rotAngle,
-              scale: startScale,
-              opacity: 0.25,
-            },
-            {
-              y: 0,
-              rotation: 0,
-              scale: 1,
-              opacity: 1,
-              ease: 'elastic.out(1.8, 0.35)',
-              scrollTrigger: {
-                trigger: letter,
-                containerAnimation: scrollTween,
-                start: 'left 100%',
-                end: 'left 18%',
-                scrub: 0.8,
-              },
-            }
-          );
-        });
-
-        // Recalculate ScrollTrigger measurements cleanly
-        ScrollTrigger.refresh();
-      } else {
-        if (bottomCard) {
-          gsap.fromTo(
-            bottomCard,
-            { scale: 0.9, opacity: 0, y: 40 },
-            {
-              scale: 1,
-              opacity: 1,
-              y: 0,
-              ease: 'back.out(1.5)',
-              scrollTrigger: {
-                trigger: bottomCard,
-                start: 'top 90%',
-                end: 'top 75%',
-                scrub: true,
-              },
-            }
-          );
-        }
-
-        letters.forEach((letter: Element, idx: number) => {
-          const isUp = idx % 2 === 0 ? 1 : -1;
-          gsap.fromTo(
-            letter,
-            {
-              y: isUp * 80,
-              opacity: 0,
-              scale: 0.35,
-              rotate: -isUp * 50,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              scale: 1,
-              rotate: 0,
-              ease: 'elastic.out(1.8, 0.4)',
-              scrollTrigger: {
-                trigger: letter,
-                start: 'top 95%',
-                end: 'top 70%',
-                scrub: 0.6,
-              },
-            }
-          );
-        });
-
-        if (arrowRef.current) {
-          gsap.fromTo(
-            arrowRef.current,
-            { scale: 0.5, opacity: 0, rotate: -20 },
-            {
-              scale: 1,
-              opacity: 1,
-              rotate: 0,
-              ease: 'back.out(1.7)',
-              scrollTrigger: {
-                trigger: arrowRef.current,
-                start: 'top 85%',
-                end: 'top 70%',
-                scrub: true,
-              },
-            }
-          );
-        }
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section
       id="marketplace-bridge-view"
-      ref={sectionRef}
-      className="relative w-full h-auto min-h-screen md:h-screen bg-[#F6FAF7] overflow-hidden font-[family:var(--font-jakarta)] select-none py-24 md:py-0"
-      onMouseMove={handleMouseMove}
+      className="relative w-full min-h-[85vh] md:min-h-screen bg-[#F6FAF7] overflow-hidden flex flex-col justify-center items-center py-20 sm:py-24 md:py-28 select-none"
     >
       {/* =====================================================================
-          1. AMBIENT BACKGROUND & MINT PATTERN
+          1. AMBIENT BACKGROUND & MINT DOTTED PATTERN
           ===================================================================== */}
       {/* Subtle Mint Dot Grid Pattern */}
       <div
-        className="absolute inset-0 z-0 opacity-[0.15]"
+        className="absolute inset-0 z-0 opacity-[0.14] pointer-events-none"
         style={{
           backgroundImage: 'radial-gradient(#177A47 1.5px, transparent 1.5px)',
           backgroundSize: '32px 32px',
         }}
+        aria-hidden="true"
       />
 
-      {/* Top & Bottom Gradient Overlay for Seamless Blend with Hero & Globe */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-black/20 pointer-events-none z-[1]" />
+      {/* Top and Bottom Gradient Blends for Seamless Integration */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/40 pointer-events-none z-[1]"
+        aria-hidden="true"
+      />
 
-      {/* Massive Glowing Mint/Teal Central Orb with Mouse Parallax */}
-      <motion.div
-        style={{ x: parallaxX, y: parallaxY }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[580px] md:w-[720px] h-[340px] sm:h-[580px] md:h-[720px] bg-gradient-to-tr from-[#2FA866] via-[#177A47] to-[#0E7C7B] rounded-full blur-[140px] opacity-20 z-0 pointer-events-none"
+      {/* Ambient Radial Glowing Orbs */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[540px] md:w-[700px] h-[320px] sm:h-[540px] md:h-[700px] bg-gradient-to-tr from-[#2FA866]/15 via-[#177A47]/10 to-[#0E7C7B]/10 rounded-full blur-[120px] pointer-events-none z-0"
+        aria-hidden="true"
       />
 
       {/* =====================================================================
-          2. SECTION CONTENT & MARQUEE
+          2. STATIC EDITORIAL TYPOGRAPHY & HERO HEADLINE
+          Clean, rock-solid responsive container that never breaks on mobile
           ===================================================================== */}
-      <div className="relative w-full h-full md:h-screen flex flex-col justify-between items-center z-10 px-4">
-        <div className="w-full flex-1 flex flex-col justify-center items-center py-12 md:py-0 relative">
-          {/* Animated Green Arrow SVG (Saverish loop-de-loop curve) */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-6 flex flex-col items-center text-center">
+        {/* Subtle Eyebrow Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold tracking-widest uppercase mb-6 shadow-2xs select-none"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>ELOVIA Marketplace</span>
+        </motion.div>
+
+        {/* Massive Editorial Headline with Hand-Drawn Arrow */}
+        <div className="relative w-full">
+          {/* Hand-drawn Green Arrow SVG Ornament (Hidden on mobile to ensure zero overlap) */}
           <motion.div
-            style={{ x: invertedParallaxX, y: invertedParallaxY }}
-            className="w-full max-w-4xl flex justify-center mb-6 md:mb-0 md:absolute md:-top-24 md:left-1/2 md:-translate-x-1/2 drop-shadow-[0_15px_30px_rgba(23,122,71,0.25)] z-20"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden md:block absolute -top-12 lg:-top-14 right-2 lg:right-12 pointer-events-none z-20 text-[#177A47] drop-shadow-sm"
+            aria-hidden="true"
           >
             <svg
-              ref={arrowRef}
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-16 sm:w-24 md:w-32 lg:w-[200px]"
+              className="w-24 sm:w-28 lg:w-36 h-auto"
               viewBox="0 0 386 127"
               fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 d="M2 123C9 35.9999 84.5 17 124 25.9999C217.764 47.3635 207 115 177.5 123C105.777 142.45 110.737 1.99991 232.5 2C310.5 2.00006 366.5 79 376 118L356.5 105.5"
-                stroke="#177A47"
+                stroke="currentColor"
                 strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
               <path
                 d="M2 123C9 35.9999 84.5 17 124 25.9999C217.764 47.3635 207 115 177.5 123C105.777 142.45 110.737 1.99991 232.5 2C310.5 2.00006 366.5 79 376 118L384 97"
-                stroke="#177A47"
+                stroke="currentColor"
                 strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -374,65 +91,76 @@ export function MarketplaceTransitionBridge() {
             </svg>
           </motion.div>
 
-          {/* Marquee Text Container with Fraunces Serif Editorial Typography */}
-          <div
-            ref={textRef}
-            className="w-full md:absolute md:top-1/2 md:left-0 md:-translate-y-1/2 whitespace-normal md:whitespace-nowrap flex items-center justify-center md:justify-start md:pr-[50vw]"
-            style={{
-              paddingLeft: '0',
-              paddingRight: '50vw',
-            }}
+          {/* Clean Static Headline: Solid Dark Text + Vibrant Gradient Accent */}
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-[5rem] font-bold tracking-tight text-slate-900 leading-[1.12] md:leading-[1.1] mb-6 font-jakarta"
           >
-            <h2 className="text-[12vw] md:text-[140px] lg:text-[160px] font-black uppercase tracking-tighter leading-none font-[family:var(--font-fraunces)] flex flex-wrap md:flex-nowrap items-center justify-center text-center md:text-left gap-y-2">
-              {wordsGrouped.map((wordObj, wIdx) => (
-                <span
-                  key={wordObj.word}
-                  className="inline-block whitespace-nowrap overflow-visible"
-                >
-                  {wordObj.letters.map((item, idx) => (
-                    <span
-                      key={`${wordObj.word}-${idx}`}
-                      className="letter inline-block select-none font-black uppercase origin-center"
-                      style={{
-                        color: item.color,
-                        textShadow:
-                          item.color === '#16A34A'
-                            ? '0 0 40px rgba(22, 163, 74, 0.45)'
-                            : 'none',
-                        willChange: 'transform, opacity',
-                      }}
-                    >
-                      {item.letter}
-                    </span>
-                  ))}
-                  {wIdx < wordsGrouped.length - 1 && (
-                    <span className="inline-block select-none font-black">
-                      {'\u00A0'}
-                    </span>
-                  )}
-                </span>
-              ))}
-            </h2>
-          </div>
+            Setiap Material <br className="hidden sm:block" />
+            Memiliki{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-green-600 font-serif italic pr-1">
+              Nilai Baru.
+            </span>
+          </motion.h1>
         </div>
 
-        {/* =====================================================================
-            3. FLOATING GLASS BOTTOM CARD (The Mission Statement)
-            ===================================================================== */}
-        <div
-          ref={bottomTextRef}
-          className="w-full px-4 mb-4 md:mb-0 md:absolute md:left-1/2 md:bottom-[10%] md:-translate-x-1/2 text-center z-20"
+        {/* Clean, Readable Editorial Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10 font-normal"
         >
-          <div className="bg-white/80 backdrop-blur-2xl border border-white/60 p-5 sm:p-6 md:p-8 rounded-[24px] sm:rounded-[32px] shadow-[0_30px_60px_-15px_rgba(23,122,71,0.08)] max-w-[300px] sm:max-w-lg md:max-w-2xl mx-auto transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(23,122,71,0.16)]">
-            <p className="text-ink-700 text-xs sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed font-[family:var(--font-jakarta)]">
-              Setiap kilogram sampah yang Anda daur ulang menciptakan efek bola salju bagi pelestarian lingkungan. Bergabunglah bersama kami menciptakan{' '}
-              <span className="text-green-600 font-bold">ekosistem sirkular</span>{' '}
-              yang menguntungkan Anda dan bumi.
+          Temukan pembeli yang tepat untuk material daur ulang Anda atau pasok kebutuhan
+          industri Anda langsung dari sumber terverifikasi.
+        </motion.p>
+
+        {/* Action Button & Telemetry Pills */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 w-full max-w-md mx-auto"
+        >
+          <button
+            type="button"
+            onClick={handleScrollToGlobe}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all hover:scale-[1.02] cursor-pointer group"
+          >
+            <Compass className="w-4 h-4 text-emerald-200 group-hover:rotate-45 transition-transform" />
+            <span>Jelajahi Peta Sentra Sirkular</span>
+            <ArrowDown className="w-4 h-4 text-emerald-200 group-hover:translate-y-0.5 transition-transform" />
+          </button>
+
+          <div className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-white/90 border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-2xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>50+ Mitra Terverifikasi SNI</span>
+          </div>
+        </motion.div>
+
+        {/* =====================================================================
+            3. FLOATING GLASS MISSION CARD
+            ===================================================================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="w-full max-w-2xl"
+        >
+          <div className="bg-white/80 backdrop-blur-xl border border-white p-5 sm:p-7 rounded-[28px] sm:rounded-[32px] shadow-[0_20px_50px_-15px_rgba(16,185,129,0.08)] transition-all duration-300 hover:shadow-[0_25px_60px_-15px_rgba(16,185,129,0.12)]">
+            <p className="text-slate-600 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
+              Setiap kilogram sampah yang Anda daur ulang menciptakan efek bola salju bagi
+              pelestarian lingkungan. Bergabunglah bersama kami menciptakan{' '}
+              <span className="text-emerald-700 font-bold">ekosistem sirkular</span> yang
+              menguntungkan Anda dan bumi.
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
+
 export default MarketplaceTransitionBridge;

@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RotateCcw,
+  RotateCw,
+  Compass,
   Sparkles,
   MapPin,
   Building,
@@ -176,17 +178,17 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
 
       {/* =====================================================================
           3. FULL-BLEED 3D INTERACTIVE GLOBE EXPERIENCE
-          Container: relative w-full h-screen overflow-hidden
+          Container: relative w-full h-[100dvh] overflow-hidden bg-slate-900
           ===================================================================== */}
       <section
         id="marketplace-globe-view"
         suppressHydrationWarning
-        className="relative w-full h-screen overflow-hidden bg-black"
+        className="relative w-full h-[100dvh] overflow-hidden bg-slate-900"
       >
         {/* ===================================================================
             A. BASE LAYER: MapLibre GL JS 3D Satellite Globe Canvas
             =================================================================== */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 pointer-events-auto">
           <MapLibreGlobe
             partners={filteredPartners}
             hoveredPartnerId={hoveredPartnerId}
@@ -199,9 +201,9 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
 
         {/* ===================================================================
             B. LEFT OVERLAY PANEL: Sirkulasi Nasional Stats Card
-            Position: absolute top-6 left-6 z-20 w-80 max-w-[calc(100vw-3rem)]
+            Position: hidden lg:block absolute top-6 left-6 z-20 w-80
             =================================================================== */}
-        <div className="hidden md:block absolute top-6 left-6 z-20 w-80 max-w-[calc(100vw-3rem)] bg-white/80 backdrop-blur-2xl rounded-3xl p-5 border border-white/60 shadow-xl pointer-events-auto font-jakarta">
+        <div className="hidden lg:block absolute top-6 left-6 z-20 w-80 max-w-[calc(100vw-3rem)] bg-white/80 backdrop-blur-2xl rounded-3xl p-5 border border-white/60 shadow-xl pointer-events-auto font-jakarta">
           {/* Header Row */}
           <div className="flex items-center justify-between pb-3 border-b border-mint-200/60 gap-2">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -284,8 +286,9 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
         </div>
 
         {/* ===================================================================
-            C. RIGHT OVERLAY PANEL: Mitra Daur Ulang Pilihan Listings
-            Position: absolute top-6 right-6 z-20 w-96 max-h-[calc(100vh-16rem)]
+            C. RIGHT OVERLAY PANEL / MOBILE BOTTOM SHEET: Mitra Daur Ulang Pilihan
+            Desktop: floating panel top-right
+            Mobile: draggable/collapsible bottom sheet
             =================================================================== */}
         <FloatingPartnerListings
           partners={filteredPartners}
@@ -298,17 +301,55 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
 
         {/* ===================================================================
             D. BOTTOM-RIGHT SHOWCASE PANEL: Sentra Fasilitas Unggulan Carousel
-            Position: absolute bottom-6 right-6 z-30 w-96 h-44
+            Position: hidden lg:block absolute bottom-6 right-6 z-30 w-96 h-44
             =================================================================== */}
-        <div className="hidden sm:block absolute bottom-6 right-6 z-30 w-96 h-44 bg-white/85 backdrop-blur-2xl rounded-3xl p-3 border border-white/80 shadow-2xl overflow-hidden pointer-events-auto">
+        <div className="hidden lg:block absolute bottom-6 right-6 z-30 w-96 h-44 bg-white/85 backdrop-blur-2xl rounded-3xl p-3 border border-white/80 shadow-2xl overflow-hidden pointer-events-auto">
           <FacilitySlideshow onSelectSlide={handleSelectSlide} />
         </div>
 
         {/* ===================================================================
-            E. BOTTOM-CENTER CONTROLS PILL: Globe Navigation
-            Position: absolute bottom-6 left-1/2 -translate-x-1/2 z-30
+            E1. MOBILE FLOATING GLOBE CONTROLS (Top Floating Dock)
+            Position: lg:hidden fixed top-24 left-1/2 -translate-x-1/2 z-20
             =================================================================== */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+        <div className="lg:hidden fixed top-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg text-xs font-bold text-slate-800 pointer-events-auto select-none font-jakarta">
+          <div className="px-2.5 py-1 rounded-full bg-green-600 text-white text-[11px] font-bold shadow-2xs flex items-center gap-1.5 shrink-0">
+            <Globe className="w-3.5 h-3.5" />
+            <span>3D Globe</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setAutoSpinEnabled((prev) => !prev)}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer shrink-0 ${
+              autoSpinEnabled
+                ? 'bg-mint-100 text-green-800'
+                : 'text-slate-700 hover:text-green-800 hover:bg-slate-100'
+            }`}
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${autoSpinEnabled ? 'animate-spin' : ''}`}
+              style={{ animationDuration: '6s' }}
+            />
+            <span>{autoSpinEnabled ? 'Putar' : 'Jeda'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setHoveredPartnerId(null);
+            }}
+            className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-700 hover:text-green-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0 flex items-center gap-1"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Pusatkan</span>
+          </button>
+        </div>
+
+        {/* ===================================================================
+            E2. DESKTOP BOTTOM-CENTER CONTROLS PILL: Globe Navigation
+            Position: hidden lg:flex absolute bottom-6 left-1/2 -translate-x-1/2 z-30
+            =================================================================== */}
+        <div className="hidden lg:flex absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
           <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-full border border-mint-200 shadow-lg flex items-center gap-2 sm:gap-3 font-jakarta whitespace-nowrap">
             <div className="px-3 py-1 rounded-full bg-green-600 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 shrink-0">
               <Globe className="w-3.5 h-3.5" />
@@ -318,12 +359,16 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
             <button
               type="button"
               onClick={() => setAutoSpinEnabled((prev) => !prev)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${autoSpinEnabled
-                ? 'bg-mint-100 text-green-800'
-                : 'text-ink-600 hover:text-green-800 hover:bg-mint-50'
-                }`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
+                autoSpinEnabled
+                  ? 'bg-mint-100 text-green-800'
+                  : 'text-ink-600 hover:text-green-800 hover:bg-mint-50'
+              }`}
             >
-              <RotateCcw className={`w-3.5 h-3.5 ${autoSpinEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
+              <RotateCw
+                className={`w-3.5 h-3.5 ${autoSpinEnabled ? 'animate-spin' : ''}`}
+                style={{ animationDuration: '6s' }}
+              />
               <span>{autoSpinEnabled ? 'Putar' : 'Jeda'}</span>
             </button>
 
@@ -332,15 +377,16 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
               onClick={() => {
                 setHoveredPartnerId(null);
               }}
-              className="px-3 py-1 rounded-full text-xs font-semibold text-ink-600 hover:text-green-800 hover:bg-mint-50 transition-colors cursor-pointer shrink-0"
+              className="px-3 py-1 rounded-full text-xs font-semibold text-ink-600 hover:text-green-800 hover:bg-mint-50 transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
             >
-              Pusatkan
+              <Compass className="w-3.5 h-3.5" />
+              <span>Pusatkan</span>
             </button>
           </div>
         </div>
 
-        {/* Soft bottom edge fade bridging to the light theme banner below */}
-        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#F4FAF6] via-[#F4FAF6]/40 to-transparent pointer-events-none z-10" />
+        {/* Soft bottom edge fade bridging to the light theme banner below (desktop only) */}
+        <div className="hidden lg:block absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#F4FAF6] via-[#F4FAF6]/40 to-transparent pointer-events-none z-10" />
       </section>
 
       {/* =====================================================================
