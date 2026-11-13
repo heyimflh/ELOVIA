@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -126,7 +126,9 @@ function DesktopAnimatedHero({ handleScrollToGlobe }: HeroProps) {
   const invertedParallaxY = useTransform(parallaxY, (v) => -v);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 1024px)', () => {
       const container = sectionRef.current;
       const textContainer = textRef.current;
       const bottomCard = bottomTextRef.current;
@@ -237,9 +239,9 @@ function DesktopAnimatedHero({ handleScrollToGlobe }: HeroProps) {
       });
 
       ScrollTrigger.refresh();
-    }, sectionRef);
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
@@ -538,21 +540,10 @@ function MobileStaticHero({ handleScrollToGlobe }: HeroProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. MASTER COMPONENT WITH CONDITIONAL DEVICE ROUTING & ZERO HYDRATION MISMATCH
+// 3. MASTER COMPONENT WITH PURE CSS RESPONSIVE RENDERING (ZERO HYDRATION MISMATCH)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function MarketplaceTransitionBridge() {
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const checkDevice = () => setIsDesktop(window.innerWidth >= 1024);
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
-  }, []);
-
   const handleScrollToGlobe = () => {
     const el = document.getElementById('marketplace-globe-view');
     if (el) {
@@ -561,17 +552,17 @@ export function MarketplaceTransitionBridge() {
   };
 
   return (
-    <div suppressHydrationWarning className="w-full">
-      {/* DESKTOP VIEW (>= lg / 1024px): Complex Saverish Elastic Letter Scattering Animation */}
-      {isDesktop && mounted && (
+    <section className="relative w-full z-10">
+      {/* DESKTOP VIEW (Large screens only - > 1024px) */}
+      <div className="hidden lg:block w-full">
         <DesktopAnimatedHero handleScrollToGlobe={handleScrollToGlobe} />
-      )}
+      </div>
 
-      {/* MOBILE VIEW (< lg) & INITIAL SSR PASS: Rock-Solid Static Responsive Typography */}
-      {(!isDesktop || !mounted) && (
+      {/* MOBILE VIEW (Small screens only - < 1024px) */}
+      <div className="block lg:hidden w-full">
         <MobileStaticHero handleScrollToGlobe={handleScrollToGlobe} />
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
 

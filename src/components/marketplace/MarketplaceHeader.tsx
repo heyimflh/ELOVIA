@@ -251,14 +251,15 @@ export function MarketplaceHeader({
 
       {/* =====================================================================
           2. LEFT-ALIGNED TYPOGRAPHY & CONSOLE BLOCK (The Hook)
-          - STRICTLY z-40 and pointer-events-auto
+          - Hidden on mobile (< lg) to prevent cluttering the 3D Globe map canvas
+          - STRICTLY z-40 and pointer-events-auto on desktop (lg:flex)
           - Perfectly proportioned to fit within 100vh without vertical overflow
           ===================================================================== */}
       <motion.div
         style={{
           y: prefersReducedMotion ? 0 : fgScrollY,
         }}
-        className="relative z-40 pointer-events-auto w-full max-w-2xl px-6 sm:px-10 lg:px-16 h-full flex flex-col justify-center pt-16 sm:pt-20 pb-4 sm:pb-6 will-change-transform"
+        className="hidden lg:flex relative z-40 pointer-events-auto w-full max-w-2xl px-6 sm:px-10 lg:px-16 h-full flex-col justify-center pt-16 sm:pt-20 pb-4 sm:pb-6 will-change-transform"
       >
         <motion.div
           style={{

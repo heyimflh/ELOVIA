@@ -158,33 +158,37 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
   return (
     <div className="w-full min-h-screen bg-[#F6FAF7] relative">
       {/* =====================================================================
-          1. HEADER & SMART SEARCH / FILTER SECTION (Hero)
+          1. DESKTOP-ONLY HEADER & SMART SEARCH / FILTER SECTION
           ===================================================================== */}
-      <MarketplaceHeader
-        filters={filters}
-        onFilterChange={(newFilters) => {
-          setSearchQuery(newFilters.searchQuery);
-          setSelectedCategory(newFilters.selectedCategory);
-          setSelectedMethod(newFilters.selectedMethod);
-          setIsVerifiedOnly(newFilters.isVerifiedOnly);
-        }}
-        targetSectionId="marketplace-bridge-view"
-      />
+      <div className="hidden lg:block">
+        <MarketplaceHeader
+          filters={filters}
+          onFilterChange={(newFilters) => {
+            setSearchQuery(newFilters.searchQuery);
+            setSelectedCategory(newFilters.selectedCategory);
+            setSelectedMethod(newFilters.selectedMethod);
+            setIsVerifiedOnly(newFilters.isVerifiedOnly);
+          }}
+          targetSectionId="marketplace-bridge-view"
+        />
+      </div>
 
       {/* =====================================================================
-          2. CINEMATIC TRANSITION BRIDGE (Marquee Scrub & Mission Statement)
-          Connects the Hero Section with the 3D Satellite Globe Section
+          2. HERO SECTION / CINEMATIC TRANSITION BRIDGE
+          Cleanly rendered at the top of the mobile page with typography:
+          "Setiap Material Memiliki Nilai Baru."
           ===================================================================== */}
       <MarketplaceTransitionBridge />
 
       {/* =====================================================================
-          3. FULL-BLEED 3D INTERACTIVE GLOBE EXPERIENCE
-          Container: relative w-full h-[100dvh] overflow-hidden bg-slate-900
+          3. SCOPED 3D INTERACTIVE GLOBE SECTION
+          Container: relative w-full h-[85dvh] lg:h-screen overflow-hidden bg-slate-900
+          Boundary for all scoped absolute controls and the mobile bottom sheet
           ===================================================================== */}
       <section
         id="marketplace-globe-view"
         suppressHydrationWarning
-        className="relative w-full h-[100dvh] overflow-hidden bg-slate-900"
+        className="relative w-full h-[85dvh] lg:h-screen overflow-hidden bg-slate-900"
       >
         {/* ===================================================================
             A. BASE LAYER: MapLibre GL JS 3D Satellite Globe Canvas
@@ -310,10 +314,11 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
 
         {/* ===================================================================
             E1. MOBILE FLOATING GLOBE CONTROLS (Top Floating Dock)
-            Position: lg:hidden fixed top-24 left-1/2 -translate-x-1/2 z-20
+            Position: lg:hidden absolute top-6 left-1/2 -translate-x-1/2 z-20
+            Scoped strictly inside the relative 3D Globe section container
             =================================================================== */}
-        <div className="lg:hidden fixed top-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg text-xs font-bold text-slate-800 pointer-events-auto select-none font-jakarta">
-          <div className="px-2.5 py-1 rounded-full bg-green-600 text-white text-[11px] font-bold shadow-2xs flex items-center gap-1.5 shrink-0">
+        <div className="lg:hidden absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 p-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-white/60 shadow-md text-xs font-semibold text-slate-800 pointer-events-auto select-none font-jakarta">
+          <div className="px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-bold shadow-2xs flex items-center gap-1.5 shrink-0">
             <Globe className="w-3.5 h-3.5" />
             <span>3D Globe</span>
           </div>
@@ -321,10 +326,10 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
           <button
             type="button"
             onClick={() => setAutoSpinEnabled((prev) => !prev)}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer shrink-0 ${
+            className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
               autoSpinEnabled
-                ? 'bg-mint-100 text-green-800'
-                : 'text-slate-700 hover:text-green-800 hover:bg-slate-100'
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'
+                : 'text-slate-700 hover:text-emerald-800 hover:bg-slate-100'
             }`}
           >
             <RotateCw
@@ -339,7 +344,7 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
             onClick={() => {
               setHoveredPartnerId(null);
             }}
-            className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-700 hover:text-green-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0 flex items-center gap-1"
+            className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
           >
             <Compass className="w-3.5 h-3.5" />
             <span>Pusatkan</span>

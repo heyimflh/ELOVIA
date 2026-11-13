@@ -251,6 +251,7 @@ export function FloatingPartnerListings({
 
       {/* =====================================================================
           2. MOBILE TAP-TO-DISMISS BACKDROP (Active when bottom sheet expanded)
+          Scoped strictly inside the relative 3D Globe section (absolute inset-0)
           ===================================================================== */}
       <AnimatePresence>
         {isMobileExpanded && (
@@ -260,17 +261,19 @@ export function FloatingPartnerListings({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setIsMobileExpanded(false)}
-            className="block lg:hidden fixed inset-0 z-25 bg-slate-950/40 backdrop-blur-[2px]"
+            className="lg:hidden absolute inset-0 z-25 bg-slate-950/40 backdrop-blur-[2px]"
             aria-label="Tutup daftar mitra"
           />
         )}
       </AnimatePresence>
 
       {/* =====================================================================
-          3. DEDICATED MOBILE BOTTOM SHEET (Visible on < lg screens)
-             - Peek state: h-[220px]
-             - Expanded state: h-[80dvh]
-             - Draggable & Tap-to-expand
+          3. DEDICATED MOBILE BOTTOM SHEET (Scoped strictly to 3D Globe section)
+             - absolute bottom-0 left-0 right-0 z-30 (NEVER fixed globally)
+             - Peek state: h-[235px] (comfortable height for pill search + filters)
+             - Expanded state: h-[82dvh]
+             - Clean Airbnb / Google Maps sheet UX with drag & swipe gestures
+             - pb-8 safe-area padding for iOS indicators
           ===================================================================== */}
       <motion.div
         drag="y"
@@ -285,22 +288,22 @@ export function FloatingPartnerListings({
             setIsMobileExpanded(false);
           }
         }}
-        className={`block lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-2xl border-t border-white/80 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] flex flex-col pointer-events-auto font-jakarta select-none ${
+        className={`lg:hidden absolute bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-2xl border-t border-slate-200 rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col pointer-events-auto font-jakarta select-none ${
           isDragging ? '' : 'transition-all duration-300'
-        } ${isMobileExpanded ? 'h-[80dvh]' : 'h-[220px]'}`}
+        } ${isMobileExpanded ? 'h-[82dvh]' : 'h-[235px]'}`}
       >
         {/* Top Drag Bar Handle */}
         <div
           onClick={() => setIsMobileExpanded((prev) => !prev)}
-          className="w-full pt-2.5 pb-1 cursor-grab active:cursor-grabbing flex flex-col items-center shrink-0"
+          className="w-full cursor-grab active:cursor-grabbing shrink-0"
         >
-          <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto my-3" />
+          <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-4" />
         </div>
 
-        {/* Header Bar */}
+        {/* Title & Badge */}
         <div
           onClick={() => setIsMobileExpanded((prev) => !prev)}
-          className="flex items-center justify-between px-5 pb-2.5 cursor-pointer shrink-0"
+          className="flex justify-between items-center px-5 mb-4 cursor-pointer shrink-0"
         >
           <div className="flex items-center gap-2 min-w-0">
             <span className="relative flex h-2.5 w-2.5 shrink-0">
@@ -330,41 +333,50 @@ export function FloatingPartnerListings({
           </div>
         </div>
 
-        {/* Search & Category Pills Filter Bar */}
-        <div className="px-5 pb-3 space-y-2 shrink-0">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              onFocus={() => setIsMobileExpanded(true)}
-              placeholder="Cari mitra, kota, atau material..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-50/90 border border-slate-200/80 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all font-jakarta shadow-2xs"
-            />
-          </div>
+        {/* Search Input: Clean full-width pill */}
+        <div className="mx-5 mb-3 relative shrink-0">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            onFocus={() => setIsMobileExpanded(true)}
+            placeholder="Cari mitra, kota, atau material..."
+            className="w-full pl-9 pr-8 py-2 rounded-full bg-slate-100 border border-transparent focus:border-emerald-500/40 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 transition-all font-jakarta shadow-2xs"
+          />
+          {searchFilter && (
+            <button
+              type="button"
+              onClick={() => setSearchFilter('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full"
+              aria-label="Hapus pencarian"
+            >
+              <span className="text-sm font-bold leading-none">×</span>
+            </button>
+          )}
+        </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-xs">
-            {[
-              { id: 'semua', label: 'Semua' },
-              { id: 'bank_sampah', label: 'Bank Sampah' },
-              { id: 'mitra_daur_ulang', label: 'Industri Sirkular' },
-              { id: 'pengepul', label: 'Pengepul' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id as CategoryTab)}
-                className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                  activeTab === tab.id
-                    ? 'bg-emerald-600 text-white shadow-2xs font-semibold'
-                    : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 bg-white/70 border border-slate-100'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+        {/* Filter Chips: Horizontally scrollable row */}
+        <div className="flex overflow-x-auto custom-scrollbar gap-2 px-5 pb-3 shrink-0 text-xs">
+          {[
+            { id: 'semua', label: 'Semua' },
+            { id: 'bank_sampah', label: 'Bank Sampah' },
+            { id: 'mitra_daur_ulang', label: 'Industri Sirkular' },
+            { id: 'pengepul', label: 'Pengepul' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id as CategoryTab)}
+              className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                activeTab === tab.id
+                  ? 'bg-emerald-600 text-white shadow-2xs font-semibold'
+                  : 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 bg-slate-100/80 border border-slate-200/60'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Scrollable Compact Partner Cards List */}
