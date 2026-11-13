@@ -9,6 +9,7 @@ export { PartnerDetailDrawer } from './PartnerDetailDrawer';
 export { FloatingOrbs } from './FloatingOrbs';
 export { PARTNERS_DATA, type PartnerItem } from './partnerData';
 export { MarketplaceHeader, type MarketplaceHeaderProps } from './MarketplaceHeader';
+export { MarketplaceMobileHero, type MarketplaceMobileHeroProps } from './MarketplaceMobileHero';
 export { MarketplaceDirectory } from './MarketplaceDirectory';
 export { MarketplaceTransitionBridge } from './MarketplaceTransitionBridge';
 export { TrustQualityBanner } from './TrustQualityBanner';

@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { MarketplaceHeader } from './MarketplaceHeader';
+import { MarketplaceMobileHero } from './MarketplaceMobileHero';
 import { MarketplaceTransitionBridge } from './MarketplaceTransitionBridge';
 import { TrustQualityBanner } from './TrustQualityBanner';
 import { PartnerDetailDrawer } from './PartnerDetailDrawer';
@@ -158,7 +159,9 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
   return (
     <div className="w-full min-h-screen bg-[#F6FAF7] relative">
       {/* =====================================================================
-          1. DESKTOP-ONLY HEADER & SMART SEARCH / FILTER SECTION
+          1. DESKTOP-ONLY HERO & CINEMATIC TRANSITION BRIDGE
+          - Desktop Parallax Header (HeroSection.png + 3D Mouse Physics)
+          - GSAP Marquee Letters Scrub Transition Bridge
           ===================================================================== */}
       <div className="hidden lg:block">
         <MarketplaceHeader
@@ -171,14 +174,26 @@ export function MarketplaceDirectory({ initialSlug }: MarketplaceDirectoryProps 
           }}
           targetSectionId="marketplace-bridge-view"
         />
+
+        <MarketplaceTransitionBridge />
       </div>
 
       {/* =====================================================================
-          2. HERO SECTION / CINEMATIC TRANSITION BRIDGE
-          Cleanly rendered at the top of the mobile page with typography:
-          "Setiap Material Memiliki Nilai Baru."
+          2. MOBILE-OPTIMIZED HERO SECTION (< lg)
+          Clean, highly readable cinematic hero sitting directly above the 3D Globe
           ===================================================================== */}
-      <MarketplaceTransitionBridge />
+      <div className="block lg:hidden">
+        <MarketplaceMobileHero
+          filters={filters}
+          onFilterChange={(newFilters) => {
+            setSearchQuery(newFilters.searchQuery);
+            setSelectedCategory(newFilters.selectedCategory);
+            setSelectedMethod(newFilters.selectedMethod);
+            setIsVerifiedOnly(newFilters.isVerifiedOnly);
+          }}
+          targetGlobeId="marketplace-globe-view"
+        />
+      </div>
 
       {/* =====================================================================
           3. SCOPED 3D INTERACTIVE GLOBE SECTION
